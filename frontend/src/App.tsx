@@ -1,7 +1,20 @@
-import React from "react";
+import { createBrowserRouter } from "react-router-dom";
+import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
 
-const App = () => {
-    return <div>App</div>;
-};
+const AppRouter = createBrowserRouter([
+    {
+        path: "/",
+        element: <div>Home</div>,
+    },
+    {
+        path: "/register",
+        element: <RegisterPage />
+    },
+    {
+        path: "/login",
+        element: <LoginPage />
+    }
+]);
 
-export default App;
+export default AppRouter;

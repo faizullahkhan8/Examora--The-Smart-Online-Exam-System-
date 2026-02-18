@@ -1,1 +1,57 @@
-console.log("server is runing...");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import expressSession from "express-session";
+import MongoStore from "connect-mongo";
+
+import connectDB from "./config/db.ts";
+
+import authRouter from "./routers/auth.router.ts";
+import { ErrorHandler } from "./middlewares/error.middleware.ts";
+
+dotenv.config();
+const app = express();
+app.use(express.json());
+
+app.use(
+    cors({
+        origin: [process.env.FRONTEND_URL || ""],
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
+    }),
+);
+
+app.use(
+    expressSession({
+        name: "connect.sid",
+        secret: process.env.SESSION_SECRET || "secret",
+        store: new MongoStore({
+            mongoUrl: process.env.MONGO_URL || "",
+            collectionName: "session",
+        }),
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+        },
+    }),
+);
+
+app.get("/", (_, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Wellcome to the API server.",
+    });
+});
+
+app.use("/api/auth", authRouter);
+
+connectDB();
+
+app.use(ErrorHandler);
+
+app.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`);
+});

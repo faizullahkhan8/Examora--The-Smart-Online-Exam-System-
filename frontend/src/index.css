@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+:root {
+    /* --- Background & Surfaces --- */
+    --bg-base: #f1faee; /* Soft Mint White - Page background */
+    --bg-surface: #ffffff; /* Pure White - For cards and modules */
+    --bg-sidebar: #1d3557; /* Oxford Navy - Dark navigation background */
+
+    /* --- Text Colors --- */
+    --text-primary: #1d3557; /* Oxford Navy - Main headings and body */
+    --text-secondary: #457b9d; /* Steel Blue - Subheadings or meta info */
+    --text-on-dark: #f1faee; /* Light color for text sitting on navy backgrounds */
+
+    /* --- Brand & Action --- */
+    --brand-primary: #457b9d; /* Steel Blue - Primary buttons/links */
+    --brand-active: #a8dadc; /* Frosted Blue - Selection highlights / Hover states */
+
+    /* --- Borders & Accents --- */
+    --ui-border: #a8dadc; /* Frosted Blue - Thin lines and input borders */
+    --ui-divider: rgba(
+        29,
+        53,
+        87,
+        0.1
+    ); /* Transparent navy for subtle separators */
+
+    /* --- Status & Feedback --- */
+    --status-danger: #e63946; /* Imperial Red - Errors, Delete, and Timers */
+    --status-success: #457b9d; /* Re-using brand blue (or you can add a green) */
+}
