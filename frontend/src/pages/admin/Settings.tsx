@@ -14,7 +14,6 @@ import {
     Divider,
     Tabs,
     Tab,
-    Box,
     InputAdornment,
 } from "@mui/material";
 import {
@@ -24,7 +23,6 @@ import {
     ShieldCheck,
     Settings as SettingsIcon,
     Users,
-    Globe,
     Bell,
     Lock,
     UploadCloud,
@@ -33,10 +31,7 @@ import {
     EyeOff,
     Plus,
     Copy,
-    Mail,
-    Smartphone,
     Server,
-    Zap,
 } from "lucide-react";
 
 const PERMISSIONS = [
@@ -242,14 +237,17 @@ const Settings: React.FC = () => {
                                                 "#F59E0B",
                                             ].map((color) => (
                                                 <button
+                                                    type="button"
+                                                    title="theme"
                                                     key={color}
-                                                    className="w-10 h-10 rounded-xl border-2 border-white shadow-sm ring-1 ring-slate-200"
-                                                    style={{
-                                                        backgroundColor: color,
-                                                    }}
+                                                    className={`w-10 h-10 rounded-xl border-2 border-white shadow-sm ring-1 ring-slate-200 bg-[${color}]`}
                                                 />
                                             ))}
-                                            <button className="w-10 h-10 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center">
+                                            <button
+                                                type="button"
+                                                title="increment"
+                                                className="w-10 h-10 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center"
+                                            >
                                                 <Plus
                                                     size={16}
                                                     className="text-slate-400"

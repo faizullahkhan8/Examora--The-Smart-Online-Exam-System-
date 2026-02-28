@@ -9,6 +9,6 @@ export const baseQuery = createApi({
             return headers;
         },
     }),
-    tagTypes: ["Auth"],
+    tagTypes: ["Auth", "Institute", "User"],
     endpoints: () => ({}),
 });

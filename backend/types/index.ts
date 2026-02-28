@@ -16,3 +16,28 @@ export interface IUserOptions extends Document {
     updatedAt: Date;
     matchPassword: (password: string) => Promise<boolean>;
 }
+
+export interface IInstituteLocation {
+    address: string;
+    city: string;
+    country: string;
+}
+
+export interface IInstituteOptions extends Document {
+    _id: Types.ObjectId;
+    name: string;
+    domain: string;
+    location: IInstituteLocation;
+    contactPhone?: string;
+    contactEmail?: string;
+    website?: string;
+    type: "university" | "college" | "school" | "polytechnic";
+    establishedYear?: number;
+    logoInitials: string;
+    isActive: boolean;
+    principal?: Types.ObjectId;
+    studentsCount: number;
+    departmentsCount: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
