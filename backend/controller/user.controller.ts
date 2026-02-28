@@ -265,3 +265,53 @@ export const adminResetPassword = expressAsyncHandler(
         }
     },
 );
+
+// --- CREATE HOD ACCOUNT (Principal) ------------------------------------------
+export const createHOD = expressAsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { firstName, lastName, email, password } = req.body as {
+                firstName: string;
+                lastName: string;
+                email: string;
+                password: string;
+            };
+
+            if (!firstName || !lastName || !email || !password) {
+                return next(new ErrorResponse("firstName, lastName, email and password are required", 400));
+            }
+            if (password.length < 6) {
+                return next(new ErrorResponse("Password must be at least 6 characters", 400));
+            }
+
+            // Derive institute from session user
+            const sessionUser = await UserModel.findById(String(req.session.user?.id));
+            if (!sessionUser) return next(new ErrorResponse("Session user not found", 404));
+            if (!sessionUser.institute) return next(new ErrorResponse("Your account has no institute linked", 400));
+
+            const existing = await UserModel.findOne({ email });
+            if (existing) return next(new ErrorResponse("A user with this email already exists", 409));
+
+            const hod = await UserModel.create({
+                firstName,
+                lastName,
+                email,
+                password,
+                role: "hod",
+                institute: sessionUser.institute,
+            });
+
+            const hodResponse = await UserModel.findById(hod._id)
+                .populate("institute", "name logoInitials")
+                .select("-password");
+
+            res.status(201).json({
+                success: true,
+                message: "HOD account created successfully",
+                data: hodResponse,
+            });
+        } catch (error: any) {
+            return next(new ErrorResponse(error.message, 500));
+        }
+    },
+);

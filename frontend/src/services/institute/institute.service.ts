@@ -156,6 +156,24 @@ export const instituteApi = baseQuery.injectEndpoints({
                 { type: "Institute", id },
             ],
         }),
+
+        // Principal-scoped: own institute
+        getMyInstitute: builder.query<InstituteResponse, void>({
+            query: () => "/institutes/my",
+            providesTags: ["Institute"],
+        }),
+
+        updateMyInstitute: builder.mutation<
+            InstituteResponse,
+            UpdateInstitutePayload
+        >({
+            query: (body) => ({
+                url: "/institutes/my",
+                method: "PUT",
+                body,
+            }),
+            invalidatesTags: ["Institute"],
+        }),
     }),
 });
 
@@ -167,4 +185,6 @@ export const {
     useDeleteInstituteMutation,
     useToggleInstituteStatusMutation,
     useAssignPrincipalMutation,
+    useGetMyInstituteQuery,
+    useUpdateMyInstituteMutation,
 } = instituteApi;

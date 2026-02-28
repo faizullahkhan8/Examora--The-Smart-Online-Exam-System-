@@ -80,3 +80,18 @@ export interface INotification extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
+// ─── DEPARTMENTS ────────────────────────────────────────────────────────
+
+export interface IDepartment extends Document {
+    _id: Types.ObjectId;
+    name: string;
+    code: string;
+    description?: string;
+    institute: Types.ObjectId;
+    hod?: Types.ObjectId;
+    capacity?: number;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}

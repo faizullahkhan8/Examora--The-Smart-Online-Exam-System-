@@ -8,9 +8,14 @@ import {
     FormControlLabel,
     Checkbox,
     Link,
+    Alert,
 } from "@mui/material";
 import { useLoginMutation } from "../services/auth/auth.service";
+import { setAuth } from "../features/auth/auth.slice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { getDashboardForRole } from "../components/guards/RouteGuards";
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
@@ -18,8 +23,11 @@ const LoginPage = () => {
         password: "",
         rememberMe: false,
     });
+    const [error, setError] = useState("");
 
     const [login, { isLoading }] = useLoginMutation();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
@@ -29,15 +37,29 @@ const LoginPage = () => {
         }));
     };
 
-    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setError("");
         try {
             const response = await login(formData).unwrap();
-            console.log(response);
-        } catch (error) {
-            console.log(error);
+            const user = (response as any).user;
+
+            // Persist auth state in Redux
+            dispatch(
+                setAuth({
+                    id: user._id,
+                    name: `${user.firstName} ${user.lastName}`,
+                    email: user.email,
+                    role: user.role,
+                }),
+            );
+
+            // Role-based redirect — no cross-access
+            navigate(getDashboardForRole(user.role), { replace: true });
+        } catch (err: any) {
+            setError(err?.data?.message ?? "Invalid credentials. Please try again.");
         }
-    }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-(--bg-base) p-4">
@@ -53,6 +75,12 @@ const LoginPage = () => {
                         Secure login for Examora smart sessions.
                     </Typography>
                 </Box>
+
+                {error && (
+                    <Alert severity="error" className="mb-4 rounded-xl" onClose={() => setError("")}>
+                        {error}
+                    </Alert>
+                )}
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     <TextField
@@ -76,10 +104,25 @@ const LoginPage = () => {
 
                     <Box className="flex items-center justify-between -mt-2">
                         <FormControlLabel
-                            control={<Checkbox checked={formData.rememberMe} name="rememberMe" onChange={handleChange} sx={{ color: "var(--brand-primary)" }} />}
-                            label={<Typography variant="body2" className="text-(--text-primary)">Remember me</Typography>}
+                            control={
+                                <Checkbox
+                                    checked={formData.rememberMe}
+                                    name="rememberMe"
+                                    onChange={handleChange}
+                                    sx={{ color: "var(--brand-primary)" }}
+                                />
+                            }
+                            label={
+                                <Typography variant="body2" className="text-(--text-primary)">
+                                    Remember me
+                                </Typography>
+                            }
                         />
-                        <Link href="#" variant="body2" className="text-(--brand-primary) hover:text-(--text-primary) no-underline font-medium">
+                        <Link
+                            href="#"
+                            variant="body2"
+                            className="text-(--brand-primary) hover:text-(--text-primary) no-underline font-medium"
+                        >
                             Forgot password?
                         </Link>
                     </Box>
@@ -89,11 +132,14 @@ const LoginPage = () => {
                         type="submit"
                         size="large"
                         variant="contained"
+                        disabled={isLoading}
                         className="py-3 mt-2 normal-case text-lg font-medium shadow-none"
-                        sx={{ backgroundColor: "var(--brand-primary)", "&:hover": { backgroundColor: "var(--text-secondary)" } }}
+                        sx={{
+                            backgroundColor: "var(--brand-primary)",
+                            "&:hover": { backgroundColor: "var(--text-secondary)" },
+                        }}
                     >
-                        {
-                            isLoading ? <Loader2 className="animate-spin" size={24} /> : "Sign In"}
+                        {isLoading ? <Loader2 className="animate-spin" size={24} /> : "Sign In"}
                     </Button>
                 </form>
             </Paper>

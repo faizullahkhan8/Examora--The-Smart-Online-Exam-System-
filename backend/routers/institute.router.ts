@@ -7,12 +7,28 @@ import {
     deleteInstitute,
     toggleInstituteStatus,
     assignPrincipal,
+    getMyInstitute,
+    updateMyInstitute,
 } from "../controller/institute.controller.ts";
 import { isAuthenticated, authorize } from "../middlewares/auth.middleware.ts";
 
 const router = Router();
 
-// All institute routes require an authenticated admin session
+// ─── Principal-only routes (own institute only) ───────────────────────────────
+router.get(
+    "/my",
+    isAuthenticated,
+    authorize("principal", "admin"),
+    getMyInstitute,
+);
+router.put(
+    "/my",
+    isAuthenticated,
+    authorize("principal", "admin"),
+    updateMyInstitute,
+);
+
+// ─── Admin-only routes ────────────────────────────────────────────────────────
 router.use(isAuthenticated, authorize("admin"));
 
 router.get("/", getAllInstitutes);

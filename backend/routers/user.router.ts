@@ -7,12 +7,21 @@ import {
     deleteUser,
     toggleUserStatus,
     adminResetPassword,
+    createHOD,
 } from "../controller/user.controller.ts";
 import { isAuthenticated, authorize } from "../middlewares/auth.middleware.ts";
 
 const router = Router();
 
-// All user-management routes require an authenticated admin session
+// ─── Principal-accessible: create HOD account scoped to their institute ───────
+router.post(
+    "/hod",
+    isAuthenticated,
+    authorize("principal", "admin"),
+    createHOD,
+);
+
+// ─── Admin-only routes ────────────────────────────────────────────────────────
 router.use(isAuthenticated, authorize("admin"));
 
 router.get("/", getAllUsers);

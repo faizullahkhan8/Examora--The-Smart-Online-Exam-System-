@@ -154,6 +154,24 @@ export const userApi = baseQuery.injectEndpoints({
                 body: data,
             }),
         }),
+
+        // Principal-scoped: create HOD account
+        createHOD: builder.mutation<
+            { success: boolean; message: string; data: User },
+            {
+                firstName: string;
+                lastName: string;
+                email: string;
+                password: string;
+            }
+        >({
+            query: (body) => ({
+                url: "/users/hod",
+                method: "POST",
+                body,
+            }),
+            invalidatesTags: ["User"],
+        }),
     }),
 });
 
@@ -165,4 +183,5 @@ export const {
     useDeleteUserMutation,
     useToggleUserStatusMutation,
     useAdminResetPasswordMutation,
+    useCreateHODMutation,
 } = userApi;
