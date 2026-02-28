@@ -41,3 +41,27 @@ export interface IInstituteOptions extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
+// ─── MESSENGER ────────────────────────────────────────────────────────────────
+
+export interface IConversation extends Document {
+    _id: Types.ObjectId;
+    type: "direct" | "group" | "announcement";
+    name?: string;
+    participants: Types.ObjectId[];
+    lastMessage?: Types.ObjectId;
+    createdBy: Types.ObjectId;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IMessage extends Document {
+    _id: Types.ObjectId;
+    conversation: Types.ObjectId;
+    sender: Types.ObjectId;
+    text: string;
+    readBy: Types.ObjectId[];
+    createdAt: Date;
+    updatedAt: Date;
+}
