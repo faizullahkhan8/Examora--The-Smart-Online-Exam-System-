@@ -95,3 +95,29 @@ export interface IDepartment extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
+// ─── ACADEMIC SESSION ──────────────────────────────────────────────────────────
+
+export interface IAcademicSession extends Document {
+    _id: Types.ObjectId;
+    /** e.g., 2026 */
+    startYear: number;
+    /** startYear + 4 */
+    endYear: number;
+    department: Types.ObjectId;
+    institute: Types.ObjectId;
+    /** 1‑8 — single source of truth for the entire cohort's semester */
+    currentSemester: number;
+    /** upcoming → active → completed (or locked at any point) */
+    status: "upcoming" | "active" | "locked" | "completed";
+    intakeCapacity: number;
+    totalEnrolledStudents: number;
+    /** false once enrollment is closed and progression begins */
+    enrollmentOpen: boolean;
+    /** Date when the next automated/manual promotion should occur */
+    nextPromotionDate: Date;
+    /** Who created the session */
+    createdBy: Types.ObjectId;
+    createdAt: Date;
+    updatedAt: Date;
+}

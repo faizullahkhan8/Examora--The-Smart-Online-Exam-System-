@@ -13,6 +13,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@types/node-cron": "^3.0.11",
         "bcryptjs": "^3.0.3",
         "connect-mongo": "^6.0.0",
         "cors": "^2.8.6",
@@ -21,6 +22,7 @@
         "express-async-handler": "^1.2.0",
         "express-session": "^1.19.0",
         "mongoose": "^9.2.1",
+        "node-cron": "^4.2.1",
         "nodemon": "^3.1.11",
         "zod": "^4.3.6"
     },

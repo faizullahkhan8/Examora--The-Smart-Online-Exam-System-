@@ -12,7 +12,10 @@ import userRouter from "./routers/user.router.ts";
 import messengerRouter from "./routers/messenger.router.ts";
 import notificationRouter from "./routers/notification.router.ts";
 import departmentRouter from "./routers/department.router.ts";
+import academicSessionRouter from "./routers/academicSession.router.ts";
+
 import { ErrorHandler } from "./middlewares/error.middleware.ts";
+import { startSessionPromotionJob } from "./jobs/sessionPromotion.job.ts";
 
 dotenv.config();
 const app = express();
@@ -47,7 +50,7 @@ app.use(
 app.get("/", (_, res) => {
     res.status(200).json({
         success: true,
-        message: "Wellcome to the API server.",
+        message: "Welcome to the Examora API server.",
     });
 });
 
@@ -57,8 +60,12 @@ app.use("/api/users", userRouter);
 app.use("/api/messenger", messengerRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/departments", departmentRouter);
+app.use("/api/sessions", academicSessionRouter);
 
 connectDB();
+
+// ─── Start background jobs ────────────────────────────────────────────────────
+startSessionPromotionJob();
 
 app.use(ErrorHandler);
 

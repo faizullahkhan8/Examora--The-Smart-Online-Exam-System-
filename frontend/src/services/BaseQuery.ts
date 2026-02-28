@@ -16,6 +16,7 @@ export const baseQuery = createApi({
         "Messenger",
         "Notification",
         "Department",
+        "AcademicSession",
     ],
     endpoints: () => ({}),
 });
