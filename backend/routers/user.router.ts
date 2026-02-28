@@ -21,15 +21,30 @@ router.post(
     createHOD,
 );
 
-// ─── Admin-only routes ────────────────────────────────────────────────────────
-router.use(isAuthenticated, authorize("admin"));
+// ─── Principal-accessible: read users (e.g. list HODs for their institute) ───
+router.get("/", isAuthenticated, authorize("principal", "admin"), getAllUsers);
+router.get(
+    "/:id",
+    isAuthenticated,
+    authorize("principal", "admin"),
+    getUserById,
+);
 
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
-router.post("/", createUser);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
-router.patch("/:id/toggle-status", toggleUserStatus);
-router.patch("/:id/reset-password", adminResetPassword);
+// ─── Admin-only mutations ─────────────────────────────────────────────────────
+router.post("/", isAuthenticated, authorize("admin"), createUser);
+router.put("/:id", isAuthenticated, authorize("admin"), updateUser);
+router.delete("/:id", isAuthenticated, authorize("admin"), deleteUser);
+router.patch(
+    "/:id/toggle-status",
+    isAuthenticated,
+    authorize("admin"),
+    toggleUserStatus,
+);
+router.patch(
+    "/:id/reset-password",
+    isAuthenticated,
+    authorize("admin"),
+    adminResetPassword,
+);
 
 export default router;
