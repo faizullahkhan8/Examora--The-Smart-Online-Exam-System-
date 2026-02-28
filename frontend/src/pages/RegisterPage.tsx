@@ -2,22 +2,17 @@ import { useState } from "react";
 import {
     TextField,
     Button,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    Select,
     Paper,
     Typography,
     Box,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-
-const roles = [
-    { label: "Student", value: "student" },
-    { label: "Teacher", value: "teacher" },
-    { label: "HOD", value: "hod" },
-    { label: "Admin", value: "admin" },
-];
+import { useRegisterMutation } from "../services/auth/auth.service";
+import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setAuth } from "../features/auth/auth.slice";
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
@@ -25,8 +20,13 @@ const RegisterPage = () => {
         lastName: "",
         email: "",
         password: "",
-        role: "",
+        role: "admin", // by default one admin and then admin can create other types of accounts
     });
+
+    const [register, { isLoading, isError, error }] = useRegisterMutation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent
@@ -37,6 +37,18 @@ const RegisterPage = () => {
             [name as string]: value,
         }));
     };
+
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const response = await register(formData).unwrap();
+        if (response.success) {
+            toast.success("Registered successfully.");
+            dispatch(setAuth(response.user))
+            navigate("/admin/dashboard")
+        }
+
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-(--bg-base) p-4">
@@ -53,7 +65,7 @@ const RegisterPage = () => {
                     </Typography>
                 </Box>
 
-                <form className="flex flex-col gap-5">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <TextField
                             fullWidth
@@ -92,29 +104,21 @@ const RegisterPage = () => {
                         sx={{ "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "var(--ui-border)" } } }}
                     />
 
-                    <FormControl fullWidth>
-                        <InputLabel sx={{ color: "var(--text-secondary)" }}>User Role</InputLabel>
-                        <Select
-                            name="role"
-                            value={formData.role}
-                            label="User Role"
-                            onChange={handleChange}
-                            sx={{ "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--ui-border)" } }}
-                        >
-                            {roles.map((role) => (
-                                <MenuItem key={role.value} value={role.value}>{role.label}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    {isError && (
+                        <Typography className="text-red-500">
+                            Something went wrong!
+                        </Typography>
+                    )}
 
                     <Button
                         fullWidth
+                        type="submit"
                         size="large"
                         variant="contained"
                         className="py-3 mt-2 normal-case text-lg font-medium shadow-none bg-(--brand-primary) hover:bg-(--text-secondary)"
                         sx={{ backgroundColor: "var(--brand-primary)" }}
                     >
-                        Register Account
+                        {isLoading ? <Loader2 className="animate-spin" size={24} /> : "Register Admin"}
                     </Button>
                 </form>
             </Paper>

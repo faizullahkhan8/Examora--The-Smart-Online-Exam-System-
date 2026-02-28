@@ -9,6 +9,8 @@ import {
     Checkbox,
     Link,
 } from "@mui/material";
+import { useLoginMutation } from "../services/auth/auth.service";
+import { Loader2 } from "lucide-react";
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
@@ -17,6 +19,8 @@ const LoginPage = () => {
         rememberMe: false,
     });
 
+    const [login, { isLoading }] = useLoginMutation();
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
@@ -24,6 +28,16 @@ const LoginPage = () => {
             [name]: type === "checkbox" ? checked : value,
         }));
     };
+
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            const response = await login(formData).unwrap();
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-(--bg-base) p-4">
@@ -40,7 +54,7 @@ const LoginPage = () => {
                     </Typography>
                 </Box>
 
-                <form className="flex flex-col gap-5">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     <TextField
                         fullWidth
                         label="Email"
@@ -72,20 +86,15 @@ const LoginPage = () => {
 
                     <Button
                         fullWidth
+                        type="submit"
                         size="large"
                         variant="contained"
                         className="py-3 mt-2 normal-case text-lg font-medium shadow-none"
                         sx={{ backgroundColor: "var(--brand-primary)", "&:hover": { backgroundColor: "var(--text-secondary)" } }}
                     >
-                        Sign In
+                        {
+                            isLoading ? <Loader2 className="animate-spin" size={24} /> : "Sign In"}
                     </Button>
-
-                    <Typography variant="body2" className="text-center text-(--text-secondary) mt-4">
-                        New to Examora?{" "}
-                        <Link href="/register" className="text-(--brand-primary) no-underline font-semibold">
-                            Create Account
-                        </Link>
-                    </Typography>
                 </form>
             </Paper>
         </div>
