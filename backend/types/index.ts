@@ -65,3 +65,18 @@ export interface IMessage extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
+// ─── NOTIFICATIONS ────────────────────────────────────────────────────────
+
+export interface INotification extends Document {
+    _id: Types.ObjectId;
+    recipient: Types.ObjectId;
+    type: "security" | "user" | "system" | "institute";
+    title: string;
+    message: string;
+    priority: "low" | "medium" | "high";
+    isRead: boolean;
+    isArchived: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}

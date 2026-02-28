@@ -10,6 +10,7 @@ import authRouter from "./routers/auth.router.ts";
 import instituteRouter from "./routers/institute.router.ts";
 import userRouter from "./routers/user.router.ts";
 import messengerRouter from "./routers/messenger.router.ts";
+import notificationRouter from "./routers/notification.router.ts";
 import { ErrorHandler } from "./middlewares/error.middleware.ts";
 
 dotenv.config();
@@ -53,6 +54,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/institutes", instituteRouter);
 app.use("/api/users", userRouter);
 app.use("/api/messenger", messengerRouter);
+app.use("/api/notifications", notificationRouter);
 
 connectDB();
 
