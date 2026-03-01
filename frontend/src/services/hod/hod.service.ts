@@ -48,7 +48,7 @@ const hodApi = baseQuery.injectEndpoints({
             { success: boolean; data: HODProfile },
             void
         >({
-            query: () => "/api/hod/profile",
+            query: () => "/hod/profile",
             providesTags: ["HODProfile"],
         }),
 
@@ -56,7 +56,7 @@ const hodApi = baseQuery.injectEndpoints({
             { success: boolean; data: HODDashboardData },
             void
         >({
-            query: () => "/api/hod/dashboard",
+            query: () => "/hod/dashboard",
             providesTags: ["HODDashboard"],
         }),
 
@@ -64,7 +64,7 @@ const hodApi = baseQuery.injectEndpoints({
             { success: boolean; data: FacultyMember[] },
             void
         >({
-            query: () => "/api/hod/faculty",
+            query: () => "/hod/faculty",
             providesTags: ["Faculty"],
         }),
 
@@ -78,7 +78,7 @@ const hodApi = baseQuery.injectEndpoints({
             }
         >({
             query: (body) => ({
-                url: "/api/hod/faculty",
+                url: "/hod/faculty",
                 method: "POST",
                 body,
             }),
@@ -90,7 +90,7 @@ const hodApi = baseQuery.injectEndpoints({
             string
         >({
             query: (id) => ({
-                url: `/api/hod/faculty/${id}/toggle`,
+                url: `/hod/faculty/${id}/toggle`,
                 method: "PATCH",
             }),
             invalidatesTags: ["Faculty"],
