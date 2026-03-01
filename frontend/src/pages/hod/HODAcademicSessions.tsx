@@ -3,8 +3,79 @@ import { Button, Chip, Paper, Dialog, DialogTitle, DialogContent, DialogActions,
 import { CalendarDays, AlertTriangle, Play, Info } from "lucide-react";
 import { toast } from "react-toastify";
 import { useGetHODProfileQuery } from "../../services/hod/hod.service";
-import { useGetSessionsByDeptQuery, useManualPromoteMutation } from "../../services/academicSession/academicSession.service";
-import type { AcademicSession } from "../../services/academicSession/academicSession.service";
+import {
+    useGetSessionsByDeptQuery,
+    useManualPromoteMutation,
+    useCreateSessionMutation,
+    useLockSessionMutation,
+    useUnlockSessionMutation,
+    useCloseEnrollmentMutation,
+    type AcademicSession
+} from "../../services/academicSession/academicSession.service";
+import { Drawer } from "@mui/material";
+import {
+    Plus, LockOpen, Lock, UserCheck, ArrowUpCircle
+} from "lucide-react";
+
+// ─── New Intake Drawer ────────────────────────────────────────────────────────
+const NewIntakeDrawer = ({
+    open, deptId, onClose,
+}: { open: boolean; deptId: string; onClose: () => void }) => {
+    const currentYear = new Date().getFullYear();
+    const [form, setForm] = useState({ startYear: currentYear, intakeCapacity: 60 });
+    const [error, setError] = useState("");
+    const [create, { isLoading }] = useCreateSessionMutation();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        try {
+            await create({ deptId, ...form }).unwrap();
+            toast.success("New cohort approved successfully");
+            onClose();
+        } catch (err: any) {
+            setError(err?.data?.message ?? "Failed to create session.");
+        }
+    };
+
+    return (
+        <Drawer anchor="right" open={open} onClose={onClose}
+            PaperProps={{ sx: { width: 400, p: 4, bgcolor: "#FAFAFA" } }}>
+            <h2 className="text-lg font-black text-slate-900 mb-1">Approve New Intake</h2>
+            <p className="text-xs text-slate-500 mb-6">
+                Creates a new 4-year / 8-semester academic cohort starting in the given year.
+                This session begins in <strong>Semester 1</strong> with enrollment open.
+            </p>
+
+            {error && <div className="mb-4 bg-rose-50 text-rose-700 p-3 rounded-xl text-sm font-bold border border-rose-200">{error}</div>}
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <TextField
+                    label="Intake Year" type="number" required size="small"
+                    value={form.startYear}
+                    onChange={(e) => setForm((p) => ({ ...p, startYear: parseInt(e.target.value) }))}
+                    helperText={`Session will span ${form.startYear}–${form.startYear + 4}`}
+                />
+                <TextField
+                    label="Intake Capacity" type="number" size="small"
+                    value={form.intakeCapacity}
+                    onChange={(e) => setForm((p) => ({ ...p, intakeCapacity: parseInt(e.target.value) }))}
+                    helperText="Can be adjusted before enrollment closes"
+                />
+                <div className="flex gap-3 pt-4">
+                    <Button fullWidth variant="outlined" onClick={onClose}
+                        className="!border-slate-200 !text-slate-600 !normal-case !font-bold !rounded-xl">
+                        Cancel
+                    </Button>
+                    <Button fullWidth type="submit" variant="contained" disabled={isLoading}
+                        className="!bg-slate-900 !text-white !normal-case !font-bold !rounded-xl">
+                        {isLoading ? "Creating…" : "Approve Intake"}
+                    </Button>
+                </div>
+            </form>
+        </Drawer>
+    );
+};
 
 const HODAcademicSessions = () => {
     const { data: profileData } = useGetHODProfileQuery();
@@ -16,8 +87,13 @@ const HODAcademicSessions = () => {
     );
     const [manualPromote, { isLoading: isPromoting }] = useManualPromoteMutation();
 
+    const [lockSession] = useLockSessionMutation();
+    const [unlockSession] = useUnlockSessionMutation();
+    const [closeEnrollment] = useCloseEnrollmentMutation();
+
     const [modal, setModal] = useState({ open: false, sessionId: "" });
     const [reason, setReason] = useState("");
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const sessions: AcademicSession[] = sessionsData?.data ?? [];
 
@@ -42,12 +118,13 @@ const HODAcademicSessions = () => {
                     <p className="text-sm font-medium text-slate-500">Monitor all student batches in your department</p>
                 </div>
                 <Button
-                    variant="outlined"
-                    startIcon={<Info size={16} />}
-                    onClick={() => toast.info("New intake requests must be submitted to the Principal for approval.")}
-                    className="!rounded-xl !border-slate-300 !text-slate-600 !font-bold !normal-case"
+                    variant="contained"
+                    startIcon={<Plus size={16} />}
+                    onClick={() => setDrawerOpen((prev) => !prev)}
+                    disabled={!deptId}
+                    className="!bg-slate-900 !text-white !rounded-xl !border-slate-300 !font-bold !normal-case !shadow-none hover:shadow-lg transition-all disabled:opacity-50"
                 >
-                    Request New Intake
+                    Approve New Intake
                 </Button>
             </div>
 
@@ -59,7 +136,15 @@ const HODAcademicSessions = () => {
                 <Paper elevation={0} className="p-16 text-center border-2 border-dashed border-slate-200 rounded-3xl">
                     <CalendarDays size={48} className="mx-auto mb-4 text-slate-300" />
                     <h3 className="font-black text-slate-500">No active sessions</h3>
-                    <p className="text-sm text-slate-400 font-medium mt-1">Coordinate with the Principal to approve a new intake.</p>
+                    <p className="text-sm text-slate-400 font-medium mt-1 mb-6">Approve a new student intake to create the first cohort.</p>
+                    <Button
+                        variant="contained" startIcon={<Plus size={16} />}
+                        onClick={() => setDrawerOpen(true)}
+                        disabled={!deptId}
+                        className="!bg-slate-900 !text-white !normal-case !font-bold !rounded-xl !shadow-none disabled:opacity-50"
+                    >
+                        Approve First Intake
+                    </Button>
                 </Paper>
             ) : (
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -79,8 +164,8 @@ const HODAcademicSessions = () => {
                                                 label={session.status}
                                                 size="small"
                                                 className={`!text-[10px] !font-black !uppercase !tracking-widest border ${session.status === "active" ? "!bg-emerald-50 !text-emerald-700 !border-emerald-200" :
-                                                        session.status === "locked" ? "!bg-amber-50 !text-amber-700 !border-amber-200" :
-                                                            "!bg-slate-100 !text-slate-500 !border-slate-200"
+                                                    session.status === "locked" ? "!bg-amber-50 !text-amber-700 !border-amber-200" :
+                                                        "!bg-slate-100 !text-slate-500 !border-slate-200"
                                                     }`}
                                             />
                                         </div>
@@ -120,23 +205,50 @@ const HODAcademicSessions = () => {
                                     </div>
                                 </div>
 
-                                {/* Action */}
-                                <div className="mt-auto pt-4 border-t border-slate-100 flex justify-end">
-                                    {isOverdue ? (
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            startIcon={<Play size={14} />}
-                                            onClick={() => setModal({ open: true, sessionId: session._id })}
-                                            className="!bg-rose-500 hover:!bg-rose-600 !text-white !font-black !text-[10px] !uppercase !tracking-widest !rounded-lg !shadow-none"
-                                        >
-                                            Promotion Overdue — Promote Now
-                                        </Button>
-                                    ) : (
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                            Next: {nextPromoDate.toLocaleDateString()}
-                                        </p>
-                                    )}
+                                {/* Action / Management Controls */}
+                                <div className="mt-auto pt-4 border-t border-slate-100">
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <div className="flex gap-2">
+                                            {session.status !== "completed" && session.enrollmentOpen && (
+                                                <Button size="small" variant="outlined" startIcon={<UserCheck size={13} />}
+                                                    onClick={() => closeEnrollment({ deptId, id: session._id })}
+                                                    className="!border-slate-200 !text-slate-600 !normal-case !font-bold !text-[11px] !rounded-xl">
+                                                    Close Enrollment
+                                                </Button>
+                                            )}
+                                            {session.status !== "completed" && session.status === "locked" ? (
+                                                <Button size="small" variant="outlined" startIcon={<LockOpen size={13} />}
+                                                    onClick={() => unlockSession({ deptId, id: session._id })}
+                                                    className="!border-amber-200 !text-amber-600 !normal-case !font-bold !text-[11px] !rounded-xl">
+                                                    Unlock
+                                                </Button>
+                                            ) : session.status !== "completed" ? (
+                                                <Button size="small" variant="outlined" startIcon={<Lock size={13} />}
+                                                    onClick={() => lockSession({ deptId, id: session._id })}
+                                                    className="!border-slate-200 !text-slate-500 !normal-case !font-bold !text-[11px] !rounded-xl">
+                                                    Lock
+                                                </Button>
+                                            ) : null}
+                                        </div>
+
+                                        {isOverdue && session.status === "active" ? (
+                                            <Button variant="contained" size="small" startIcon={<Play size={14} />}
+                                                onClick={() => setModal({ open: true, sessionId: session._id })}
+                                                className="!bg-rose-500 hover:!bg-rose-600 !text-white !font-black !text-[10px] !uppercase !tracking-widest !rounded-lg !shadow-none">
+                                                Promote Now
+                                            </Button>
+                                        ) : session.status === "active" ? (
+                                            <Button variant="outlined" size="small" startIcon={<ArrowUpCircle size={14} />}
+                                                onClick={() => setModal({ open: true, sessionId: session._id })}
+                                                className="!border-indigo-200 !text-indigo-600 !font-black !text-[10px] !uppercase !tracking-widest !rounded-lg !shadow-none">
+                                                Manual Promote
+                                            </Button>
+                                        ) : (
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">
+                                                Next: {nextPromoDate.toLocaleDateString()}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             </Paper>
                         );
@@ -173,6 +285,12 @@ const HODAcademicSessions = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            <NewIntakeDrawer
+                open={drawerOpen}
+                deptId={deptId}
+                onClose={() => setDrawerOpen(false)}
+            />
         </div>
     );
 };

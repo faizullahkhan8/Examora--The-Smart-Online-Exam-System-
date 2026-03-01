@@ -186,6 +186,15 @@ export const assignHOD = expressAsyncHandler(
                     ),
                 );
 
+            // Unset department for any previously assigned HOD in this institute
+            await UserModel.updateMany(
+                {
+                    institute: hodUser.institute,
+                    department: new mongoose.Types.ObjectId(id),
+                },
+                { $unset: { department: "" } },
+            );
+
             // Ensure one HOD per dept in the institute
             await DepartmentModel.updateMany(
                 {
@@ -196,6 +205,7 @@ export const assignHOD = expressAsyncHandler(
                 { $set: { hod: null } },
             );
 
+            // Set the new HOD on the department
             const dept = await DepartmentModel.findByIdAndUpdate(
                 id,
                 { $set: { hod: new mongoose.Types.ObjectId(hodId) } },
@@ -203,6 +213,11 @@ export const assignHOD = expressAsyncHandler(
             ).populate("hod", "firstName lastName email role");
             if (!dept)
                 return next(new ErrorResponse("Department not found", 404));
+
+            // Set the department on the HOD user
+            await UserModel.findByIdAndUpdate(hodId, {
+                $set: { department: new mongoose.Types.ObjectId(id) },
+            });
 
             res.status(200).json({
                 success: true,
@@ -223,13 +238,17 @@ export const removeHOD = expressAsyncHandler(
             if (!mongoose.Types.ObjectId.isValid(id))
                 return next(new ErrorResponse("Invalid department ID", 400));
 
-            const dept = await DepartmentModel.findByIdAndUpdate(
-                id,
-                { $set: { hod: null } },
-                { new: true },
-            );
+            const dept = await DepartmentModel.findByIdAndUpdate(id, {
+                $set: { hod: null },
+            });
             if (!dept)
                 return next(new ErrorResponse("Department not found", 404));
+
+            if (dept.hod) {
+                await UserModel.findByIdAndUpdate(dept.hod, {
+                    $unset: { department: "" },
+                });
+            }
 
             res.status(200).json({
                 success: true,

@@ -30,32 +30,32 @@ router.get("/:deptId/:id", isAuthenticated, getSessionById);
 router.post(
     "/:deptId",
     isAuthenticated,
-    authorize("principal", "admin"),
+    authorize("hod", "principal", "admin"),
     createSession,
 );
 router.put(
     "/:deptId/:id",
     isAuthenticated,
-    authorize("principal", "admin"),
+    authorize("hod", "principal", "admin"),
     updateSession,
 );
 
 router.patch(
     "/:deptId/:id/lock",
     isAuthenticated,
-    authorize("principal", "admin"),
+    authorize("hod", "principal", "admin"),
     lockSession,
 );
 router.patch(
     "/:deptId/:id/unlock",
     isAuthenticated,
-    authorize("principal", "admin"),
+    authorize("hod", "principal", "admin"),
     unlockSession,
 );
 router.patch(
     "/:deptId/:id/close-enrollment",
     isAuthenticated,
-    authorize("principal", "admin"),
+    authorize("hod", "principal", "admin"),
     closeEnrollment,
 );
 

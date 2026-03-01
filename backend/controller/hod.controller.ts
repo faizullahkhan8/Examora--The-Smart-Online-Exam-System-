@@ -10,8 +10,8 @@ const resolveHOD = async (req: Request) => {
     const hod = await UserModel.findById(req.session.user?.id).lean();
     if (!hod) throw new ErrorResponse("User not found", 404);
     if (hod.role !== "hod") throw new ErrorResponse("Access denied", 403);
-    if (!hod.department)
-        throw new ErrorResponse("HOD has no assigned department", 400);
+    // if (!hod.department)
+    //     throw new ErrorResponse("HOD has no assigned department", 400);
     return hod;
 };
 

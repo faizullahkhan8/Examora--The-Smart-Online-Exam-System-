@@ -55,6 +55,22 @@ export async function promoteSemester(
     };
 }
 
+// ─── HELPER: Enforce HOD Ownership ───────────────────────────────────────────
+const checkHODAuthorization = (user: any, department: any) => {
+    if (user.role === "hod") {
+        const hodId =
+            department.hod?.toString() ||
+            department.hod?._id?.toString() ||
+            department.hod;
+        if (!hodId || hodId !== user._id.toString()) {
+            throw new ErrorResponse(
+                "You are not authorized to manage this department's sessions",
+                403,
+            );
+        }
+    }
+};
+
 // ─── GET SESSIONS BY DEPARTMENT ───────────────────────────────────────────────
 export const getSessionsByDepartment = expressAsyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -119,13 +135,19 @@ export const createSession = expressAsyncHandler(
             if (!sessionUser)
                 return next(new ErrorResponse("User not found", 404));
 
-            // Ensure dept belongs to the principal's institute
+            // Ensure dept belongs to the principal's/hod's institute
             const dept = await DepartmentModel.findOne({
                 _id: deptId,
                 institute: sessionUser.institute,
             });
             if (!dept)
                 return next(new ErrorResponse("Department not found", 404));
+
+            try {
+                checkHODAuthorization(sessionUser, dept);
+            } catch (err: any) {
+                return next(err);
+            }
 
             const { startYear, intakeCapacity } = validation.data;
 
@@ -183,9 +205,24 @@ export const updateSession = expressAsyncHandler(
             if (!validation.success)
                 return next(new ErrorResponse(validation.error.message, 400));
 
-            const session = await AcademicSessionModel.findById(req.params.id);
+            const sessionUser = await UserModel.findById(
+                String(req.session.user?.id),
+            );
+            if (!sessionUser)
+                return next(new ErrorResponse("User not found", 404));
+
+            const session = await AcademicSessionModel.findById(
+                req.params.id,
+            ).populate("department");
             if (!session)
                 return next(new ErrorResponse("Session not found", 404));
+
+            try {
+                checkHODAuthorization(sessionUser, session.department);
+            } catch (err: any) {
+                return next(err);
+            }
+
             if (session.status === "completed")
                 return next(
                     new ErrorResponse(
@@ -253,9 +290,24 @@ export const lockSession = expressAsyncHandler(
 export const unlockSession = expressAsyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const session = await AcademicSessionModel.findById(req.params.id);
+            const sessionUser = await UserModel.findById(
+                String(req.session.user?.id),
+            );
+            if (!sessionUser)
+                return next(new ErrorResponse("User not found", 404));
+
+            const session = await AcademicSessionModel.findById(
+                req.params.id,
+            ).populate("department");
             if (!session)
                 return next(new ErrorResponse("Session not found", 404));
+
+            try {
+                checkHODAuthorization(sessionUser, session.department);
+            } catch (err: any) {
+                return next(err);
+            }
+
             if (session.status !== "locked")
                 return next(new ErrorResponse("Session is not locked", 400));
 
@@ -277,9 +329,24 @@ export const unlockSession = expressAsyncHandler(
 export const closeEnrollment = expressAsyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const session = await AcademicSessionModel.findById(req.params.id);
+            const sessionUser = await UserModel.findById(
+                String(req.session.user?.id),
+            );
+            if (!sessionUser)
+                return next(new ErrorResponse("User not found", 404));
+
+            const session = await AcademicSessionModel.findById(
+                req.params.id,
+            ).populate("department");
             if (!session)
                 return next(new ErrorResponse("Session not found", 404));
+
+            try {
+                checkHODAuthorization(sessionUser, session.department);
+            } catch (err: any) {
+                return next(err);
+            }
+
             if (!session.enrollmentOpen)
                 return next(
                     new ErrorResponse("Enrollment is already closed", 400),
@@ -319,20 +386,10 @@ export const manualPromote = expressAsyncHandler(
             if (!academicSession)
                 return next(new ErrorResponse("Session not found", 404));
 
-            // HOD can only promote sessions belonging to their own department
-            if (sessionUser.role === "hod") {
-                const dept = academicSession.department as any;
-                if (
-                    !dept.hod ||
-                    dept.hod.toString() !== sessionUser._id.toString()
-                ) {
-                    return next(
-                        new ErrorResponse(
-                            "You are not the HOD of this department",
-                            403,
-                        ),
-                    );
-                }
+            try {
+                checkHODAuthorization(sessionUser, academicSession.department);
+            } catch (err: any) {
+                return next(err);
             }
 
             const mongoSession = await mongoose.startSession();
