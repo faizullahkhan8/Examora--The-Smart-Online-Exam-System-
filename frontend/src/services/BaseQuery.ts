@@ -17,6 +17,9 @@ export const baseQuery = createApi({
         "Notification",
         "Department",
         "AcademicSession",
+        "Faculty",
+        "HODDashboard",
+        "HODProfile",
     ],
     endpoints: () => ({}),
 });

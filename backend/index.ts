@@ -13,6 +13,7 @@ import messengerRouter from "./routers/messenger.router.ts";
 import notificationRouter from "./routers/notification.router.ts";
 import departmentRouter from "./routers/department.router.ts";
 import academicSessionRouter from "./routers/academicSession.router.ts";
+import hodRouter from "./routers/hod.router.ts";
 
 import { ErrorHandler } from "./middlewares/error.middleware.ts";
 import { startSessionPromotionJob } from "./jobs/sessionPromotion.job.ts";
@@ -61,6 +62,7 @@ app.use("/api/messenger", messengerRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/departments", departmentRouter);
 app.use("/api/sessions", academicSessionRouter);
+app.use("/api/hod", hodRouter);
 
 connectDB();
 

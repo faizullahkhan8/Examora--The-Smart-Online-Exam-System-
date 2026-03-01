@@ -23,6 +23,17 @@ import Analytics from "./pages/principal/Analytics";
 import PrincipalMessanger from "./pages/principal/Messanger";
 import PrincipalNotifications from "./pages/principal/Notifications";
 
+// ─── HOD
+import HODLayout from "./pages/hod/HODLayout";
+import HODDashboard from "./pages/hod/HODDashboard";
+import HODAcademicSessions from "./pages/hod/HODAcademicSessions";
+import FacultyManagement from "./pages/hod/FacultyManagement";
+import HODStudents from "./pages/hod/Students";
+import HODSubjects from "./pages/hod/Subjects";
+import HODExams from "./pages/hod/Exams";
+import HODMessanger from "./pages/hod/HODMessanger";
+import HODNotifications from "./pages/hod/HODNotifications";
+
 // ─── Route Guards
 import { RequireRole } from "./components/guards/RouteGuards";
 
@@ -66,6 +77,26 @@ const AppRouter = createBrowserRouter([
                     { path: "/principal/analytics", element: <Analytics /> },
                     { path: "/principal/messenger", element: <PrincipalMessanger /> },
                     { path: "/principal/notifications", element: <PrincipalNotifications /> },
+                ],
+            },
+        ],
+    },
+
+    // ─── HOD Routes (role=hod only) ───────────────────────────────────────────
+    {
+        element: <RequireRole allowedRoles={["hod"]} />,
+        children: [
+            {
+                element: <HODLayout />,
+                children: [
+                    { path: "/hod/dashboard", element: <HODDashboard /> },
+                    { path: "/hod/sessions", element: <HODAcademicSessions /> },
+                    { path: "/hod/faculty", element: <FacultyManagement /> },
+                    { path: "/hod/students", element: <HODStudents /> },
+                    { path: "/hod/subjects", element: <HODSubjects /> },
+                    { path: "/hod/exams", element: <HODExams /> },
+                    { path: "/hod/messenger", element: <HODMessanger /> },
+                    { path: "/hod/notifications", element: <HODNotifications /> },
                 ],
             },
         ],

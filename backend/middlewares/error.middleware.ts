@@ -1,7 +1,12 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { ErrorResponse } from "./error.handler.ts"; // Path to your class
 
-export const ErrorHandler = (err: any, _: Request, res: Response) => {
+export const ErrorHandler = (
+    err: any,
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): any => {
     let error = { ...err };
     error.message = err.message;
 
