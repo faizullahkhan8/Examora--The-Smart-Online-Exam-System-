@@ -34,6 +34,17 @@ import HODExams from "./pages/hod/Exams";
 import HODMessanger from "./pages/hod/HODMessanger";
 import HODNotifications from "./pages/hod/HODNotifications";
 
+// ─── Teacher
+import TeacherLayout from "./pages/teacher/TeacherLayout";
+import TeacherDashboard from "./pages/teacher/TeacherDashboard";
+import MySubjects from "./pages/teacher/MySubjects";
+import ExamPapers from "./pages/teacher/ExamPapers";
+import ExamPaperBuilder from "./pages/teacher/ExamPaperBuilder";
+import AttendancePage from "./pages/teacher/AttendancePage";
+import MaterialsPage from "./pages/teacher/MaterialsPage";
+import TeacherMessenger from "./pages/teacher/TeacherMessenger";
+import TeacherNotifications from "./pages/teacher/TeacherNotifications";
+
 // ─── Route Guards
 import { RequireRole } from "./components/guards/RouteGuards";
 
@@ -102,6 +113,27 @@ const AppRouter = createBrowserRouter([
         ],
     },
 
+    // ─── Teacher Routes (role=teacher only) ──────────────────────────────────
+    {
+        element: <RequireRole allowedRoles={["teacher"]} />,
+        children: [
+            // Builder is full-screen (no sidebar)
+            { path: "/teacher/exam-papers/builder", element: <ExamPaperBuilder /> },
+            {
+                element: <TeacherLayout />,
+                children: [
+                    { path: "/teacher/dashboard", element: <TeacherDashboard /> },
+                    { path: "/teacher/subjects", element: <MySubjects /> },
+                    { path: "/teacher/exam-papers", element: <ExamPapers /> },
+                    { path: "/teacher/attendance", element: <AttendancePage /> },
+                    { path: "/teacher/materials", element: <MaterialsPage /> },
+                    { path: "/teacher/messenger", element: <TeacherMessenger /> },
+                    { path: "/teacher/notifications", element: <TeacherNotifications /> },
+                ],
+            },
+        ],
+    },
+
     {
         path: "/auth/admin/register",
         element: <RegisterPage />,
@@ -109,3 +141,4 @@ const AppRouter = createBrowserRouter([
 ]);
 
 export default AppRouter;
+

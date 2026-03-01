@@ -14,6 +14,11 @@ import notificationRouter from "./routers/notification.router.ts";
 import departmentRouter from "./routers/department.router.ts";
 import academicSessionRouter from "./routers/academicSession.router.ts";
 import hodRouter from "./routers/hod.router.ts";
+import teacherRouter from "./routers/teacher.router.ts";
+import subjectRouter from "./routers/subject.router.ts";
+import examPaperRouter from "./routers/examPaper.router.ts";
+import attendanceRouter from "./routers/attendance.router.ts";
+import materialRouter from "./routers/material.router.ts";
 
 import { ErrorHandler } from "./middlewares/error.middleware.ts";
 import { startSessionPromotionJob } from "./jobs/sessionPromotion.job.ts";
@@ -63,6 +68,11 @@ app.use("/api/notifications", notificationRouter);
 app.use("/api/departments", departmentRouter);
 app.use("/api/sessions", academicSessionRouter);
 app.use("/api/hod", hodRouter);
+app.use("/api/teacher", teacherRouter);
+app.use("/api/subjects", subjectRouter);
+app.use("/api/exam-papers", examPaperRouter);
+app.use("/api/attendance", attendanceRouter);
+app.use("/api/materials", materialRouter);
 
 connectDB();
 

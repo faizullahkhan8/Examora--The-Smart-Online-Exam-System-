@@ -20,6 +20,12 @@ export const baseQuery = createApi({
         "Faculty",
         "HODDashboard",
         "HODProfile",
+        "TeacherProfile",
+        "TeacherDashboard",
+        "Subject",
+        "ExamPaper",
+        "Attendance",
+        "Material",
     ],
     endpoints: () => ({}),
 });

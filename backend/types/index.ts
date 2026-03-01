@@ -121,3 +121,79 @@ export interface IAcademicSession extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
+// ─── SUBJECT ──────────────────────────────────────────────────────────────────
+
+export interface ISubject extends Document {
+    _id: Types.ObjectId;
+    name: string;
+    code: string;
+    department: Types.ObjectId;
+    session: Types.ObjectId;
+    semester: number;
+    teacher?: Types.ObjectId;
+    creditHours: number;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+// ─── EXAM PAPER ───────────────────────────────────────────────────────────────
+
+export interface IExamQuestion {
+    text: string;
+    marks: number;
+    type: "mcq" | "short" | "long";
+    options?: string[];
+}
+
+export interface IExamPaper extends Document {
+    _id: Types.ObjectId;
+    subject: Types.ObjectId;
+    teacher: Types.ObjectId;
+    department: Types.ObjectId;
+    session: Types.ObjectId;
+    semester: number;
+    title: string;
+    questions: IExamQuestion[];
+    totalMarks: number;
+    duration: number;
+    status: "draft" | "submitted" | "approved" | "rejected";
+    rejectionReason?: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+// ─── ATTENDANCE ───────────────────────────────────────────────────────────────
+
+export interface IAttendanceRecord {
+    student: Types.ObjectId;
+    present: boolean;
+}
+
+export interface IAttendance extends Document {
+    _id: Types.ObjectId;
+    subject: Types.ObjectId;
+    teacher: Types.ObjectId;
+    department: Types.ObjectId;
+    date: Date;
+    semester: number;
+    records: IAttendanceRecord[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+// ─── MATERIAL ─────────────────────────────────────────────────────────────────
+
+export interface IMaterial extends Document {
+    _id: Types.ObjectId;
+    subject: Types.ObjectId;
+    teacher: Types.ObjectId;
+    department: Types.ObjectId;
+    title: string;
+    type: "pdf" | "link" | "note";
+    content: string;
+    semester: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
