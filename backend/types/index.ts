@@ -81,6 +81,27 @@ export interface INotification extends Document {
     updatedAt: Date;
 }
 
+export interface IAuditLog extends Document {
+    _id: Types.ObjectId;
+    actorId?: Types.ObjectId | null;
+    actorLabel: string;
+    actorRole: string;
+    eventType: string;
+    resource: string;
+    method: string;
+    path: string;
+    targetId?: string;
+    targetLabel?: string;
+    statusCode: number;
+    status: "Success" | "Failed";
+    severity: "Info" | "Warning" | "Critical";
+    ip?: string;
+    userAgent?: string;
+    metadata?: Record<string, unknown>;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 // ─── DEPARTMENTS ────────────────────────────────────────────────────────
 
 export interface IDepartment extends Document {

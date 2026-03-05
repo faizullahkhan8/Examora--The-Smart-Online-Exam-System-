@@ -1,47 +1,42 @@
-import React, { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
-    IconButton,
-    Button,
-    Chip,
-    Tooltip,
-    Dialog,
-    DialogTitle,
-    DialogContent,
     Avatar,
-    Box,
-    Typography,
-    Pagination,
     Breadcrumbs,
+    Button,
+    CircularProgress,
+    IconButton,
     Link,
+    Pagination,
+    Typography,
 } from "@mui/material";
 import {
     Activity,
-    Search,
-    Filter,
-    Download,
-    ChevronRight,
-    ShieldAlert,
-    UserCheck,
-    Building2,
-    Key,
-    Globe,
-    Monitor,
-    MapPin,
-    Clock,
-    ExternalLink,
-    X,
-    Copy,
     AlertCircle,
-    LogIn,
-    LogOut,
-    Settings,
-    MoreVertical,
-    FileJson,
-    Calendar,
+    ChevronRight,
+    Clock,
+    Copy,
+    Download,
+    Globe,
     RefreshCcw,
+    Search,
+    ShieldAlert,
+    UserRound,
+    X,
 } from "lucide-react";
+import {
+    type AuditLog,
+    type AuditSeverity,
+    type AuditStatus,
+    useGetAuditLogsQuery,
+} from "../../services/auditLog/auditLog.service";
 
-const SEVERITY_CONFIG = {
+const severityConfig: Record<
+    AuditSeverity,
+    {
+        color: string;
+        icon: typeof Activity;
+    }
+> = {
     Info: {
         color: "bg-emerald-50 text-emerald-600 border-emerald-100",
         icon: Activity,
@@ -56,120 +51,117 @@ const SEVERITY_CONFIG = {
     },
 };
 
-const MOCK_LOGS = [
-    {
-        id: "LOG-8829",
-        timestamp: "2024-02-15 14:22:10",
-        type: "Role Assigned",
-        user: "Alexander Wright",
-        role: "Super Admin",
-        target: "Robert Chen",
-        institute: "Stanford Technical",
-        ip: "192.168.1.45",
-        severity: "Info",
-        status: "Success",
-        details: { before: { role: "Faculty" }, after: { role: "HOD" } },
-    },
-    {
-        id: "LOG-8830",
-        timestamp: "2024-02-15 15:05:44",
-        type: "Login Failure",
-        user: "Unknown",
-        role: "N/A",
-        target: "s.jenkins@oxford.edu",
-        institute: "Oxford International",
-        ip: "45.22.11.90",
-        severity: "Warning",
-        status: "Failed",
-        details: { reason: "Invalid Password", attempts: 3 },
-    },
-    {
-        id: "LOG-8831",
-        timestamp: "2024-02-15 16:12:01",
-        type: "Permission Modified",
-        user: "Alexander Wright",
-        role: "Super Admin",
-        target: "System Policy",
-        institute: "Global HQ",
-        ip: "192.168.1.45",
-        severity: "Critical",
-        status: "Success",
-        details: {
-            before: { manage_billing: false },
-            after: { manage_billing: true },
-        },
-    },
-    {
-        id: "LOG-8832",
-        timestamp: "2024-02-15 16:45:30",
-        type: "Institute Created",
-        user: "Sarah Jenkins",
-        role: "Principal",
-        target: "New Age Academy",
-        institute: "Global HQ",
-        ip: "88.102.34.12",
-        severity: "Info",
-        status: "Success",
-        details: { name: "New Age Academy", tier: "Premium" },
-    },
-    {
-        id: "LOG-8833",
-        timestamp: "2024-02-15 17:00:12",
-        type: "Account Suspended",
-        user: "Alexander Wright",
-        role: "Super Admin",
-        target: "Elena Rodriguez",
-        institute: "Berlin Academy",
-        ip: "192.168.1.45",
-        severity: "Warning",
-        status: "Success",
-        details: { reason: "Policy Violation" },
-    },
-];
+const statusPillClass: Record<AuditStatus, string> = {
+    Success: "bg-emerald-50 text-emerald-600",
+    Failed: "bg-rose-50 text-rose-600",
+};
 
-const KPI_STATS = [
-    {
-        label: "Total Events",
-        value: "24,810",
-        trend: "+12%",
-        icon: Activity,
-        color: "text-blue-600",
-    },
-    {
-        label: "Security Alerts",
-        value: "142",
-        trend: "-5%",
-        icon: ShieldAlert,
-        color: "text-rose-600",
-    },
-    {
-        label: "Role Changes",
-        value: "34",
-        trend: "+2",
-        icon: Settings,
-        color: "text-purple-600",
-    },
-    {
-        label: "Failed Logins",
-        value: "89",
-        trend: "+18%",
-        icon: LogIn,
-        color: "text-amber-600",
-    },
-];
+const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
+
+const formatTime = (iso: string) =>
+    new Date(iso).toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    });
+
+const formatDateTime = (iso: string) =>
+    new Date(iso).toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    });
+
+const copyJson = async (value: unknown) => {
+    await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
+};
 
 const AuditLogs = () => {
-    const [selectedLog, setSelectedLog] = useState(null);
+    const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [severityFilter, setSeverityFilter] = useState<AuditSeverity | "">("");
+    const [statusFilter, setStatusFilter] = useState<AuditStatus | "">("");
+    const [methodFilter, setMethodFilter] = useState("");
+    const [page, setPage] = useState(1);
+
+    const queryParams = useMemo(
+        () => ({
+            search: searchTerm || undefined,
+            severity: severityFilter || undefined,
+            status: statusFilter || undefined,
+            method: methodFilter || undefined,
+            page,
+            limit: 20,
+        }),
+        [methodFilter, page, searchTerm, severityFilter, statusFilter],
+    );
+
+    const { data, isLoading, isFetching, refetch } = useGetAuditLogsQuery(queryParams);
+
+    const logs = data?.data ?? [];
+    const pagination = data?.pagination;
+    const stats = data?.stats;
+
+    const kpiStats = [
+        {
+            label: "Total Events",
+            value: stats?.totalEvents ?? 0,
+            icon: Activity,
+            color: "text-blue-600",
+        },
+        {
+            label: "Security Alerts",
+            value: stats?.securityAlerts ?? 0,
+            icon: ShieldAlert,
+            color: "text-rose-600",
+        },
+        {
+            label: "Role Changes",
+            value: stats?.roleChanges ?? 0,
+            icon: UserRound,
+            color: "text-purple-600",
+        },
+        {
+            label: "Failed Logins",
+            value: stats?.failedLogins ?? 0,
+            icon: AlertCircle,
+            color: "text-amber-600",
+        },
+    ];
+
+    const latestSecurityAlert = logs.find((log) => log.severity !== "Info");
+
+    const handleExport = () => {
+        const payload = {
+            exportedAt: new Date().toISOString(),
+            filters: queryParams,
+            stats,
+            logs,
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {
+            type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = `audit-logs-${new Date().toISOString().slice(0, 10)}.json`;
+        anchor.click();
+        URL.revokeObjectURL(url);
+    };
 
     return (
         <div className="flex-grow bg-[#F8FAFC] min-h-screen font-sans">
             <header className="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-40">
                 <div className="flex flex-col">
-                    <Breadcrumbs
-                        separator={<ChevronRight size={12} />}
-                        className="mb-1"
-                    >
+                    <Breadcrumbs separator={<ChevronRight size={12} />} className="mb-1">
                         <Link
                             underline="hover"
                             color="inherit"
@@ -178,23 +170,13 @@ const AuditLogs = () => {
                         >
                             Dashboard
                         </Link>
-                        <Link
-                            underline="hover"
-                            color="inherit"
-                            href="#"
-                            className="text-[10px] font-bold uppercase tracking-widest text-slate-400"
-                        >
-                            System
-                        </Link>
                         <Typography className="text-[10px] font-bold uppercase tracking-widest text-slate-900">
                             Audit Logs
                         </Typography>
                     </Breadcrumbs>
-                    <h1 className="text-xl font-black text-slate-900">
-                        Audit Logs
-                    </h1>
+                    <h1 className="text-xl font-black text-slate-900">Audit Logs</h1>
                     <p className="text-[11px] text-slate-500 font-medium">
-                        Monitor all system-level activities and security events
+                        Real-time record of system operations and security events
                     </p>
                 </div>
 
@@ -202,13 +184,15 @@ const AuditLogs = () => {
                     <Button
                         variant="outlined"
                         startIcon={<Download size={16} />}
+                        onClick={handleExport}
                         className="!border-slate-200 !text-slate-700 !rounded-xl !normal-case !font-bold !text-xs !px-4"
                     >
                         Export Logs
                     </Button>
                     <Button
                         variant="contained"
-                        startIcon={<RefreshCcw size={16} />}
+                        startIcon={isFetching ? <CircularProgress size={14} color="inherit" /> : <RefreshCcw size={16} />}
+                        onClick={() => refetch()}
                         className="!bg-slate-900 !text-white !rounded-xl !normal-case !font-bold !text-xs !px-4 !shadow-none"
                     >
                         Refresh
@@ -218,59 +202,40 @@ const AuditLogs = () => {
 
             <div className="p-8 max-w-[1600px] mx-auto space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {KPI_STATS.map((kpi, i) => (
+                    {kpiStats.map((kpi) => (
                         <div
-                            key={i}
+                            key={kpi.label}
                             className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
                         >
-                            <div className="flex justify-between items-start mb-3">
-                                <div
-                                    className={`p-2.5 rounded-xl bg-slate-50 ${kpi.color}`}
-                                >
-                                    <kpi.icon size={20} />
-                                </div>
-                                <div className="flex flex-col items-end">
-                                    <span
-                                        className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${kpi.trend.includes("+") && kpi.label === "Security Alerts" ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-emerald-600"}`}
-                                    >
-                                        {kpi.trend}
-                                    </span>
-                                    <span className="text-[9px] text-slate-400 font-bold uppercase mt-1">
-                                        Last 30 Days
-                                    </span>
-                                </div>
+                            <div className={`p-2.5 rounded-xl bg-slate-50 w-fit ${kpi.color}`}>
+                                <kpi.icon size={20} />
                             </div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-3">
                                 {kpi.label}
                             </p>
                             <h3 className="text-2xl font-black text-slate-900 mt-1">
-                                {kpi.value}
+                                {kpi.value.toLocaleString()}
                             </h3>
                         </div>
                     ))}
                 </div>
 
-                <div className="bg-rose-50 border border-rose-100 rounded-2xl p-5 flex items-start gap-4 shadow-sm">
-                    <div className="bg-rose-100 p-2 rounded-lg text-rose-600">
-                        <ShieldAlert size={20} />
+                {latestSecurityAlert && (
+                    <div className="bg-rose-50 border border-rose-100 rounded-2xl p-5 flex items-start gap-4 shadow-sm">
+                        <div className="bg-rose-100 p-2 rounded-lg text-rose-600">
+                            <ShieldAlert size={20} />
+                        </div>
+                        <div className="flex-grow">
+                            <h4 className="text-sm font-black text-rose-900 uppercase tracking-tight">
+                                {latestSecurityAlert.severity} Alert: {latestSecurityAlert.eventType}
+                            </h4>
+                            <p className="text-xs text-rose-700 font-medium mt-1">
+                                {latestSecurityAlert.actorLabel} at {latestSecurityAlert.ip || "unknown IP"} on{" "}
+                                {formatDateTime(latestSecurityAlert.createdAt)}.
+                            </p>
+                        </div>
                     </div>
-                    <div className="flex-grow">
-                        <h4 className="text-sm font-black text-rose-900 uppercase tracking-tight">
-                            Security Alert: Suspicious Activity Detected
-                        </h4>
-                        <p className="text-xs text-rose-700 font-medium mt-1">
-                            Multiple failed login attempts from IP 45.22.11.90
-                            targeting administrative accounts. Action
-                            recommended.
-                        </p>
-                    </div>
-                    <Button
-                        variant="contained"
-                        className="!bg-rose-600 !text-white !rounded-lg !text-[10px] !font-black !px-4 !shadow-none hover:!bg-rose-700"
-                    >
-                        Investigate
-                    </Button>
-                </div>
+                )}
 
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div className="p-6 border-b border-slate-100 space-y-4">
@@ -282,177 +247,206 @@ const AuditLogs = () => {
                                 />
                                 <input
                                     type="text"
-                                    placeholder="Search user, action, IP or entity ID..."
+                                    placeholder="Search actor, event, target, IP..."
                                     className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-slate-900 transition-all"
                                     value={searchTerm}
-                                    onChange={(e) =>
-                                        setSearchTerm(e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                        setSearchTerm(e.target.value);
+                                        setPage(1);
+                                    }}
                                 />
                             </div>
-                            <select className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none">
-                                <option>All Event Types</option>
-                                <option>User Created</option>
-                                <option>Role Assigned</option>
-                                <option>Security Failure</option>
-                            </select>
-                            <select className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none">
-                                <option>Severity: All</option>
-                                <option>Critical Only</option>
-                                <option>Warnings</option>
-                            </select>
-                            <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-4 py-2 bg-slate-50">
-                                <Calendar
-                                    size={14}
-                                    className="text-slate-500"
-                                />
-                                <span className="text-xs font-bold text-slate-700">
-                                    Feb 01 - Feb 15
-                                </span>
-                            </div>
-                            <Button
-                                startIcon={<Filter size={16} />}
-                                className="!text-slate-600 !normal-case !font-bold !text-xs"
+
+                            <select
+                                title="severity filter"
+                                className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none"
+                                value={severityFilter}
+                                onChange={(e) => {
+                                    setSeverityFilter(e.target.value as AuditSeverity | "");
+                                    setPage(1);
+                                }}
                             >
-                                More Filters
-                            </Button>
+                                <option value="">Severity: All</option>
+                                <option value="Info">Info</option>
+                                <option value="Warning">Warning</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+
+                            <select
+                                title="status filter"
+                                className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none"
+                                value={statusFilter}
+                                onChange={(e) => {
+                                    setStatusFilter(e.target.value as AuditStatus | "");
+                                    setPage(1);
+                                }}
+                            >
+                                <option value="">Status: All</option>
+                                <option value="Success">Success</option>
+                                <option value="Failed">Failed</option>
+                            </select>
+
+                            <select
+                                title="method filter"
+                                className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none"
+                                value={methodFilter}
+                                onChange={(e) => {
+                                    setMethodFilter(e.target.value);
+                                    setPage(1);
+                                }}
+                            >
+                                <option value="">Method: All</option>
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="PATCH">PATCH</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
                         </div>
                     </div>
 
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-slate-50 border-b border-slate-100">
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        Timestamp
-                                    </th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        Event Type
-                                    </th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        Actor
-                                    </th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        Target Entity
-                                    </th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        Context
-                                    </th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        Severity
-                                    </th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {MOCK_LOGS.map((log) => (
-                                    <tr
-                                        key={log.id}
-                                        className="hover:bg-slate-50/50 transition-colors group"
-                                    >
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-slate-900">
-                                                    {
-                                                        log.timestamp.split(
-                                                            " ",
-                                                        )[0]
-                                                    }
-                                                </span>
-                                                <span className="text-[10px] text-slate-400 font-medium">
-                                                    {
-                                                        log.timestamp.split(
-                                                            " ",
-                                                        )[1]
-                                                    }
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <div
-                                                    className={`w-1.5 h-1.5 rounded-full ${log.status === "Success" ? "bg-emerald-500" : "bg-rose-500"}`}
-                                                />
-                                                <span className="text-xs font-black text-slate-800">
-                                                    {log.type}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <Avatar
-                                                    sx={{
-                                                        width: 24,
-                                                        height: 24,
-                                                        fontSize: "10px",
-                                                        fontWeight: 900,
-                                                        bgcolor: "slate.900",
-                                                    }}
-                                                >
-                                                    {log.user.charAt(0)}
-                                                </Avatar>
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs font-bold text-slate-900">
-                                                        {log.user}
-                                                    </span>
-                                                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">
-                                                        {log.role}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded uppercase text-[10px]">
-                                                {log.target}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-slate-900">
-                                                    {log.institute}
-                                                </span>
-                                                <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
-                                                    <Globe size={10} /> {log.ip}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span
-                                                className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase border flex items-center gap-1 w-fit ${SEVERITY_CONFIG[log.severity]?.color}`}
-                                            >
-                                                {React.createElement(
-                                                    SEVERITY_CONFIG[
-                                                        log.severity
-                                                    ]?.icon,
-                                                    { size: 10 },
-                                                )}
-                                                {log.severity}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <Button
-                                                size="small"
-                                                onClick={() =>
-                                                    setSelectedLog(log)
-                                                }
-                                                className="!text-[10px] !font-black !text-slate-900 hover:!bg-slate-100 !rounded-lg !px-3"
-                                            >
-                                                Details
-                                            </Button>
-                                        </td>
+                        {isLoading ? (
+                            <div className="flex justify-center items-center py-20">
+                                <CircularProgress size={34} />
+                            </div>
+                        ) : logs.length === 0 ? (
+                            <div className="text-center py-20 text-slate-500">
+                                <p className="text-sm font-bold">No audit logs found</p>
+                            </div>
+                        ) : (
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-slate-50 border-b border-slate-100">
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Timestamp
+                                        </th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Event Type
+                                        </th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Actor
+                                        </th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Target
+                                        </th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Context
+                                        </th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Severity
+                                        </th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
+                                            Actions
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {logs.map((log) => {
+                                        const SeverityIcon = severityConfig[log.severity].icon;
+                                        return (
+                                            <tr
+                                                key={log._id}
+                                                className="hover:bg-slate-50/50 transition-colors"
+                                            >
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-bold text-slate-900">
+                                                            {formatDate(log.createdAt)}
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-400 font-medium">
+                                                            {formatTime(log.createdAt)}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <div
+                                                            className={`w-1.5 h-1.5 rounded-full ${log.status === "Success" ? "bg-emerald-500" : "bg-rose-500"}`}
+                                                        />
+                                                        <span className="text-xs font-black text-slate-800">
+                                                            {log.eventType}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <Avatar
+                                                            sx={{
+                                                                width: 24,
+                                                                height: 24,
+                                                                fontSize: "10px",
+                                                                fontWeight: 900,
+                                                                bgcolor: "slate.900",
+                                                            }}
+                                                        >
+                                                            {log.actorLabel.charAt(0)}
+                                                        </Avatar>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-xs font-bold text-slate-900">
+                                                                {log.actorLabel}
+                                                            </span>
+                                                            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">
+                                                                {log.actorRole}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded uppercase text-[10px]">
+                                                        {log.targetLabel || log.targetId || "-"}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-bold text-slate-900">
+                                                            {log.path}
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+                                                            <Globe size={10} />
+                                                            {log.ip || "Unknown IP"}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span
+                                                        className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase border flex items-center gap-1 w-fit ${severityConfig[log.severity].color}`}
+                                                    >
+                                                        <SeverityIcon size={10} />
+                                                        {log.severity}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <Button
+                                                        size="small"
+                                                        onClick={() => setSelectedLog(log)}
+                                                        className="!text-[10px] !font-black !text-slate-900 hover:!bg-slate-100 !rounded-lg !px-3"
+                                                    >
+                                                        Details
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
-                    <div className="p-4 border-t border-slate-100 flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                            Page 1 of 420
-                        </span>
-                        <Pagination count={10} size="small" shape="rounded" />
-                    </div>
+
+                    {pagination && pagination.pages > 1 && (
+                        <div className="p-4 border-t border-slate-100 flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                Page {pagination.page} of {pagination.pages}
+                            </span>
+                            <Pagination
+                                count={pagination.pages}
+                                page={page}
+                                onChange={(_, value) => setPage(value)}
+                                size="small"
+                                shape="rounded"
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -467,7 +461,7 @@ const AuditLogs = () => {
                                     Event Specification
                                 </h2>
                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                                    {selectedLog.id}
+                                    {selectedLog._id}
                                 </p>
                             </div>
                             <IconButton
@@ -478,20 +472,20 @@ const AuditLogs = () => {
                             </IconButton>
                         </div>
 
-                        <div className="flex-grow overflow-y-auto p-8 space-y-8">
+                        <div className="flex-grow overflow-y-auto p-8 space-y-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-4 rounded-2xl border border-slate-200 bg-slate-50/30">
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                                        Status & Severity
+                                        Status
                                     </p>
                                     <div className="flex items-center gap-2 mt-2">
                                         <span
-                                            className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${selectedLog.status === "Success" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}
+                                            className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${statusPillClass[selectedLog.status]}`}
                                         >
                                             {selectedLog.status}
                                         </span>
                                         <span
-                                            className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase border ${SEVERITY_CONFIG[selectedLog.severity]?.color}`}
+                                            className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase border ${severityConfig[selectedLog.severity].color}`}
                                         >
                                             {selectedLog.severity}
                                         </span>
@@ -502,184 +496,49 @@ const AuditLogs = () => {
                                         Event Time
                                     </p>
                                     <p className="text-sm font-bold text-slate-900 mt-2 flex items-center gap-2">
-                                        <Clock size={14} />{" "}
-                                        {selectedLog.timestamp}
+                                        <Clock size={14} />
+                                        {formatDateTime(selectedLog.createdAt)}
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">
-                                    Actor Identity
-                                </h4>
-                                <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-200">
-                                    <div className="flex items-center gap-4">
-                                        <Avatar
-                                            sx={{
-                                                width: 48,
-                                                height: 48,
-                                                bgcolor: "slate.900",
-                                                fontWeight: 900,
-                                            }}
-                                        >
-                                            {selectedLog.user.charAt(0)}
-                                        </Avatar>
-                                        <div>
-                                            <p className="text-sm font-black text-slate-900">
-                                                {selectedLog.user}
-                                            </p>
-                                            <p className="text-[11px] text-slate-500 font-bold uppercase">
-                                                {selectedLog.role}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        className="!rounded-lg !text-[10px] !font-black !normal-case !border-slate-200 !text-slate-900"
-                                    >
-                                        View Profile
-                                    </Button>
-                                </div>
+                            <div className="p-4 rounded-2xl border border-slate-200 space-y-3">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    Actor & Target
+                                </p>
+                                <p className="text-sm font-bold text-slate-900">
+                                    {selectedLog.actorLabel}
+                                </p>
+                                <p className="text-xs font-semibold text-slate-500 uppercase">
+                                    {selectedLog.actorRole}
+                                </p>
+                                <p className="text-xs text-slate-700">
+                                    Target: {selectedLog.targetLabel || selectedLog.targetId || "-"}
+                                </p>
+                                <p className="text-xs text-slate-700">
+                                    Endpoint: {selectedLog.method} {selectedLog.path}
+                                </p>
+                                <p className="text-xs text-slate-700">
+                                    IP: {selectedLog.ip || "Unknown"} | Status Code: {selectedLog.statusCode}
+                                </p>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        Digital Footprint
-                                    </h4>
-                                    <div className="p-4 rounded-2xl border border-slate-200 space-y-3">
-                                        <div className="flex items-center gap-2">
-                                            <Globe
-                                                size={14}
-                                                className="text-slate-400"
-                                            />
-                                            <span className="text-[11px] font-bold text-slate-700">
-                                                {selectedLog.ip}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Monitor
-                                                size={14}
-                                                className="text-slate-400"
-                                            />
-                                            <span className="text-[11px] font-bold text-slate-700">
-                                                Chrome 121.0.0 (MacOS)
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <MapPin
-                                                size={14}
-                                                className="text-slate-400"
-                                            />
-                                            <span className="text-[11px] font-bold text-slate-700">
-                                                London, United Kingdom
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        Entity Target
-                                    </h4>
-                                    <div className="p-4 rounded-2xl border border-slate-200 space-y-3">
-                                        <div className="flex items-center gap-2">
-                                            <Building2
-                                                size={14}
-                                                className="text-slate-400"
-                                            />
-                                            <span className="text-[11px] font-bold text-slate-700">
-                                                {selectedLog.institute}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <UserCheck
-                                                size={14}
-                                                className="text-slate-400"
-                                            />
-                                            <span className="text-[11px] font-bold text-slate-700">
-                                                {selectedLog.target}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Key
-                                                size={14}
-                                                className="text-slate-400"
-                                            />
-                                            <span className="text-[11px] font-bold text-slate-700">
-                                                EntityID:{" "}
-                                                {Math.random()
-                                                    .toString(36)
-                                                    .substr(2, 9)
-                                                    .toUpperCase()}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
+                            <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        State Delta (JSON)
+                                        Metadata (JSON)
                                     </h4>
                                     <IconButton
                                         size="small"
+                                        onClick={() => copyJson(selectedLog.metadata ?? {})}
                                         className="text-slate-400 hover:text-slate-900"
                                     >
                                         <Copy size={16} />
                                     </IconButton>
                                 </div>
-                                <div className="bg-slate-900 rounded-2xl p-6 font-mono text-[11px] leading-relaxed shadow-inner overflow-x-auto">
-                                    <div className="flex gap-8">
-                                        <div className="space-y-1 min-w-[200px]">
-                                            <span className="text-rose-400 block mb-2 font-bold uppercase tracking-widest text-[9px]">
-                                                Before
-                                            </span>
-                                            <pre className="text-rose-200/60">
-                                                {JSON.stringify(
-                                                    selectedLog.details
-                                                        .before || {},
-                                                    null,
-                                                    2,
-                                                )}
-                                            </pre>
-                                        </div>
-                                        <div className="w-px bg-slate-800" />
-                                        <div className="space-y-1 min-w-[200px]">
-                                            <span className="text-emerald-400 block mb-2 font-bold uppercase tracking-widest text-[9px]">
-                                                After
-                                            </span>
-                                            <pre className="text-emerald-200">
-                                                {JSON.stringify(
-                                                    selectedLog.details.after ||
-                                                        selectedLog.details,
-                                                    null,
-                                                    2,
-                                                )}
-                                            </pre>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="pt-4 border-t border-slate-100 flex gap-3">
-                                <Button
-                                    variant="contained"
-                                    fullWidth
-                                    startIcon={<FileJson size={18} />}
-                                    className="!bg-slate-900 !text-white !rounded-xl !py-3 !font-black !shadow-none"
-                                >
-                                    Download JSON Audit
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    fullWidth
-                                    startIcon={<ExternalLink size={18} />}
-                                    className="!border-slate-200 !text-slate-900 !rounded-xl !py-3 !font-black"
-                                >
-                                    Open Resource
-                                </Button>
+                                <pre className="bg-slate-900 rounded-2xl p-5 text-[11px] text-emerald-200 overflow-x-auto leading-relaxed">
+                                    {JSON.stringify(selectedLog.metadata ?? {}, null, 2)}
+                                </pre>
                             </div>
                         </div>
                     </div>

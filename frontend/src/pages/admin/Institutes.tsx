@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from "react";
+﻿import { useMemo, useState } from "react";
 import {
     IconButton, Avatar, Button, Dialog, DialogTitle,
     DialogContent, DialogActions, Stepper, Step, StepLabel,
@@ -23,6 +23,7 @@ import {
     type Institute,
     type CreateInstitutePayload,
 } from "../../services/institute/institute.service";
+import { useGetAllUsersQuery } from "../../services/user/user.service";
 
 const CHART_DATA = [
     { name: "Jan", value: 400 }, { name: "Feb", value: 300 },
@@ -73,6 +74,15 @@ const Institutes = () => {
     const { data: institutesData, isLoading } = useGetAllInstitutesQuery(
         search ? { search } : undefined,
     );
+    const {
+        data: principalsData,
+        isFetching: isPrincipalsLoading,
+        isError: isPrincipalsError,
+    } = useGetAllUsersQuery({
+        role: "principal",
+        page: 1,
+        limit: 200,
+    });
 
     const [createInstitute, { isLoading: creating }] = useCreateInstituteMutation();
     const [updateInstitute, { isLoading: updating }] = useUpdateInstituteMutation();
@@ -81,6 +91,7 @@ const Institutes = () => {
     const [assignPrincipal, { isLoading: assigning }] = useAssignPrincipalMutation();
 
     const institutes = institutesData?.data ?? [];
+    const principalUsers = principalsData?.data ?? [];
 
     const kpiData = useMemo(() => {
         const total = institutesData?.pagination?.total ?? institutes.length;
@@ -405,7 +416,13 @@ const Institutes = () => {
                                         </div>
                                     </div>
                                     <Tooltip title="Assign Principal">
-                                        <IconButton size="small" onClick={() => setIsPrincipalModalOpen(true)}><UserPlus size={18} /></IconButton>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => {
+                                                setPrincipalId(selectedInstitute.principal?._id ?? "");
+                                                setIsPrincipalModalOpen(true);
+                                            }}
+                                        ><UserPlus size={18} /></IconButton>
                                     </Tooltip>
                                 </div>
                             </div>
@@ -587,8 +604,34 @@ const Institutes = () => {
                         <p className="text-rose-700 text-[11px] font-bold leading-relaxed">SECURITY ADVISORY: Assigning a new Principal will transfer all ownership permissions and revoke the current occupant's ERP access.</p>
                     </div>
                     <div className="space-y-1.5">
-                        <label className={labelCls}>Principal User ID</label>
-                        <input className={inputCls} placeholder="Enter User ID of the principal..." value={principalId} onChange={(e) => setPrincipalId(e.target.value)} />
+                        <label className={labelCls}>Select Principal</label>
+                        <select
+                            className={inputCls}
+                            value={principalId}
+                            onChange={(e) => setPrincipalId(e.target.value)}
+                            disabled={isPrincipalsLoading}
+                        >
+                            <option value="">
+                                {isPrincipalsLoading
+                                    ? "Loading principals..."
+                                    : "Choose a principal"}
+                            </option>
+                            {principalUsers.map((user) => (
+                                <option key={user._id} value={user._id}>
+                                    {user.firstName} {user.lastName} - {user.email}
+                                </option>
+                            ))}
+                        </select>
+                        {isPrincipalsError && (
+                            <p className="text-[11px] text-rose-600 font-semibold">
+                                Failed to load principal list.
+                            </p>
+                        )}
+                        {!isPrincipalsLoading && !isPrincipalsError && principalUsers.length === 0 && (
+                            <p className="text-[11px] text-(--text-secondary) font-semibold">
+                                No principal accounts found. Create a principal user first.
+                            </p>
+                        )}
                     </div>
                 </DialogContent>
                 <DialogActions sx={{ px: 4, pb: 4 }}>

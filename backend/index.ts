@@ -19,8 +19,10 @@ import subjectRouter from "./routers/subject.router.ts";
 import examPaperRouter from "./routers/examPaper.router.ts";
 import attendanceRouter from "./routers/attendance.router.ts";
 import materialRouter from "./routers/material.router.ts";
+import auditLogRouter from "./routers/auditLog.router.ts";
 
 import { ErrorHandler } from "./middlewares/error.middleware.ts";
+import { auditLogMiddleware } from "./middlewares/auditLog.middleware.ts";
 import { startSessionPromotionJob } from "./jobs/sessionPromotion.job.ts";
 
 dotenv.config();
@@ -53,6 +55,8 @@ app.use(
     }),
 );
 
+app.use(auditLogMiddleware);
+
 app.get("/", (_, res) => {
     res.status(200).json({
         success: true,
@@ -73,6 +77,7 @@ app.use("/api/subjects", subjectRouter);
 app.use("/api/exam-papers", examPaperRouter);
 app.use("/api/attendance", attendanceRouter);
 app.use("/api/materials", materialRouter);
+app.use("/api/audit-logs", auditLogRouter);
 
 connectDB();
 

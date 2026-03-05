@@ -47,7 +47,7 @@ const ExamPapers = () => {
                 </div>
                 <Button component={Link} to="/teacher/exam-papers/builder"
                     variant="contained" startIcon={<Plus size={16} />}
-                    className="!bg-slate-900 !text-white !rounded-xl !font-bold !normal-case !shadow-none">
+                    className="bg-slate-900! !text-white !rounded-xl !font-bold !normal-case !shadow-none">
                     New Paper
                 </Button>
             </div>
