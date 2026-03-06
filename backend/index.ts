@@ -23,7 +23,6 @@ import auditLogRouter from "./routers/auditLog.router.ts";
 
 import { ErrorHandler } from "./middlewares/error.middleware.ts";
 import { auditLogMiddleware } from "./middlewares/auditLog.middleware.ts";
-import { startSessionPromotionJob } from "./jobs/sessionPromotion.job.ts";
 
 dotenv.config();
 const app = express();
@@ -81,8 +80,6 @@ app.use("/api/audit-logs", auditLogRouter);
 
 connectDB();
 
-// ─── Start background jobs ────────────────────────────────────────────────────
-startSessionPromotionJob();
 
 app.use(ErrorHandler);
 

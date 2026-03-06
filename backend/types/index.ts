@@ -136,7 +136,7 @@ export interface IAcademicSession extends Document {
     totalEnrolledStudents: number;
     /** false once enrollment is closed and progression begins */
     enrollmentOpen: boolean;
-    /** Date when the next automated/manual promotion should occur */
+    /** Date when the next HOD-controlled promotion should occur */
     nextPromotionDate: Date;
     /** Who created the session */
     createdBy: Types.ObjectId;

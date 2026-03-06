@@ -8,7 +8,6 @@ import {
     unlockSession,
     closeEnrollment,
     manualPromote,
-    examTriggerPromote,
     getSessionAnalytics,
 } from "../controller/academicSession.controller.ts";
 import { isAuthenticated, authorize } from "../middlewares/auth.middleware.ts";
@@ -59,21 +58,12 @@ router.patch(
     closeEnrollment,
 );
 
-// HOD, Principal, Admin can manually promote a session's semester
+// Only HOD can manually promote a session's semester
 router.patch(
     "/:deptId/:id/promote",
     isAuthenticated,
-    authorize("hod", "principal", "admin"),
+    authorize("hod"),
     manualPromote,
-);
-
-// Internal hook: called by Exam module when all students pass final exam
-// Restricted to admin (Exam module will call with admin-level auth token internally)
-router.patch(
-    "/:deptId/:id/exam-promote",
-    isAuthenticated,
-    authorize("admin"),
-    examTriggerPromote,
 );
 
 export default router;

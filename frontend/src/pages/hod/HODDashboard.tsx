@@ -1,5 +1,5 @@
 import { Typography, Paper, Chip } from "@mui/material";
-import { Users, BookOpen, CalendarCheck, ShieldCheck, GraduationCap } from "lucide-react";
+import { BookOpen, CalendarCheck, ShieldCheck, GraduationCap, AlertTriangle } from "lucide-react";
 import { useGetHODDashboardQuery } from "../../services/hod/hod.service";
 import { useSelector } from "react-redux";
 
@@ -14,11 +14,29 @@ const StatCard = ({ title, value, icon, bg }: { title: string; value: any; icon:
 );
 
 const HODDashboard = () => {
+    const PROMOTION_ALERT_WINDOW_DAYS = 14;
     const { name } = useSelector((state: any) => state.auth);
     const { data, isLoading } = useGetHODDashboardQuery();
 
     const stats = data?.data?.stats;
     const sessions = data?.data?.sessions ?? [];
+    const nowTime = Date.now();
+    const msPerDay = 1000 * 60 * 60 * 24;
+
+    const overdueSessions = sessions.filter((session: any) => {
+        if (session.status !== "active") return false;
+        return new Date(session.nextPromotionDate).getTime() <= nowTime;
+    });
+
+    const dueSoonSessions = sessions.filter((session: any) => {
+        if (session.status !== "active") return false;
+        const daysUntilPromotion =
+            (new Date(session.nextPromotionDate).getTime() - nowTime) / msPerDay;
+        return (
+            daysUntilPromotion > 0 &&
+            daysUntilPromotion <= PROMOTION_ALERT_WINDOW_DAYS
+        );
+    });
 
     return (
         <div className="p-8 pb-32 max-w-[1200px] mx-auto w-full font-sans">
@@ -45,6 +63,31 @@ const HODDashboard = () => {
                     </>
                 )}
             </div>
+
+            {!isLoading &&
+                (overdueSessions.length > 0 || dueSoonSessions.length > 0) && (
+                    <Paper
+                        elevation={0}
+                        className="mb-8 border border-amber-200 bg-amber-50 rounded-2xl p-4"
+                    >
+                        <div className="flex items-start gap-3">
+                            <AlertTriangle
+                                size={18}
+                                className="text-amber-700 mt-0.5 shrink-0"
+                            />
+                            <div>
+                                <p className="text-sm font-black text-amber-900">
+                                    Promotion action required
+                                </p>
+                                <p className="text-xs font-semibold text-amber-800 mt-1">
+                                    {overdueSessions.length} overdue sessions and{" "}
+                                    {dueSoonSessions.length} sessions due within{" "}
+                                    {PROMOTION_ALERT_WINDOW_DAYS} days.
+                                </p>
+                            </div>
+                        </div>
+                    </Paper>
+                )}
 
             {/* Sessions monitoring table */}
             <Paper elevation={0} className="border border-slate-200 rounded-2xl overflow-hidden bg-white">

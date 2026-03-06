@@ -288,7 +288,6 @@ const AuditLogs = () => {
                                     }}
                                 >
                                     <option value="">Method: All</option>
-                                    <option value="GET">GET</option>
                                     <option value="POST">POST</option>
                                     <option value="PUT">PUT</option>
                                     <option value="PATCH">PATCH</option>

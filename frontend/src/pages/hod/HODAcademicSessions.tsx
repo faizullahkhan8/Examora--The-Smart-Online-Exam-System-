@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Chip, Paper, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
-import { CalendarDays, AlertTriangle, Play, Info } from "lucide-react";
+import { CalendarDays, AlertTriangle, Play } from "lucide-react";
 import { toast } from "react-toastify";
 import { useGetHODProfileQuery } from "../../services/hod/hod.service";
 import {
@@ -78,6 +78,7 @@ const NewIntakeDrawer = ({
 };
 
 const HODAcademicSessions = () => {
+    const PROMOTION_ALERT_WINDOW_DAYS = 14;
     const { data: profileData } = useGetHODProfileQuery();
     const deptId = profileData?.data?.department?._id ?? "";
 
@@ -96,6 +97,24 @@ const HODAcademicSessions = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const sessions: AcademicSession[] = sessionsData?.data ?? [];
+    const now = new Date();
+    const nowTime = now.getTime();
+    const msPerDay = 1000 * 60 * 60 * 24;
+
+    const overdueSessions = sessions.filter((session) => {
+        if (session.status !== "active") return false;
+        return new Date(session.nextPromotionDate).getTime() <= nowTime;
+    });
+
+    const dueSoonSessions = sessions.filter((session) => {
+        if (session.status !== "active") return false;
+        const daysUntilPromotion =
+            (new Date(session.nextPromotionDate).getTime() - nowTime) / msPerDay;
+        return (
+            daysUntilPromotion > 0 &&
+            daysUntilPromotion <= PROMOTION_ALERT_WINDOW_DAYS
+        );
+    });
 
     const handlePromote = async () => {
         if (!reason.trim()) return;
@@ -127,6 +146,61 @@ const HODAcademicSessions = () => {
                     Approve New Intake
                 </Button>
             </div>
+
+            {!isLoading &&
+                (overdueSessions.length > 0 || dueSoonSessions.length > 0) && (
+                    <Paper
+                        elevation={0}
+                        className="mb-6 border border-amber-200 bg-amber-50 rounded-2xl p-4"
+                    >
+                        <div className="flex items-start gap-3">
+                            <AlertTriangle
+                                size={18}
+                                className="text-amber-700 mt-0.5 shrink-0"
+                            />
+                            <div className="min-w-0">
+                                <p className="text-sm font-black text-amber-900">
+                                    Session promotion alert for HOD
+                                </p>
+                                <p className="text-xs font-semibold text-amber-800 mt-1">
+                                    {overdueSessions.length > 0
+                                        ? `${overdueSessions.length} overdue`
+                                        : "0 overdue"}
+                                    {" · "}
+                                    {dueSoonSessions.length > 0
+                                        ? `${dueSoonSessions.length} due within ${PROMOTION_ALERT_WINDOW_DAYS} days`
+                                        : `0 due within ${PROMOTION_ALERT_WINDOW_DAYS} days`}
+                                </p>
+                                <div className="mt-2 space-y-1">
+                                    {overdueSessions.slice(0, 3).map((session) => (
+                                        <p
+                                            key={session._id}
+                                            className="text-xs font-medium text-amber-900"
+                                        >
+                                            {session.startYear} - {session.endYear} batch is overdue since{" "}
+                                            {new Date(
+                                                session.nextPromotionDate,
+                                            ).toLocaleDateString()}
+                                            .
+                                        </p>
+                                    ))}
+                                    {dueSoonSessions.slice(0, 2).map((session) => (
+                                        <p
+                                            key={session._id}
+                                            className="text-xs font-medium text-amber-900"
+                                        >
+                                            {session.startYear} - {session.endYear} batch is due on{" "}
+                                            {new Date(
+                                                session.nextPromotionDate,
+                                            ).toLocaleDateString()}
+                                            .
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </Paper>
+                )}
 
             {isLoading || !deptId ? (
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-pulse">

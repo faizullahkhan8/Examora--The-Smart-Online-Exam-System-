@@ -32,7 +32,7 @@ const academicSessionSchema = new Schema<IAcademicSession>(
         // Once closed, intake capacity cannot be changed without unlock
         enrollmentOpen: { type: Boolean, default: true },
 
-        // Next automated or manual promotion eligibility date
+        // Next HOD-controlled promotion eligibility date
         nextPromotionDate: { type: Date, required: true },
 
         createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -45,7 +45,7 @@ academicSessionSchema.index({ department: 1, startYear: 1 }, { unique: true });
 
 // Fast queries scoped by dept + institute
 academicSessionSchema.index({ department: 1, institute: 1 });
-academicSessionSchema.index({ status: 1, nextPromotionDate: 1 }); // used by cron job
+academicSessionSchema.index({ status: 1, nextPromotionDate: 1 }); // used by due-alert checks
 
 const AcademicSessionModel = model<IAcademicSession>(
     "AcademicSession",

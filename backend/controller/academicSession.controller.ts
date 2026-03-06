@@ -16,9 +16,8 @@ import {
 // ─── SHARED UTILITY: Semester Promotion ──────────────────────────────────────
 //
 // Called by:
-//   1. Daily cron job (automated promotion when nextPromotionDate is passed)
-//   2. HOD / Principal / Admin manual PATCH /promote endpoint
-//   3. Future: Exam module (PATCH /exam-promote after all students pass final exam)
+//   1. HOD manual PATCH /promote endpoint
+//   2. Future: Exam module hook (currently disabled from routing)
 //
 export async function promoteSemester(
     sessionId: string,
@@ -366,7 +365,7 @@ export const closeEnrollment = expressAsyncHandler(
     },
 );
 
-// ─── MANUAL PROMOTE (HOD / Principal / Admin) ────────────────────────────────
+// ─── MANUAL PROMOTE (HOD) ─────────────────────────────────────────────────────
 export const manualPromote = expressAsyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -417,7 +416,7 @@ export const manualPromote = expressAsyncHandler(
 );
 
 // ─── EXAM-TRIGGERED PROMOTE (Internal hook — used by Exam module) ─────────────
-// No UI. Called programmatically by the Exam controller after all final exams pass.
+// Reserved for future internal use by the Exam module.
 export const examTriggerPromote = expressAsyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
         try {

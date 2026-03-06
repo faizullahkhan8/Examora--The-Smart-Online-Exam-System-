@@ -1,11 +1,11 @@
 import { useState } from "react";
 import {
     Breadcrumbs, Link, Typography, Button, Chip, Skeleton, Drawer,
-    TextField, Dialog, DialogTitle, DialogContent, DialogActions, Alert,
+    TextField, Alert,
     Select, MenuItem, FormControl, InputLabel, LinearProgress,
 } from "@mui/material";
 import {
-    ChevronRight, Plus, Lock, LockOpen, ArrowUpCircle, UserCheck,
+    ChevronRight, Plus, Lock, LockOpen, UserCheck,
     Calendar, Users, BookOpen, TrendingUp, AlertCircle,
 } from "lucide-react";
 import {
@@ -15,12 +15,11 @@ import {
     useLockSessionMutation,
     useUnlockSessionMutation,
     useCloseEnrollmentMutation,
-    useManualPromoteMutation,
     type AcademicSession,
 } from "../../services/academicSession/academicSession.service";
 import { useGetDepartmentsQuery } from "../../services/department/department.service";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 const STATUS_MAP: Record<AcademicSession["status"], { label: string; color: string }> = {
     upcoming: { label: "Upcoming", color: "!bg-blue-50 !text-blue-700" },
     active: { label: "Active", color: "!bg-emerald-50 !text-emerald-700" },
@@ -37,7 +36,7 @@ function monthsUntil(dateStr: string): number {
     );
 }
 
-// ─── New Intake Drawer ────────────────────────────────────────────────────────
+// New Intake Drawer
 const NewIntakeDrawer = ({
     open, deptId, onClose,
 }: { open: boolean; deptId: string; onClose: () => void }) => {
@@ -73,7 +72,7 @@ const NewIntakeDrawer = ({
                     label="Intake Year" type="number" required size="small"
                     value={form.startYear}
                     onChange={(e) => setForm((p) => ({ ...p, startYear: parseInt(e.target.value) }))}
-                    helperText={`Session will span ${form.startYear}–${form.startYear + 4}`}
+                    helperText={`Session will span ${form.startYear}-${form.startYear + 4}`}
                 />
                 <TextField
                     label="Intake Capacity" type="number" size="small"
@@ -88,7 +87,7 @@ const NewIntakeDrawer = ({
                     </Button>
                     <Button fullWidth type="submit" variant="contained" disabled={isLoading}
                         className="!bg-slate-900 !text-white !normal-case !font-bold !rounded-xl">
-                        {isLoading ? "Creating…" : "Approve Intake"}
+                        {isLoading ? "Creating..." : "Approve Intake"}
                     </Button>
                 </div>
             </form>
@@ -96,75 +95,9 @@ const NewIntakeDrawer = ({
     );
 };
 
-// ─── Promote Dialog ───────────────────────────────────────────────────────────
-const PromoteDialog = ({
-    open, session, onClose,
-}: { open: boolean; session: AcademicSession | null; onClose: () => void }) => {
-    const [reason, setReason] = useState("");
-    const [error, setError] = useState("");
-    const [promote, { isLoading }] = useManualPromoteMutation();
-
-    const deptId = typeof session?.department === "string"
-        ? session.department
-        : session?.department?._id ?? "";
-
-    const handlePromote = async () => {
-        if (!session || !reason.trim()) return;
-        setError("");
-        try {
-            await promote({ deptId, id: session._id, reason }).unwrap();
-            setReason("");
-            onClose();
-        } catch (err: any) {
-            setError(err?.data?.message ?? "Promotion failed.");
-        }
-    };
-
-    const nextSem = (session?.currentSemester ?? 0) + 1;
-    const willComplete = session?.currentSemester === 8;
-
-    return (
-        <Dialog open={open} onClose={onClose} PaperProps={{ sx: { borderRadius: 3, minWidth: 420 } }}>
-            <DialogTitle className="font-black text-slate-900">
-                {willComplete ? "Graduate Cohort" : `Promote to Semester ${nextSem}`}
-            </DialogTitle>
-            <DialogContent className="space-y-3">
-                {willComplete && (
-                    <Alert severity="warning" className="rounded-xl">
-                        This will mark the session as <strong>Completed</strong> and graduate all enrolled students.
-                    </Alert>
-                )}
-                <p className="text-sm text-slate-600">
-                    Session: <strong>{session?.startYear}–{session?.endYear}</strong> · Currently Semester <strong>{session?.currentSemester}</strong>
-                </p>
-                {error && <Alert severity="error" className="rounded-xl">{error}</Alert>}
-                <TextField
-                    fullWidth multiline rows={2} size="small"
-                    label="Reason / Notes (required)"
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                    placeholder="e.g. End-of-semester exams completed successfully"
-                />
-            </DialogContent>
-            <DialogActions sx={{ p: 2, gap: 1 }}>
-                <Button onClick={onClose} className="!text-slate-500 !font-bold !normal-case">Cancel</Button>
-                <Button
-                    onClick={handlePromote}
-                    disabled={!reason.trim() || isLoading}
-                    variant="contained"
-                    color={willComplete ? "warning" : "primary"}
-                    className="!font-bold !normal-case !rounded-xl">
-                    {isLoading ? "Processing…" : willComplete ? "Graduate Cohort" : `Promote to Sem ${nextSem}`}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-};
-
-// ─── Session Card ─────────────────────────────────────────────────────────────
 const SessionCard = ({
-    session, deptId, onPromote,
-}: { session: AcademicSession; deptId: string; onPromote: (s: AcademicSession) => void }) => {
+    session, deptId,
+}: { session: AcademicSession; deptId: string }) => {
     const [lock] = useLockSessionMutation();
     const [unlock] = useUnlockSessionMutation();
     const [closeEnrollment] = useCloseEnrollmentMutation();
@@ -180,7 +113,7 @@ const SessionCard = ({
             <div className="flex items-start justify-between">
                 <div>
                     <p className="font-black text-slate-900 text-lg leading-tight">
-                        {session.startYear}–{session.endYear}
+                        {session.startYear}-{session.endYear}
                     </p>
                     {deptName && <p className="text-xs text-slate-400 font-medium mt-0.5">{deptName}</p>}
                 </div>
@@ -229,7 +162,7 @@ const SessionCard = ({
                 </div>
                 <div className="bg-slate-50 rounded-xl p-2">
                     <p className={`font-black text-sm ${months <= 1 ? "text-rose-600" : "text-slate-900"}`}>
-                        {session.status === "completed" ? "—" : `${months}mo`}
+                        {session.status === "completed" ? "-" : `${months}mo`}
                     </p>
                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Next Promo</p>
                 </div>
@@ -253,14 +186,6 @@ const SessionCard = ({
                             Close Enrollment
                         </Button>
                     )}
-                    {session.status === "active" && (
-                        <Button size="small" variant="outlined"
-                            startIcon={<ArrowUpCircle size={13} />}
-                            onClick={() => onPromote(session)}
-                            className="!border-indigo-200 !text-indigo-600 !normal-case !font-bold !text-[11px] !rounded-xl">
-                            {session.currentSemester < 8 ? `Promote → Sem ${session.currentSemester + 1}` : "Graduate Cohort"}
-                        </Button>
-                    )}
                     {session.status === "locked" ? (
                         <Button size="small" variant="outlined"
                             startIcon={<LockOpen size={13} />}
@@ -282,11 +207,10 @@ const SessionCard = ({
     );
 };
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// Main Page
 const AcademicSessions = () => {
     const [selectedDept, setSelectedDept] = useState("");
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [promoteSession, setPromoteSession] = useState<AcademicSession | null>(null);
 
     const { data: deptData, isLoading: loadingDepts } = useGetDepartmentsQuery();
     const { data: sessionData, isLoading: loadingSessions } = useGetSessionsByDeptQuery(
@@ -360,7 +284,7 @@ const AcademicSessions = () => {
                             onChange={(e) => setSelectedDept(e.target.value)}
                             sx={{ borderRadius: "12px" }}>
                             {loadingDepts ? (
-                                <MenuItem disabled>Loading…</MenuItem>
+                                <MenuItem disabled>Loading...</MenuItem>
                             ) : departments.map((d) => (
                                 <MenuItem key={d._id} value={d._id}>
                                     {d.name} <span className="ml-2 text-slate-400 text-xs font-bold">{d.code}</span>
@@ -374,7 +298,7 @@ const AcademicSessions = () => {
                 {selectedDept && (
                     <div>
                         <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">
-                            {departments.find((d) => d._id === selectedDept)?.name} — Academic Cohorts
+                            {departments.find((d) => d._id === selectedDept)?.name} - Academic Cohorts
                         </h2>
 
                         {loadingSessions ? (
@@ -401,7 +325,6 @@ const AcademicSessions = () => {
                                         key={s._id}
                                         session={s}
                                         deptId={selectedDept}
-                                        onPromote={setPromoteSession}
                                     />
                                 ))}
                             </div>
@@ -422,13 +345,6 @@ const AcademicSessions = () => {
                 open={drawerOpen}
                 deptId={selectedDept}
                 onClose={() => setDrawerOpen(false)}
-            />
-
-            {/* Promote Dialog */}
-            <PromoteDialog
-                open={!!promoteSession}
-                session={promoteSession}
-                onClose={() => setPromoteSession(null)}
             />
         </div>
     );

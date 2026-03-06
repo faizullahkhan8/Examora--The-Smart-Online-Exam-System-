@@ -9,6 +9,7 @@ import {
 const shouldSkipAudit = (req: Request): boolean => {
     const path = req.originalUrl.split("?")[0];
     if (req.method === "OPTIONS") return true;
+    if (req.method === "GET") return true;
     if (path === "/") return true;
     if (path.startsWith("/api/audit-logs")) return true;
     return false;
@@ -82,7 +83,9 @@ export const auditLogMiddleware = (
         const resolvedActorRole = req.session?.user?.role || initialActorRole;
         const currentActorLabel = getActorLabel(req);
         const resolvedActorLabel =
-            currentActorLabel === "Anonymous" ? initialActorLabel : currentActorLabel;
+            currentActorLabel === "Anonymous"
+                ? initialActorLabel
+                : currentActorLabel;
 
         void createAuditLog({
             actorId: resolvedActorId,
