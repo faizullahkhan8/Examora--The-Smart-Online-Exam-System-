@@ -9,7 +9,6 @@ import Institutes from "./pages/admin/Institutes";
 import Messanger from "./pages/admin/Messanger";
 import Users from "./pages/admin/Users";
 import AuditLogs from "./pages/admin/AuditLogs";
-import Settings from "./pages/admin/Settings";
 import Notifications from "./pages/admin/Notifications";
 
 // ─── Principal
@@ -67,7 +66,6 @@ const AppRouter = createBrowserRouter([
                     { path: "/admin/users", element: <Users /> },
                     { path: "/admin/audit-logs", element: <AuditLogs /> },
                     { path: "/admin/notifications", element: <Notifications /> },
-                    { path: "/admin/settings", element: <Settings /> },
                 ],
             },
         ],

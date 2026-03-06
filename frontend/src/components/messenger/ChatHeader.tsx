@@ -23,21 +23,15 @@ const ChatHeader: React.FC<Props> = ({
     let isGroup = false;
 
     if (conversation.type === "direct") {
-        const other = conversation.participants.find(
-            (p) => p._id !== currentUserId,
-        );
+        const other = conversation.participants.find((p) => p._id !== currentUserId);
         name = other ? `${other.firstName} ${other.lastName}` : "Unknown User";
         subtitle = [
             other?.role,
-            typeof other?.institute === "object" && other?.institute
-                ? other.institute.name
-                : "",
+            typeof other?.institute === "object" && other?.institute ? other.institute.name : "",
         ]
             .filter(Boolean)
             .join(" • ");
-        initials = other
-            ? `${other.firstName[0]}${other.lastName[0]}`
-            : "??";
+        initials = other ? `${other.firstName[0]}${other.lastName[0]}` : "??";
         isOnline = other?.isActive ?? false;
     } else if (conversation.type === "group") {
         name = conversation.name ?? "Group Chat";
@@ -45,54 +39,49 @@ const ChatHeader: React.FC<Props> = ({
         isGroup = true;
     } else {
         name = conversation.name ?? "Announcement";
-        subtitle = "Broadcast to all members";
+        subtitle = "System Broadcast Channel";
         isOnline = true;
     }
 
     return (
-        <div className="h-20 border-b border-slate-200 px-6 flex items-center justify-between shrink-0 bg-white">
-            <div className="flex items-center gap-3">
+        <div className="h-[72px] border-b border-(--ui-divider) px-6 flex items-center justify-between shrink-0 bg-(--bg-surface) shadow-sm z-10">
+            <div className="flex items-center gap-4">
                 {conversation.type === "announcement" ? (
-                    <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-xl">
+                    <div className="w-11 h-11 rounded-xl bg-rose-50 flex items-center justify-center text-xl shadow-sm border border-rose-100">
                         📢
                     </div>
                 ) : isGroup ? (
-                    <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center">
+                    <div className="w-11 h-11 rounded-xl bg-violet-50 flex items-center justify-center shadow-sm border border-violet-100">
                         <Users size={20} className="text-violet-600" />
                     </div>
                 ) : (
-                    <Avatar className="bg-slate-900 text-white font-black text-sm">
+                    <Avatar sx={{ width: 44, height: 44 }} className="!bg-(--bg-sidebar) !text-(--text-on-dark) !font-bold !text-sm !rounded-xl !shadow-sm">
                         {initials}
                     </Avatar>
                 )}
-                <div>
+                <div className="flex flex-col justify-center">
                     <div className="flex items-center gap-2">
-                        <h2 className="text-base font-black text-slate-900">
+                        <h2 className="text-[15px] font-bold text-(--text-primary) tracking-tight leading-tight">
                             {name}
                         </h2>
                         {isOnline && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
                         )}
                     </div>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    <p className="text-[11px] font-semibold text-(--text-secondary) capitalize mt-0.5">
                         {subtitle}
                     </p>
                 </div>
             </div>
-            <div className="flex items-center gap-1">
-                <IconButton size="small">
-                    <Search size={20} className="text-slate-400" />
+            <div className="flex items-center gap-1.5">
+                <IconButton size="small" sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--text-primary)", bgcolor: "var(--bg-base)" } }}>
+                    <Search size={18} />
                 </IconButton>
-                <IconButton size="small" onClick={onToggleDetails}>
-                    <Info
-                        size={20}
-                        className={
-                            showDetails ? "text-slate-900" : "text-slate-400"
-                        }
-                    />
+                <IconButton size="small" onClick={onToggleDetails} sx={{ color: showDetails ? "var(--brand-primary)" : "var(--text-secondary)", bgcolor: showDetails ? "var(--brand-active)" : "transparent", "&:hover": { color: "var(--brand-primary)", bgcolor: "var(--bg-base)" } }}>
+                    <Info size={18} />
                 </IconButton>
-                <IconButton size="small">
-                    <MoreVertical size={20} className="text-slate-400" />
+                <IconButton size="small" sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--text-primary)", bgcolor: "var(--bg-base)" } }}>
+                    <MoreVertical size={18} />
                 </IconButton>
             </div>
         </div>

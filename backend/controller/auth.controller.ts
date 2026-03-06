@@ -3,6 +3,7 @@ import expressAsyncHandler from "express-async-handler";
 import { ErrorResponse } from "../middlewares/error.handler.ts";
 
 // models
+import InstituteModel from "../models/institute.model.ts";
 import UserModel from "../models/user.model.ts";
 
 // validations
@@ -10,6 +11,14 @@ import {
     loginValidation,
     registerValidation,
 } from "../validations/auth.validations.ts";
+
+const getInstituteCounterUpdateForRole = (
+    role: string,
+): Record<string, number> | null => {
+    if (role === "student") return { studentsCount: 1 };
+    if (role === "teacher") return { facultyCount: 1 };
+    return null;
+};
 
 export const login = expressAsyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -95,6 +104,13 @@ export const register = expressAsyncHandler(
                 department: department || "6988c52663224388d9e058ad",
                 institute: institute || "6988c52663224388d9e058ae",
             });
+
+            const counterUpdate = getInstituteCounterUpdateForRole(user.role);
+            if (counterUpdate && user.institute) {
+                await InstituteModel.findByIdAndUpdate(user.institute, {
+                    $inc: counterUpdate,
+                });
+            }
 
             req.session.user = {
                 id: user._id,

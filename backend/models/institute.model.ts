@@ -56,6 +56,10 @@ const instituteSchema = new mongoose.Schema<IInstituteOptions>(
             type: Number,
             default: 0,
         },
+        facultyCount: {
+            type: Number,
+            default: 0,
+        },
     },
     {
         timestamps: true,

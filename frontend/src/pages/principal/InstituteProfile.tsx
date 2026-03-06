@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
     Breadcrumbs, Link, Typography, Button, TextField, Skeleton, Alert,
 } from "@mui/material";
-import { ChevronRight, Building2, Pencil, Save, X, Info } from "lucide-react";
+import { ChevronRight, Pencil, Save, X, Info } from "lucide-react";
 import {
     useGetMyInstituteQuery,
     useUpdateMyInstituteMutation,
@@ -22,6 +22,7 @@ const PLACEHOLDER_INSTITUTE = {
     location: { address: "123 Campus Road", city: "City", country: "Country" },
     studentsCount: 0,
     departmentsCount: 0,
+    facultyCount: 0,
     isActive: true,
     principal: null,
     createdAt: "",
@@ -197,7 +198,7 @@ const InstituteProfile = () => {
                         </div>
 
                         {/* Stats */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm text-center">
                                 <p className="text-3xl font-black text-indigo-600">{institute.studentsCount ?? 0}</p>
                                 <p className="text-xs font-black uppercase tracking-widest text-slate-400 mt-1">Total Students</p>
@@ -205,6 +206,10 @@ const InstituteProfile = () => {
                             <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm text-center">
                                 <p className="text-3xl font-black text-blue-600">{institute.departmentsCount ?? 0}</p>
                                 <p className="text-xs font-black uppercase tracking-widest text-slate-400 mt-1">Departments</p>
+                            </div>
+                            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm text-center">
+                                <p className="text-3xl font-black text-emerald-600">{institute.facultyCount ?? 0}</p>
+                                <p className="text-xs font-black uppercase tracking-widest text-slate-400 mt-1">FacultyCount</p>
                             </div>
                         </div>
                     </>

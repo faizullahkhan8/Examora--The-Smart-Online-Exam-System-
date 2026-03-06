@@ -16,8 +16,6 @@ interface Props {
     onSearchChange: (val: string) => void;
 }
 
-const TABS = ["All", "Unread", "Groups", "Announcements"];
-
 const ConversationList: React.FC<Props> = ({
     conversations,
     isLoading,
@@ -26,14 +24,11 @@ const ConversationList: React.FC<Props> = ({
     activeTab,
     search,
     onSelect,
-    onTabChange,
-    onSearchChange,
 }) => {
     const filtered = conversations.filter((conv) => {
         // Tab filter
         if (activeTab === "Groups" && conv.type !== "group") return false;
-        if (activeTab === "Announcements" && conv.type !== "announcement")
-            return false;
+        if (activeTab === "Announcements" && conv.type !== "announcement") return false;
 
         // Search filter
         if (search) {
@@ -51,26 +46,28 @@ const ConversationList: React.FC<Props> = ({
     });
 
     return (
-        <div className="flex-grow overflow-y-auto">
+        <div className="flex-grow overflow-y-auto custom-scrollbar">
             {isLoading ? (
                 <MessengerSkeleton rows={5} />
             ) : filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-40 gap-2 text-slate-300">
+                <div className="flex flex-col items-center justify-center h-40 gap-3 text-(--text-secondary) opacity-60">
                     <span className="text-3xl">💬</span>
-                    <p className="text-xs font-bold text-slate-400">
+                    <p className="text-xs font-semibold">
                         No conversations found
                     </p>
                 </div>
             ) : (
-                filtered.map((conv) => (
-                    <ConversationItem
-                        key={conv._id}
-                        conversation={conv}
-                        isSelected={selectedId === conv._id}
-                        currentUserId={currentUserId}
-                        onClick={() => onSelect(conv)}
-                    />
-                ))
+                <div className="flex flex-col">
+                    {filtered.map((conv) => (
+                        <ConversationItem
+                            key={conv._id}
+                            conversation={conv}
+                            isSelected={selectedId === conv._id}
+                            currentUserId={currentUserId}
+                            onClick={() => onSelect(conv)}
+                        />
+                    ))}
+                </div>
             )}
         </div>
     );

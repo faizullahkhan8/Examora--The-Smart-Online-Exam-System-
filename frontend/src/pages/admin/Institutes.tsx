@@ -2,7 +2,7 @@
 import {
     IconButton, Avatar, Button, Dialog, DialogTitle,
     DialogContent, DialogActions, Stepper, Step, StepLabel,
-    Tooltip, CircularProgress,
+    Tooltip, CircularProgress, TablePagination,
 } from "@mui/material";
 import {
     Users, Building2, MoreVertical, Search, Plus, Filter,
@@ -41,9 +41,9 @@ const INST_TYPES = [
 ];
 
 const inputCls =
-    "w-full bg-(--bg-base) border border-(--ui-border) rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-(--brand-primary) outline-none";
+    "w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-colors";
 const labelCls =
-    "text-[10px] font-black text-(--text-secondary) uppercase tracking-widest";
+    "text-xs font-semibold text-(--text-secondary)";
 
 const emptyForm = (): CreateInstitutePayload => ({
     name: "", domain: "",
@@ -55,6 +55,8 @@ const emptyForm = (): CreateInstitutePayload => ({
 
 const Institutes = () => {
     const [search, setSearch] = useState("");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [selectedInstitute, setSelectedInstitute] = useState<Institute | null>(null);
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [wizardStep, setWizardStep] = useState(0);
@@ -71,9 +73,13 @@ const Institutes = () => {
         setTimeout(() => setToast(null), 3500);
     };
 
-    const { data: institutesData, isLoading } = useGetAllInstitutesQuery(
-        search ? { search } : undefined,
-    );
+    const queryParams = useMemo(() => ({
+        search: search || undefined,
+        page: page + 1,
+        limit: rowsPerPage,
+    }), [search, page, rowsPerPage]);
+
+    const { data: institutesData, isLoading } = useGetAllInstitutesQuery(queryParams);
     const {
         data: principalsData,
         isFetching: isPrincipalsLoading,
@@ -91,6 +97,7 @@ const Institutes = () => {
     const [assignPrincipal, { isLoading: assigning }] = useAssignPrincipalMutation();
 
     const institutes = institutesData?.data ?? [];
+    const pagination = institutesData?.pagination;
     const principalUsers = principalsData?.data ?? [];
 
     const kpiData = useMemo(() => {
@@ -170,46 +177,50 @@ const Institutes = () => {
         }
     };
 
+    const buttonSx = {
+        borderRadius: "8px",
+        textTransform: "none",
+        fontWeight: 600,
+    };
+
     return (
-        <div className="grow bg-(--bg-base) min-h-screen font-sans">
-            {/* Toast */}
+        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10 relative">
             {toast && (
-                <div className={`fixed top-5 right-5 z-[200] px-5 py-3 rounded-xl shadow-xl text-sm font-bold text-white transition-all ${toast.ok ? "bg-emerald-500" : "bg-rose-500"
-                    }`}>
+                <div className={`fixed bottom-6 right-6 z-[200] px-4 py-2.5 rounded-lg shadow-lg text-sm font-semibold text-white transition-all ${toast.ok ? "bg-emerald-600" : "bg-rose-600"}`}>
                     {toast.msg}
                 </div>
             )}
 
-            {/* Header */}
-            <header className="h-20 bg-(--bg-surface) border-b border-(--ui-border) px-8 flex items-center justify-between">
-                <div className="flex flex-col">
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-(--text-secondary) uppercase tracking-widest mb-1">
-                        <span>Dashboard</span>
-                        <ChevronRight size={10} />
-                        <span className="text-(--text-primary)">Institutes</span>
+            <div className="p-8 max-w-[1600px] mx-auto">
+                <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-black text-(--text-primary) tracking-tight">
+                            Institute Management
+                        </h1>
+                        <p className="text-(--text-secondary) text-sm font-medium mt-1">
+                            Manage and monitor all registered educational entities.
+                        </p>
                     </div>
-                    <h1 className="text-xl font-black text-(--text-primary)">Institute Management</h1>
-                    <p className="text-[11px] text-(--text-secondary) font-medium">Manage and monitor all registered educational entities</p>
+                    <div className="flex gap-3">
+                        <Button variant="outlined" startIcon={<Download size={16} />}
+                            sx={{ ...buttonSx, borderColor: "var(--ui-border)", color: "var(--text-primary)", "&:hover": { borderColor: "var(--brand-primary)", bgcolor: "var(--brand-active)" } }}>
+                            Export Report
+                        </Button>
+                        <Button variant="contained" startIcon={<Plus size={16} />} onClick={openWizard}
+                            sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", boxShadow: "none", "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
+                            Create Institute
+                        </Button>
+                    </div>
                 </div>
-                <div className="flex items-center gap-3">
-                    <Button variant="outlined" startIcon={<Download size={18} />} sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 700, borderColor: "var(--ui-border)", color: "var(--text-primary)" }}>
-                        Export Report
-                    </Button>
-                    <Button variant="contained" startIcon={<Plus size={18} />} onClick={openWizard}
-                        sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 700, bgcolor: "var(--brand-primary)", boxShadow: "none" }}>
-                        Create Institute
-                    </Button>
-                </div>
-            </header>
 
-            <div className="p-8 max-w-[1600px] mx-auto space-y-8">
-                {/* KPI Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {kpiData.map((kpi, i) => (
-                        <div key={i} className="bg-(--bg-surface) p-6 rounded-2xl border border-(--ui-border) shadow-sm hover:shadow-md transition-shadow">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-2.5 rounded-xl bg-(--bg-base)"><kpi.icon size={22} className="text-(--brand-primary)" /></div>
-                                <div className="h-10 w-20">
+                        <div key={i} className="p-5 bg-(--bg-surface) border border-(--ui-border) rounded-xl hover:border-(--brand-primary) transition-colors shadow-sm">
+                            <div className="flex justify-between items-start mb-3">
+                                <div className="p-2.5 rounded-lg bg-[var(--bg-base)]">
+                                    <kpi.icon size={20} className="text-(--brand-primary)" />
+                                </div>
+                                <div className="h-8 w-16 opacity-70">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <AreaChart data={CHART_DATA}>
                                             <Area type="monotone" dataKey="value" stroke="var(--brand-primary)" fill="var(--brand-active)" fillOpacity={0.2} strokeWidth={2} />
@@ -217,35 +228,40 @@ const Institutes = () => {
                                     </ResponsiveContainer>
                                 </div>
                             </div>
-                            <p className="text-[11px] font-black text-(--text-secondary) uppercase tracking-widest">{kpi.label}</p>
-                            <div className="flex items-baseline gap-2 mt-1">
-                                <h3 className="text-2xl font-black text-(--text-primary)">{kpi.value}</h3>
-                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${kpi.trend.includes("+") ? "text-emerald-600 bg-emerald-50" : "text-rose-600 bg-rose-50"}`}>{kpi.trend}</span>
-                            </div>
+                            <h3 className="text-2xl font-black text-(--text-primary) tracking-tight flex items-center gap-2">
+                                {kpi.value}
+                                <span className={`text-[11px] px-1.5 py-0.5 rounded font-bold ${kpi.trend.includes("+") ? "text-emerald-600 bg-emerald-50" : "text-rose-600 bg-rose-50"}`}>
+                                    {kpi.trend}
+                                </span>
+                            </h3>
+                            <p className="text-xs font-semibold text-(--text-secondary) mt-1">
+                                {kpi.label}
+                            </p>
                         </div>
                     ))}
                 </div>
 
-                {/* Table */}
-                <div className="bg-(--bg-surface) rounded-2xl border border-(--ui-border) shadow-sm overflow-hidden">
-                    <div className="p-6 border-b border-(--ui-divider) flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="bg-(--bg-surface) rounded-xl border border-(--ui-border) shadow-sm overflow-hidden mb-8">
+                    <div className="p-5 border-b border-(--ui-divider) flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="relative w-full md:w-96">
-                            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
-                            <input type="text" placeholder="Search institutes..." className="w-full bg-(--bg-base) border border-(--ui-border) rounded-xl pl-10 pr-4 py-2.5 text-sm focus:ring-1 focus:ring-(--brand-primary) outline-none" value={search} onChange={(e) => setSearch(e.target.value)} />
+                            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
+                            <input type="text" placeholder="Search institutes..."
+                                className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all"
+                                value={search} onChange={(e) => { setSearch(e.target.value); setPage(0); }} />
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             <Button variant="text" startIcon={<Filter size={16} />} sx={{ color: "var(--text-secondary)", textTransform: "none", fontWeight: 600 }}>Filters</Button>
-                            <div className="h-6 w-px bg-(--ui-divider)" />
-                            <p className="text-xs text-(--text-secondary) font-medium">Showing {institutes.length} institutes</p>
+                            <div className="h-5 w-px bg-(--ui-divider)" />
+                            <p className="text-xs text-(--text-secondary) font-semibold">Showing {pagination?.total ?? institutes.length} results</p>
                         </div>
                     </div>
 
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-(--bg-base)/50 border-b border-(--ui-divider)">
+                                <tr className="bg-[var(--bg-base)] border-b border-(--ui-divider)">
                                     {["Institute Details", "Lead Principal", "Resources", "Status", "Management"].map((h, i) => (
-                                        <th key={i} className={`px-6 py-4 text-[11px] font-black text-(--text-secondary) uppercase tracking-widest ${i === 2 ? "text-center" : i === 4 ? "text-right" : ""}`}>{h}</th>
+                                        <th key={i} className={`px-5 py-3 text-xs font-bold text-(--text-secondary) uppercase tracking-wider ${i === 2 ? "text-center" : i === 4 ? "text-right" : ""}`}>{h}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -254,63 +270,62 @@ const Institutes = () => {
                                     Array.from({ length: 4 }).map((_, i) => (
                                         <tr key={i}>
                                             {Array.from({ length: 5 }).map((__, j) => (
-                                                <td key={j} className="px-6 py-5">
-                                                    <div className="h-4 bg-(--bg-base) rounded-lg animate-pulse" />
+                                                <td key={j} className="px-5 py-3">
+                                                    <div className="h-4 bg-[var(--bg-base)] rounded w-2/3 animate-pulse" />
                                                 </td>
                                             ))}
                                         </tr>
                                     ))
                                 ) : institutes.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-16 text-center">
-                                            <Building2 size={40} className="mx-auto mb-3 text-(--text-secondary) opacity-30" />
-                                            <p className="text-sm font-bold text-(--text-secondary)">No institutes found</p>
-                                            <p className="text-xs text-(--text-secondary) mt-1">Create one using the button above</p>
+                                        <td colSpan={5} className="px-5 py-16 text-center">
+                                            <Building2 size={32} className="mx-auto mb-3 text-(--text-secondary) opacity-50" />
+                                            <p className="text-sm font-semibold text-(--text-secondary)">No institutes registered</p>
                                         </td>
                                     </tr>
                                 ) : (
                                     institutes.map((inst) => (
-                                        <tr key={inst._id} className="hover:bg-(--bg-base)/30 transition-colors group">
-                                            <td className="px-6 py-4">
+                                        <tr key={inst._id} className="hover:bg-[var(--bg-base)] transition-colors">
+                                            <td className="px-5 py-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-lg bg-(--bg-sidebar) flex items-center justify-center text-(--text-on-dark) font-black text-xs shadow-sm">{inst.logoInitials}</div>
+                                                    <div className="w-10 h-10 rounded-lg bg-(--bg-sidebar) flex items-center justify-center text-(--text-on-dark) font-bold text-xs shadow-sm">{inst.logoInitials}</div>
                                                     <div>
                                                         <p className="text-sm font-bold text-(--text-primary)">{inst.name}</p>
-                                                        <div className="flex items-center gap-1 text-xs text-(--text-secondary)">
+                                                        <div className="flex items-center gap-1 text-xs text-(--text-secondary) font-medium mt-0.5">
                                                             <MapPin size={12} />{inst.location.city}, {inst.location.country}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-5 py-3">
                                                 {inst.principal ? (
                                                     <div className="flex items-center gap-2">
-                                                        <Avatar sx={{ width: 24, height: 24, fontSize: "0.6rem", bgcolor: "var(--brand-primary)" }}>{inst.principal.firstName.charAt(0)}</Avatar>
+                                                        <Avatar sx={{ width: 28, height: 28, fontSize: "12px", fontWeight: 700, bgcolor: "var(--brand-primary)" }}>{inst.principal.firstName.charAt(0)}</Avatar>
                                                         <span className="text-sm font-semibold text-(--text-primary)">{inst.principal.firstName} {inst.principal.lastName}</span>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs text-(--text-secondary) italic">Unassigned</span>
+                                                    <span className="text-xs font-semibold text-(--text-secondary) opacity-80">Unassigned</span>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-4 text-center">
-                                                <div className="inline-flex gap-4">
-                                                    <div className="text-center"><p className="text-xs font-black text-(--text-primary)">{inst.departmentsCount}</p><p className="text-[9px] text-(--text-secondary) uppercase font-bold">Depts</p></div>
-                                                    <div className="text-center"><p className="text-xs font-black text-(--text-primary)">{inst.studentsCount}</p><p className="text-[9px] text-(--text-secondary) uppercase font-bold">Students</p></div>
+                                            <td className="px-5 py-3 text-center">
+                                                <div className="inline-flex gap-5">
+                                                    <div className="text-center"><p className="text-sm font-bold text-(--text-primary)">{inst.departmentsCount}</p><p className="text-[10px] text-(--text-secondary) uppercase font-semibold">Depts</p></div>
+                                                    <div className="text-center"><p className="text-sm font-bold text-(--text-primary)">{inst.facultyCount ?? 0}</p><p className="text-[10px] text-(--text-secondary) uppercase font-semibold">Faculty</p></div>
+                                                    <div className="text-center"><p className="text-sm font-bold text-(--text-primary)">{inst.studentsCount}</p><p className="text-[10px] text-(--text-secondary) uppercase font-semibold">Students</p></div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${inst.isActive ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-rose-50 text-rose-500 border border-rose-100"}`}>
+                                            <td className="px-5 py-3">
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${inst.isActive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-500"}`}>
                                                     {inst.isActive ? "Active" : "Inactive"}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-right">
+                                            <td className="px-5 py-3 text-right">
                                                 <div className="flex justify-end gap-1">
                                                     <Tooltip title="View Details">
                                                         <IconButton size="small" onClick={() => setSelectedInstitute(inst)}>
-                                                            <ExternalLink size={18} className="text-(--text-secondary) group-hover:text-(--brand-primary)" />
+                                                            <ExternalLink size={16} className="text-(--text-secondary) hover:text-(--brand-primary) transition-colors" />
                                                         </IconButton>
                                                     </Tooltip>
-                                                    <IconButton size="small"><MoreVertical size={18} className="text-(--text-secondary)" /></IconButton>
                                                 </div>
                                             </td>
                                         </tr>
@@ -319,125 +334,96 @@ const Institutes = () => {
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                {/* Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="bg-(--bg-surface) p-8 rounded-2xl border border-(--ui-border) shadow-sm">
-                        <h3 className="text-lg font-black text-(--text-primary) mb-6">Student Enrollment Per Institute</h3>
-                        <div className="h-[300px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={CHART_DATA}>
-                                    <XAxis dataKey="name" hide />
-                                    <YAxis hide />
-                                    <RechartsTooltip cursor={{ fill: "transparent" }} contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-                                    <Bar dataKey="value" fill="var(--brand-primary)" radius={[6, 6, 0, 0]} barSize={40} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                    <div className="bg-(--bg-surface) p-8 rounded-2xl border border-(--ui-border) shadow-sm">
-                        <h3 className="text-lg font-black text-(--text-primary) mb-6">System Audit & Activity</h3>
-                        <div className="space-y-6">
-                            {[
-                                { action: "Principal Assigned", target: "Latest Institute", time: "Just now", admin: "SuperAdmin" },
-                                { action: "New Institute Created", target: "Via Admin Panel", time: "5 min ago", admin: "SuperAdmin" },
-                                { action: "Status Toggled", target: "An Institute", time: "1 hour ago", admin: "System" },
-                            ].map((log, idx) => (
-                                <div key={idx} className="flex gap-4 items-start pb-4 border-b border-(--ui-divider) last:border-0 last:pb-0">
-                                    <div className={`p-2 rounded-lg ${log.action.includes("Toggled") ? "bg-rose-50" : "bg-(--bg-base)"}`}>
-                                        <Activity size={16} className={log.action.includes("Toggled") ? "text-rose-500" : "text-(--brand-primary)"} />
-                                    </div>
-                                    <div className="grow">
-                                        <p className="text-sm font-bold text-(--text-primary)">{log.action} <span className="text-(--text-secondary) font-medium">on {log.target}</span></p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-[10px] font-bold text-(--brand-primary) uppercase">{log.admin}</span>
-                                            <span className="text-[10px] text-(--text-secondary)">â€¢ {log.time}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <TablePagination component="div"
+                        count={pagination?.total ?? 0} page={page}
+                        onPageChange={(_, p) => setPage(p)}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        sx={{
+                            borderTop: "1px solid var(--ui-divider)",
+                            ".MuiTablePagination-selectLabel,.MuiTablePagination-displayedRows": {
+                                fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)",
+                            },
+                        }}
+                    />
                 </div>
             </div>
 
-            {/* Detail Drawer */}
             <div className={`fixed inset-y-0 right-0 w-full md:w-[480px] bg-(--bg-surface) shadow-2xl z-50 transform transition-transform duration-300 border-l border-(--ui-border) ${selectedInstitute ? "translate-x-0" : "translate-x-full"}`}>
                 {selectedInstitute && (
                     <div className="h-full flex flex-col">
-                        <div className="p-6 border-b border-(--ui-divider) flex items-center justify-between bg-(--bg-base)/30">
-                            <h2 className="text-lg font-black text-(--text-primary) tracking-tight">Institutional Profile</h2>
-                            <IconButton onClick={() => setSelectedInstitute(null)}><X size={20} /></IconButton>
+                        <div className="p-5 border-b border-(--ui-divider) flex items-center justify-between bg-[var(--bg-base)]">
+                            <h2 className="text-base font-bold text-(--text-primary) tracking-tight">Institutional Profile</h2>
+                            <IconButton onClick={() => setSelectedInstitute(null)} size="small"><X size={18} /></IconButton>
                         </div>
-                        <div className="flex-grow overflow-y-auto p-8 space-y-8">
+                        <div className="flex-grow overflow-y-auto p-6 space-y-6">
                             <div className="flex flex-col items-center text-center">
-                                <div className="w-24 h-24 rounded-2xl bg-(--bg-sidebar) flex items-center justify-center text-white text-3xl font-black mb-4 shadow-lg ring-4 ring-(--bg-base)">{selectedInstitute.logoInitials}</div>
-                                <h3 className="text-2xl font-black text-(--text-primary)">{selectedInstitute.name}</h3>
-                                <p className="text-(--text-secondary) flex items-center gap-1 mt-1 font-semibold text-sm">
+                                <div className="w-20 h-20 rounded-xl bg-(--bg-sidebar) flex items-center justify-center text-white text-2xl font-black mb-4 shadow-sm">{selectedInstitute.logoInitials}</div>
+                                <h3 className="text-xl font-bold text-(--text-primary)">{selectedInstitute.name}</h3>
+                                <p className="text-(--text-secondary) flex items-center justify-center gap-1.5 mt-1 font-medium text-sm">
                                     <MapPin size={14} />{selectedInstitute.location.city}, {selectedInstitute.location.country}
                                 </p>
-                                <div className={`mt-4 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${selectedInstitute.isActive ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-500 border-rose-100"}`}>
+                                <div className={`mt-3 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${selectedInstitute.isActive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-500"}`}>
                                     {selectedInstitute.isActive ? "Active" : "Suspended"}
                                 </div>
                             </div>
-                            <div className="grid grid-cols-3 gap-4">
+
+                            <div className="grid grid-cols-2 gap-3">
                                 {[
                                     { val: selectedInstitute.studentsCount, lbl: "Students" },
-                                    { val: selectedInstitute.departmentsCount, lbl: "Departments" },
+                                    { val: selectedInstitute.departmentsCount, lbl: "Depts" },
+                                    { val: selectedInstitute.facultyCount ?? 0, lbl: "Faculty" },
                                     { val: selectedInstitute.type, lbl: "Type" },
                                 ].map(({ val, lbl }) => (
-                                    <div key={lbl} className="bg-(--bg-base) p-4 rounded-2xl text-center border border-(--ui-border)">
-                                        <p className="text-lg font-black text-(--text-primary) truncate">{val}</p>
-                                        <p className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-wider">{lbl}</p>
+                                    <div key={lbl} className="bg-[var(--bg-base)] p-3 rounded-xl text-center border border-(--ui-border)">
+                                        <p className="text-base font-bold text-(--text-primary) truncate">{val}</p>
+                                        <p className="text-[10px] font-semibold text-(--text-secondary) uppercase tracking-wider">{lbl}</p>
                                     </div>
                                 ))}
                             </div>
+
                             {selectedInstitute.domain && (
-                                <div className="bg-(--bg-base) p-4 rounded-xl border border-(--ui-border) text-sm">
-                                    <span className="text-[10px] font-black text-(--text-secondary) uppercase tracking-widest block mb-1">Domain</span>
-                                    <span className="font-semibold text-(--text-primary)">{selectedInstitute.domain}</span>
+                                <div className="bg-[var(--bg-base)] p-3.5 rounded-xl border border-(--ui-border) text-sm flex flex-col">
+                                    <span className="text-xs font-semibold text-(--text-secondary) mb-0.5">Primary Domain</span>
+                                    <span className="font-bold text-(--text-primary)">{selectedInstitute.domain}</span>
                                 </div>
                             )}
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between border-b border-(--ui-divider) pb-2">
-                                    <h4 className="text-[10px] font-black text-(--text-secondary) uppercase tracking-widest">Leadership</h4>
-                                </div>
-                                <div className="p-4 rounded-2xl border border-(--ui-divider) bg-white shadow-sm flex items-center justify-between">
+
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-semibold text-(--text-secondary) uppercase tracking-wider border-b border-(--ui-divider) pb-2">Leadership Team</h4>
+                                <div className="p-4 rounded-xl border border-(--ui-border) bg-[var(--bg-base)] flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <Avatar sx={{ width: 44, height: 44, bgcolor: "var(--bg-sidebar)" }}>
+                                        <Avatar sx={{ width: 40, height: 40, bgcolor: "var(--bg-sidebar)", fontSize: "16px", fontWeight: 700 }}>
                                             {selectedInstitute.principal?.firstName?.charAt(0) ?? "?"}
                                         </Avatar>
                                         <div>
                                             <p className="text-sm font-bold text-(--text-primary)">
-                                                {selectedInstitute.principal ? `${selectedInstitute.principal.firstName} ${selectedInstitute.principal.lastName}` : "No principal assigned"}
+                                                {selectedInstitute.principal ? `${selectedInstitute.principal.firstName} ${selectedInstitute.principal.lastName}` : "No assignment"}
                                             </p>
-                                            <p className="text-[11px] text-(--text-secondary) font-medium">Head of Institute</p>
+                                            <p className="text-xs text-(--text-secondary) font-medium">Head Principal</p>
                                         </div>
                                     </div>
-                                    <Tooltip title="Assign Principal">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => {
-                                                setPrincipalId(selectedInstitute.principal?._id ?? "");
-                                                setIsPrincipalModalOpen(true);
-                                            }}
-                                        ><UserPlus size={18} /></IconButton>
+                                    <Tooltip title="Assign New Principal">
+                                        <IconButton size="small"
+                                            onClick={() => { setPrincipalId(selectedInstitute.principal?._id ?? ""); setIsPrincipalModalOpen(true); }}
+                                        ><UserPlus size={16} className="text-(--brand-primary)" /></IconButton>
                                     </Tooltip>
                                 </div>
                             </div>
-                            <div className="space-y-3 pt-4">
+
+                            <div className="space-y-2.5 pt-2">
                                 <Button variant="contained" fullWidth onClick={() => { setEditData({ name: selectedInstitute.name, domain: selectedInstitute.domain, type: selectedInstitute.type, logoInitials: selectedInstitute.logoInitials }); setIsEditOpen(true); }}
-                                    sx={{ borderRadius: "12px", textTransform: "none", fontWeight: 700, bgcolor: "var(--brand-primary)", py: 1.5, boxShadow: "none" }}>
-                                    <Pencil size={16} className="mr-2" /> Edit Profile
+                                    sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", py: 1.25, boxShadow: "none", "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
+                                    <Pencil size={14} className="mr-2" /> Modify Profile
                                 </Button>
                                 <Button variant="outlined" fullWidth onClick={handleToggleStatus} disabled={toggling}
-                                    sx={{ borderRadius: "12px", textTransform: "none", fontWeight: 700, borderColor: "var(--ui-border)", color: "var(--text-primary)", py: 1.5 }}>
+                                    sx={{ ...buttonSx, borderColor: "var(--ui-border)", color: "var(--text-primary)", py: 1.25 }}>
                                     {toggling ? <CircularProgress size={16} /> : (selectedInstitute.isActive ? "Suspend Institute" : "Reactivate Institute")}
                                 </Button>
                                 <Button variant="outlined" fullWidth color="error" onClick={() => setDeleteConfirm(true)}
-                                    sx={{ borderRadius: "12px", textTransform: "none", fontWeight: 700, py: 1.5 }}>
-                                    <Trash2 size={16} className="mr-2" /> Delete Institute
+                                    sx={{ ...buttonSx, py: 1.25 }}>
+                                    <Trash2 size={14} className="mr-2" /> Permanently Delete
                                 </Button>
                             </div>
                         </div>
@@ -445,21 +431,19 @@ const Institutes = () => {
                 )}
             </div>
 
-            {/* Create Wizard */}
-            <Dialog open={isWizardOpen} onClose={() => setIsWizardOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: "24px" } }}>
-                <DialogTitle sx={{ fontWeight: 900, color: "var(--text-primary)", px: 4, pt: 4 }}>New Institute Enrollment</DialogTitle>
-                <DialogContent sx={{ px: 4 }}>
-                    <Stepper activeStep={wizardStep} sx={{ my: 4 }}>
+            <Dialog open={isWizardOpen} onClose={() => setIsWizardOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: "12px", border: "1px solid var(--ui-border)", boxShadow: "0 10px 25px -5px rgb(0 0 0 / 0.1)" } }}>
+                <DialogTitle sx={{ fontWeight: 800, px: 3, pt: 3, pb: 1, fontSize: "1.125rem" }}>Register New Institute</DialogTitle>
+                <DialogContent sx={{ px: 3 }}>
+                    <Stepper activeStep={wizardStep} sx={{ my: 3 }}>
                         {WIZARD_STEPS.map((label) => (
-                            <Step key={label} sx={{ "& .MuiStepLabel-label": { fontSize: "9px", fontWeight: 900, textTransform: "uppercase" } }}>
+                            <Step key={label} sx={{ "& .MuiStepLabel-label": { fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" } }}>
                                 <StepLabel>{label}</StepLabel>
                             </Step>
                         ))}
                     </Stepper>
-                    <div className="py-4 min-h-[300px]">
-                        {/* Step 0 â€“ General */}
+                    <div className="py-2 min-h-[280px]">
                         {wizardStep === 0 && (
-                            <div className="space-y-5">
+                            <div className="space-y-4">
                                 <div className="space-y-1.5">
                                     <label className={labelCls}>Institute Name *</label>
                                     <input className={inputCls} placeholder="e.g. Global Tech University" value={formData.name} onChange={(e) => setField("name", e.target.value)} />
@@ -473,16 +457,15 @@ const Institutes = () => {
                                     <input className={inputCls} placeholder="e.g. GTU" maxLength={3} value={formData.logoInitials} onChange={(e) => setField("logoInitials", e.target.value.toUpperCase())} />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className={labelCls}>Type *</label>
+                                    <label className={labelCls}>Classification Type *</label>
                                     <select className={inputCls} value={formData.type} onChange={(e) => setField("type", e.target.value)}>
                                         {INST_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                                     </select>
                                 </div>
                             </div>
                         )}
-                        {/* Step 1 â€“ Contact */}
                         {wizardStep === 1 && (
-                            <div className="space-y-5">
+                            <div className="space-y-4">
                                 <div className="space-y-1.5">
                                     <label className={labelCls}>Street Address *</label>
                                     <input className={inputCls} placeholder="123 Main Street" value={formData.location.address} onChange={(e) => setLocField("address", e.target.value)} />
@@ -507,9 +490,8 @@ const Institutes = () => {
                                 </div>
                             </div>
                         )}
-                        {/* Step 2 â€“ Details */}
                         {wizardStep === 2 && (
-                            <div className="space-y-5">
+                            <div className="space-y-4">
                                 <div className="space-y-1.5">
                                     <label className={labelCls}>Website URL</label>
                                     <input className={inputCls} placeholder="https://university.edu" value={formData.website ?? ""} onChange={(e) => setField("website", e.target.value)} />
@@ -520,54 +502,50 @@ const Institutes = () => {
                                 </div>
                             </div>
                         )}
-                        {/* Step 3 â€“ Review */}
                         {wizardStep === 3 && (
-                            <div className="space-y-4">
-                                <div className="flex flex-col items-center text-center mb-4">
-                                    <div className="w-16 h-16 rounded-2xl bg-(--bg-sidebar) flex items-center justify-center text-white text-2xl font-black mb-3">{formData.logoInitials || "?"}</div>
-                                    <h4 className="text-xl font-black text-(--text-primary)">{formData.name || "â€”"}</h4>
+                            <div className="space-y-3">
+                                <div className="flex flex-col items-center text-center mb-3">
+                                    <div className="w-14 h-14 rounded-xl bg-(--bg-sidebar) flex items-center justify-center text-white text-xl font-bold mb-2">{formData.logoInitials || "?"}</div>
+                                    <h4 className="text-lg font-bold text-(--text-primary)">{formData.name || "Unnamed"}</h4>
                                     <p className="text-sm text-(--text-secondary) font-medium">{formData.domain}</p>
                                 </div>
-                                {[
-                                    { label: "Location", value: `${formData.location.city}, ${formData.location.country}` },
-                                    { label: "Type", value: formData.type },
-                                    { label: "Contact Email", value: formData.contactEmail || "â€”" },
-                                    { label: "Website", value: formData.website || "â€”" },
-                                    { label: "Established", value: formData.establishedYear ? String(formData.establishedYear) : "â€”" },
-                                ].map(({ label, value }) => (
-                                    <div key={label} className="flex justify-between text-sm py-2 border-b border-(--ui-divider)">
-                                        <span className="font-bold text-(--text-secondary)">{label}</span>
-                                        <span className="font-semibold text-(--text-primary) capitalize">{value}</span>
-                                    </div>
-                                ))}
-                                <div className="mt-4 p-4 bg-emerald-50 rounded-xl flex items-center gap-3">
-                                    <CheckCircle2 size={20} className="text-emerald-500 shrink-0" />
-                                    <p className="text-sm text-emerald-700 font-medium">Ready to provision â€” click <strong>Launch Institute</strong> to create.</p>
+                                <div className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg p-1">
+                                    {[
+                                        { label: "Location", value: `${formData.location.city}, ${formData.location.country}` },
+                                        { label: "Type", value: formData.type },
+                                        { label: "Contact Email", value: formData.contactEmail || "Not provided" },
+                                        { label: "Website", value: formData.website || "Not provided" },
+                                        { label: "Established", value: formData.establishedYear ? String(formData.establishedYear) : "Not provided" },
+                                    ].map(({ label, value }) => (
+                                        <div key={label} className="flex justify-between py-2.5 px-3 border-b border-(--ui-divider) last:border-0">
+                                            <span className="text-xs font-semibold text-(--text-secondary)">{label}</span>
+                                            <span className="text-sm font-bold text-(--text-primary) capitalize">{value}</span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
                     </div>
                 </DialogContent>
-                <DialogActions sx={{ px: 4, pb: 4 }}>
-                    <Button onClick={() => setIsWizardOpen(false)} sx={{ color: "var(--text-secondary)", fontWeight: 700 }}>Cancel</Button>
+                <DialogActions sx={{ px: 3, pb: 3 }}>
+                    <Button onClick={() => setIsWizardOpen(false)} sx={{ color: "var(--text-secondary)", fontWeight: 600, textTransform: "none" }}>Cancel</Button>
                     <div className="grow" />
                     {wizardStep > 0 && (
-                        <Button onClick={() => setWizardStep((p) => p - 1)} sx={{ fontWeight: 700, color: "var(--text-primary)" }}>Back</Button>
+                        <Button onClick={() => setWizardStep((p) => p - 1)} sx={{ fontWeight: 600, color: "var(--text-primary)", textTransform: "none" }}>Back</Button>
                     )}
                     <Button variant="contained"
                         onClick={wizardStep === 3 ? handleCreate : () => setWizardStep((p) => p + 1)}
                         disabled={creating}
-                        sx={{ bgcolor: "var(--brand-primary)", borderRadius: "10px", px: 4, fontWeight: 700, boxShadow: "none" }}>
-                        {creating ? <CircularProgress size={18} color="inherit" /> : wizardStep === 3 ? "Launch Institute" : "Continue"}
+                        sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", px: 3, boxShadow: "none", "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
+                        {creating ? <CircularProgress size={16} color="inherit" /> : wizardStep === 3 ? "Launch Institute" : "Continue"}
                     </Button>
                 </DialogActions>
             </Dialog>
 
-            {/* Edit Dialog */}
-            <Dialog open={isEditOpen} onClose={() => setIsEditOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: "24px" } }}>
-                <DialogTitle sx={{ fontWeight: 900, px: 4, pt: 4 }}>Edit Institute</DialogTitle>
-                <DialogContent sx={{ px: 4 }}>
-                    <div className="space-y-5 pt-2">
+            <Dialog open={isEditOpen} onClose={() => setIsEditOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: "12px", border: "1px solid var(--ui-border)" } }}>
+                <DialogTitle sx={{ fontWeight: 800, px: 3, pt: 3, pb: 1, fontSize: "1.125rem" }}>Update Details</DialogTitle>
+                <DialogContent sx={{ px: 3 }}>
+                    <div className="space-y-4 pt-2">
                         {[
                             { key: "name", label: "Name", placeholder: "Institute Name" },
                             { key: "domain", label: "Domain", placeholder: "university.edu" },
@@ -580,31 +558,30 @@ const Institutes = () => {
                             </div>
                         ))}
                         <div className="space-y-1.5">
-                            <label className={labelCls}>Type</label>
+                            <label className={labelCls}>Classification Type</label>
                             <select className={inputCls} value={editData.type ?? "university"} onChange={(e) => setEditData((p) => ({ ...p, type: e.target.value as any }))}>
                                 {INST_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                             </select>
                         </div>
                     </div>
                 </DialogContent>
-                <DialogActions sx={{ px: 4, pb: 4 }}>
-                    <Button onClick={() => setIsEditOpen(false)} sx={{ color: "var(--text-secondary)", fontWeight: 700 }}>Cancel</Button>
+                <DialogActions sx={{ px: 3, pb: 3, pt: 2 }}>
+                    <Button onClick={() => setIsEditOpen(false)} sx={{ color: "var(--text-secondary)", fontWeight: 600, textTransform: "none" }}>Cancel</Button>
                     <Button variant="contained" onClick={handleUpdate} disabled={updating}
-                        sx={{ bgcolor: "var(--brand-primary)", borderRadius: "10px", px: 3, fontWeight: 700, boxShadow: "none" }}>
+                        sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", px: 3, boxShadow: "none", "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
                         {updating ? <CircularProgress size={16} color="inherit" /> : "Save Changes"}
                     </Button>
                 </DialogActions>
             </Dialog>
 
-            {/* Assign Principal Modal */}
-            <Dialog open={isPrincipalModalOpen} onClose={() => setIsPrincipalModalOpen(false)} PaperProps={{ sx: { borderRadius: "24px" } }}>
-                <DialogTitle sx={{ fontWeight: 900, px: 4, pt: 4 }}>Assign Institute Head</DialogTitle>
-                <DialogContent sx={{ width: 440, px: 4 }}>
-                    <div className="bg-rose-50 border border-rose-100 p-4 rounded-xl mb-6">
-                        <p className="text-rose-700 text-[11px] font-bold leading-relaxed">SECURITY ADVISORY: Assigning a new Principal will transfer all ownership permissions and revoke the current occupant's ERP access.</p>
+            <Dialog open={isPrincipalModalOpen} onClose={() => setIsPrincipalModalOpen(false)} PaperProps={{ sx: { borderRadius: "12px", border: "1px solid var(--ui-border)" } }}>
+                <DialogTitle sx={{ fontWeight: 800, px: 3, pt: 3, pb: 1, fontSize: "1.125rem" }}>Assign Chief Executive</DialogTitle>
+                <DialogContent sx={{ width: 440, px: 3 }}>
+                    <div className="bg-rose-50 border border-rose-100 p-3 rounded-lg mb-5 mt-2">
+                        <p className="text-rose-700 text-xs font-semibold leading-relaxed">Warning: Reassigning a principal will immediately transfer administrative rights and revoke access for the current occupant.</p>
                     </div>
                     <div className="space-y-1.5">
-                        <label className={labelCls}>Select Principal</label>
+                        <label className={labelCls}>Select User</label>
                         <select
                             className={inputCls}
                             value={principalId}
@@ -613,47 +590,42 @@ const Institutes = () => {
                         >
                             <option value="">
                                 {isPrincipalsLoading
-                                    ? "Loading principals..."
-                                    : "Choose a principal"}
+                                    ? "Loading available principals..."
+                                    : "Choose an available principal"}
                             </option>
                             {principalUsers.map((user) => (
                                 <option key={user._id} value={user._id}>
-                                    {user.firstName} {user.lastName} - {user.email}
+                                    {user.firstName} {user.lastName} ({user.email})
                                 </option>
                             ))}
                         </select>
                         {isPrincipalsError && (
-                            <p className="text-[11px] text-rose-600 font-semibold">
-                                Failed to load principal list.
-                            </p>
+                            <p className="text-[10px] text-rose-600 font-semibold mt-1">Failed to fetch principal directory.</p>
                         )}
                         {!isPrincipalsLoading && !isPrincipalsError && principalUsers.length === 0 && (
-                            <p className="text-[11px] text-(--text-secondary) font-semibold">
-                                No principal accounts found. Create a principal user first.
-                            </p>
+                            <p className="text-[10px] text-(--text-secondary) font-semibold mt-1">No vacant principal accounts located. Provision a principal user first.</p>
                         )}
                     </div>
                 </DialogContent>
-                <DialogActions sx={{ px: 4, pb: 4 }}>
-                    <Button onClick={() => { setIsPrincipalModalOpen(false); setPrincipalId(""); }} sx={{ color: "var(--text-secondary)", fontWeight: 700 }}>Cancel</Button>
+                <DialogActions sx={{ px: 3, pb: 3, pt: 2 }}>
+                    <Button onClick={() => { setIsPrincipalModalOpen(false); setPrincipalId(""); }} sx={{ color: "var(--text-secondary)", fontWeight: 600, textTransform: "none" }}>Cancel</Button>
                     <Button variant="contained" onClick={handleAssignPrincipal} disabled={assigning || !principalId.trim()}
-                        sx={{ bgcolor: "var(--brand-primary)", borderRadius: "10px", px: 3, fontWeight: 700, boxShadow: "none" }}>
-                        {assigning ? <CircularProgress size={16} color="inherit" /> : "Assign Principal"}
+                        sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", px: 3, boxShadow: "none", "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
+                        {assigning ? <CircularProgress size={16} color="inherit" /> : "Confirm Assignment"}
                     </Button>
                 </DialogActions>
             </Dialog>
 
-            {/* Delete Confirm */}
-            <Dialog open={deleteConfirm} onClose={() => setDeleteConfirm(false)} PaperProps={{ sx: { borderRadius: "20px" } }}>
-                <DialogTitle sx={{ fontWeight: 900, px: 4, pt: 4 }}>Confirm Deletion</DialogTitle>
-                <DialogContent sx={{ px: 4, pb: 1 }}>
-                    <p className="text-sm text-(--text-secondary)">Are you sure you want to permanently delete <strong className="text-(--text-primary)">{selectedInstitute?.name}</strong>? This action cannot be undone.</p>
+            <Dialog open={deleteConfirm} onClose={() => setDeleteConfirm(false)} PaperProps={{ sx: { borderRadius: "12px", border: "1px solid var(--ui-border)" } }}>
+                <DialogTitle sx={{ fontWeight: 800, px: 3, pt: 3, pb: 1, fontSize: "1.125rem" }}>Confirm Deletion</DialogTitle>
+                <DialogContent sx={{ px: 3, pb: 1 }}>
+                    <p className="text-sm text-(--text-secondary) font-medium">Are you sure you wish to permanently delete the <strong className="text-(--text-primary)">{selectedInstitute?.name}</strong> node? This destroys all associated data.</p>
                 </DialogContent>
-                <DialogActions sx={{ px: 4, pb: 4 }}>
-                    <Button onClick={() => setDeleteConfirm(false)} sx={{ color: "var(--text-secondary)", fontWeight: 700 }}>Cancel</Button>
+                <DialogActions sx={{ px: 3, pb: 3, pt: 2 }}>
+                    <Button onClick={() => setDeleteConfirm(false)} sx={{ color: "var(--text-secondary)", fontWeight: 600, textTransform: "none" }}>Cancel</Button>
                     <Button variant="contained" color="error" onClick={handleDelete} disabled={deleting}
-                        sx={{ borderRadius: "10px", px: 3, fontWeight: 700, boxShadow: "none" }}>
-                        {deleting ? <CircularProgress size={16} color="inherit" /> : "Delete"}
+                        sx={{ ...buttonSx, px: 3, boxShadow: "none" }}>
+                        {deleting ? <CircularProgress size={16} color="inherit" /> : "Delete Node"}
                     </Button>
                 </DialogActions>
             </Dialog>

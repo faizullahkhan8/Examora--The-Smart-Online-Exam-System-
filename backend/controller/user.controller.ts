@@ -13,6 +13,27 @@ import {
     resetPasswordValidation,
 } from "../validations/user.validations.ts";
 
+const getInstituteCounterUpdateForRole = (
+    role: string,
+    delta: number,
+): Record<string, number> | null => {
+    if (role === "student") return { studentsCount: delta };
+    if (role === "teacher") return { facultyCount: delta };
+    return null;
+};
+
+const syncInstituteUserCounter = async (
+    instituteId: unknown,
+    role: string,
+    delta: number,
+) => {
+    const counterUpdate = getInstituteCounterUpdateForRole(role, delta);
+    if (!counterUpdate || !instituteId) return;
+    await InstituteModel.findByIdAndUpdate(instituteId, {
+        $inc: counterUpdate,
+    });
+};
+
 // ─── GET ALL USERS ────────────────────────────────────────────────────────────
 export const getAllUsers = expressAsyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -139,6 +160,7 @@ export const createUser = expressAsyncHandler(
                     { $set: { principal: user._id } },
                 );
             }
+            await syncInstituteUserCounter(user.institute, user.role, 1);
 
             const userResponse = await UserModel.findById(user._id)
                 .populate("institute", "name logoInitials")
@@ -198,6 +220,7 @@ export const deleteUser = expressAsyncHandler(
             if (!user) {
                 return next(new ErrorResponse("User not found", 404));
             }
+            await syncInstituteUserCounter(user.institute, user.role, -1);
 
             res.status(200).json({
                 success: true,

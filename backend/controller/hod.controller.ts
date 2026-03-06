@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { ErrorResponse } from "../middlewares/error.handler.ts";
+import InstituteModel from "../models/institute.model.ts";
 import UserModel from "../models/user.model.ts";
 import AcademicSessionModel from "../models/academicSession.model.ts";
 import { createFacultyValidation } from "../validations/hod.validations.ts";
@@ -113,6 +114,9 @@ export const createFaculty = expressAsyncHandler(
                 department: hod.department,
                 institute: hod.institute,
                 isVerified: true,
+            });
+            await InstituteModel.findByIdAndUpdate(hod.institute, {
+                $inc: { facultyCount: 1 },
             });
 
             const { password: _pw, ...safe } =

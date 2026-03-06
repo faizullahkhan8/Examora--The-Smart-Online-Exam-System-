@@ -3,6 +3,7 @@ import expressAsyncHandler from "express-async-handler";
 import mongoose from "mongoose";
 import { ErrorResponse } from "../middlewares/error.handler.ts";
 import DepartmentModel from "../models/department.model.ts";
+import InstituteModel from "../models/institute.model.ts";
 import UserModel from "../models/user.model.ts";
 import {
     createDepartmentValidation,
@@ -89,6 +90,9 @@ export const createDepartment = expressAsyncHandler(
             const dept = await DepartmentModel.create({
                 ...validation.data,
                 institute: user.institute,
+            });
+            await InstituteModel.findByIdAndUpdate(user.institute, {
+                $inc: { departmentsCount: 1 },
             });
 
             res.status(201).json({
@@ -272,6 +276,9 @@ export const deleteDepartment = expressAsyncHandler(
             const dept = await DepartmentModel.findByIdAndDelete(id);
             if (!dept)
                 return next(new ErrorResponse("Department not found", 404));
+            await InstituteModel.findByIdAndUpdate(dept.institute, {
+                $inc: { departmentsCount: -1 },
+            });
 
             res.status(200).json({
                 success: true,

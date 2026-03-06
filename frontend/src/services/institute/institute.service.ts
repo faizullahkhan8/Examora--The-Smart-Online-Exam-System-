@@ -27,6 +27,7 @@ export interface Institute {
     } | null;
     studentsCount: number;
     departmentsCount: number;
+    facultyCount: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -179,6 +180,7 @@ export const instituteApi = baseQuery.injectEndpoints({
 
 export const {
     useGetAllInstitutesQuery,
+    useLazyGetAllInstitutesQuery,
     useGetInstituteByIdQuery,
     useCreateInstituteMutation,
     useUpdateInstituteMutation,

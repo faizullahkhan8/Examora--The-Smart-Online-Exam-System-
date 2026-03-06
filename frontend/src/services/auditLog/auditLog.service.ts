@@ -64,12 +64,18 @@ export interface AuditLogResponse {
 
 export const auditLogApi = baseQuery.injectEndpoints({
     endpoints: (builder) => ({
-        getAuditLogs: builder.query<GetAuditLogsResponse, GetAuditLogsParams | void>({
+        getAuditLogs: builder.query<
+            GetAuditLogsResponse,
+            GetAuditLogsParams | void
+        >({
             query: (params) => {
                 const queryString = params
                     ? new URLSearchParams(
                           Object.entries(params)
-                              .filter(([, value]) => value !== undefined && value !== "")
+                              .filter(
+                                  ([, value]) =>
+                                      value !== undefined && value !== "",
+                              )
                               .map(([key, value]) => [key, String(value)]),
                       ).toString()
                     : "";
@@ -84,4 +90,8 @@ export const auditLogApi = baseQuery.injectEndpoints({
     }),
 });
 
-export const { useGetAuditLogsQuery, useGetAuditLogByIdQuery } = auditLogApi;
+export const {
+    useGetAuditLogsQuery,
+    useLazyGetAuditLogsQuery,
+    useGetAuditLogByIdQuery,
+} = auditLogApi;

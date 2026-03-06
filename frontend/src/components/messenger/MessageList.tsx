@@ -16,18 +16,12 @@ function groupByDate(messages: Message[]) {
     for (const msg of messages) {
         const date = new Date(msg.createdAt);
         const now = new Date();
-        const diffDays = Math.floor(
-            (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-        );
+        const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
         let label = "";
+
         if (diffDays === 0) label = "Today";
         else if (diffDays === 1) label = "Yesterday";
-        else
-            label = date.toLocaleDateString([], {
-                weekday: "long",
-                month: "short",
-                day: "numeric",
-            });
+        else label = date.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" });
 
         if (label !== lastLabel) {
             groups.push({ label, messages: [msg] });
@@ -48,18 +42,18 @@ const MessageList: React.FC<Props> = ({ messages, isLoading, currentUserId }) =>
 
     if (isLoading) {
         return (
-            <div className="flex-grow flex items-center justify-center bg-[#F8FAFC]/50">
-                <CircularProgress size={28} sx={{ color: "#1e293b" }} />
+            <div className="flex-grow flex items-center justify-center bg-[var(--bg-base)]">
+                <CircularProgress size={28} sx={{ color: "var(--brand-primary)" }} />
             </div>
         );
     }
 
     if (messages.length === 0) {
         return (
-            <div className="flex-grow flex flex-col items-center justify-center gap-3 bg-[#F8FAFC]/50 text-slate-300">
-                <span className="text-5xl">💬</span>
-                <p className="text-sm font-bold text-slate-400">
-                    No messages yet. Say hello!
+            <div className="flex-grow flex flex-col items-center justify-center gap-3 bg-[var(--bg-base)] text-(--text-secondary) opacity-70">
+                <span className="text-4xl">💬</span>
+                <p className="text-sm font-semibold">
+                    No messages yet. Start the conversation!
                 </p>
             </div>
         );
@@ -68,11 +62,11 @@ const MessageList: React.FC<Props> = ({ messages, isLoading, currentUserId }) =>
     const groups = groupByDate(messages);
 
     return (
-        <div className="flex-grow overflow-y-auto p-8 space-y-6 bg-[#F8FAFC]/50">
+        <div className="flex-grow overflow-y-auto p-6 space-y-8 bg-[var(--bg-base)] custom-scrollbar">
             {groups.map((group) => (
                 <div key={group.label} className="space-y-4">
-                    <div className="flex justify-center">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] bg-white px-4 py-1 rounded-full border border-slate-100">
+                    <div className="flex justify-center sticky top-2 z-10">
+                        <span className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-widest bg-(--bg-surface) px-4 py-1.5 rounded-full border border-(--ui-border) shadow-sm">
                             {group.label}
                         </span>
                     </div>

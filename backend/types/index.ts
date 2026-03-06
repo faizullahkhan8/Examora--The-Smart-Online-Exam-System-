@@ -38,6 +38,7 @@ export interface IInstituteOptions extends Document {
     principal?: Types.ObjectId;
     studentsCount: number;
     departmentsCount: number;
+    facultyCount: number;
     createdAt: Date;
     updatedAt: Date;
 }

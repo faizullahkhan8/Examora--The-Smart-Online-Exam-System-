@@ -12,7 +12,6 @@ const MessageInput: React.FC<Props> = ({ conversationId, onSend, isSending }) =>
     const [message, setMessage] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Auto-resize textarea
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto";
@@ -20,7 +19,6 @@ const MessageInput: React.FC<Props> = ({ conversationId, onSend, isSending }) =>
         }
     }, [message]);
 
-    // Reset message when conversation changes
     useEffect(() => {
         setMessage("");
     }, [conversationId]);
@@ -40,47 +38,56 @@ const MessageInput: React.FC<Props> = ({ conversationId, onSend, isSending }) =>
     };
 
     return (
-        <div className="p-6 bg-white border-t border-slate-200">
-            <div className="bg-slate-50 rounded-2xl p-2 flex items-end gap-2 border border-slate-200 focus-within:border-slate-400 transition-all">
-                <IconButton size="small" disabled>
-                    <Paperclip size={20} className="text-slate-400" />
+        <div className="p-5 bg-(--bg-surface) border-t border-(--ui-divider) z-10">
+            <div className="bg-[var(--bg-base)] rounded-xl p-2 flex items-end gap-2 border border-(--ui-border) focus-within:border-(--brand-primary) focus-within:ring-1 focus-within:ring-(--brand-primary) transition-all shadow-sm">
+                <IconButton size="small" disabled sx={{ color: "var(--text-secondary)" }}>
+                    <Paperclip size={18} />
                 </IconButton>
-                <IconButton size="small" disabled>
-                    <Smile size={20} className="text-slate-400" />
+                <IconButton size="small" disabled sx={{ color: "var(--text-secondary)" }}>
+                    <Smile size={18} />
                 </IconButton>
                 <textarea
                     ref={textareaRef}
                     rows={1}
-                    placeholder="Type your message..."
-                    className="flex-grow bg-transparent border-none outline-none py-2 px-2 text-sm font-medium resize-none max-h-32"
+                    placeholder="Type a message..."
+                    className="flex-grow bg-transparent border-none outline-none py-2 px-2 text-sm font-medium resize-none max-h-32 text-(--text-primary) placeholder:text-(--text-secondary) placeholder:opacity-60 custom-scrollbar"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
                 />
                 <Button
                     variant="contained"
-                    className="!bg-slate-900 !text-white !rounded-xl !min-w-0 !p-2 !shadow-none"
                     disabled={!message.trim() || isSending}
                     onClick={handleSend}
+                    sx={{
+                        bgcolor: "var(--brand-primary)",
+                        color: "#fff",
+                        borderRadius: "8px",
+                        minWidth: 0,
+                        p: 1.25,
+                        boxShadow: "none",
+                        "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" },
+                        "&.Mui-disabled": { bgcolor: "var(--ui-border)", color: "var(--text-secondary)" }
+                    }}
                 >
                     {isSending ? (
-                        <CircularProgress size={16} sx={{ color: "white" }} />
+                        <CircularProgress size={18} sx={{ color: "white" }} />
                     ) : (
-                        <Send size={20} />
+                        <Send size={18} />
                     )}
                 </Button>
             </div>
             <div className="flex items-center justify-between mt-3 px-2">
                 <div className="flex gap-4">
-                    <span className="text-[10px] font-black text-slate-400 flex items-center gap-1 uppercase tracking-tighter">
-                        <ImageIcon size={12} /> Images
+                    <span className="text-[10px] font-bold text-(--text-secondary) flex items-center gap-1.5 uppercase tracking-wider cursor-not-allowed opacity-70">
+                        <ImageIcon size={14} /> Media
                     </span>
-                    <span className="text-[10px] font-black text-slate-400 flex items-center gap-1 uppercase tracking-tighter">
-                        <FileText size={12} /> PDF / Docs
+                    <span className="text-[10px] font-bold text-(--text-secondary) flex items-center gap-1.5 uppercase tracking-wider cursor-not-allowed opacity-70">
+                        <FileText size={14} /> Document
                     </span>
                 </div>
-                <span className="text-[10px] font-bold text-slate-400">
-                    Enter to send · Shift+Enter for new line
+                <span className="text-[10px] font-semibold text-(--text-secondary)">
+                    <strong className="font-bold">Enter</strong> to send · <strong className="font-bold">Shift+Enter</strong> for line break
                 </span>
             </div>
         </div>
