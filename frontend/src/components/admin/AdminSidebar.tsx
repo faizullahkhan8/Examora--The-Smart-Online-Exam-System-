@@ -18,8 +18,12 @@ import {
     LogOut,
     VideoIcon,
     BellIcon,
+    Loader2,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useLogoutMutation } from "../../services/auth/auth.service";
+import { useDispatch } from "react-redux";
+import { clearAuth } from "../../features/auth/auth.slice";
 
 const drawerWidth = 260;
 
@@ -35,6 +39,14 @@ const menuItems = [
 
 const AdminSidebar = () => {
     const location = useLocation();
+    const dispatch = useDispatch();
+
+    const [logout, { isLoading }] = useLogoutMutation();
+
+    const handleLogout = async () => {
+        await logout({}).unwrap();
+        dispatch(clearAuth());
+    }
 
     return (
         <Drawer
@@ -118,6 +130,7 @@ const AdminSidebar = () => {
 
             <List sx={{ px: 2, py: 2 }}>
                 <ListItemButton
+                    onClick={handleLogout}
                     sx={{
                         borderRadius: "8px",
                         transition: "all 0.2s ease-in-out",
@@ -127,7 +140,7 @@ const AdminSidebar = () => {
                     }}
                 >
                     <ListItemIcon sx={{ color: "var(--status-danger)", minWidth: 40 }}>
-                        <LogOut size={20} strokeWidth={2.5} />
+                        {isLoading ? <Loader2 className="animate-spin" size={20} /> : <LogOut size={20} strokeWidth={2.5} />}
                     </ListItemIcon>
                     <ListItemText
                         primary="Logout"

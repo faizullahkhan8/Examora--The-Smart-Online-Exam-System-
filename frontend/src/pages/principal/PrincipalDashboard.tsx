@@ -10,7 +10,7 @@ import {
     Building2,
     CalendarDays,
 } from "lucide-react";
-import { Breadcrumbs, Link, Typography, Skeleton } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import { useGetDepartmentsQuery } from "../../services/department/department.service";
 import { useSelector } from "react-redux";
 
@@ -18,29 +18,27 @@ const StatCard = ({
     label,
     value,
     icon: Icon,
-    color,
+    colorClass,
     loading,
 }: {
     label: string;
     value: string | number;
     icon: any;
-    color: string;
+    colorClass: string;
     loading?: boolean;
 }) => (
-    <div className="bg-white rounded-2xl border border-slate-100 p-6 flex items-center gap-5 shadow-sm">
-        <div className={`p-4 rounded-xl ${color}`}>
-            <Icon size={24} className="text-white" />
+    <div className="p-5 bg-(--bg-surface) border border-(--ui-border) rounded-xl hover:border-(--brand-primary) transition-colors shadow-sm">
+        <div className="flex justify-between items-start mb-3">
+            <div className={`p-2.5 rounded-lg bg-[var(--bg-base)] w-fit ${colorClass}`}>
+                <Icon size={20} className="text-current" />
+            </div>
         </div>
-        <div>
-            {loading ? (
-                <Skeleton width={48} height={32} />
-            ) : (
-                <p className="text-3xl font-black text-slate-900">{value}</p>
-            )}
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-0.5">
-                {label}
-            </p>
-        </div>
+        {loading ? (
+            <Skeleton width={48} height={32} sx={{ bgcolor: "var(--ui-divider)", mb: 0.5 }} />
+        ) : (
+            <h3 className="text-2xl font-black text-(--text-primary) tracking-tight">{value}</h3>
+        )}
+        <p className="text-xs font-semibold text-(--text-secondary) mt-1">{label}</p>
     </div>
 );
 
@@ -57,16 +55,16 @@ const QuickAction = ({
 }) => (
     <a
         href={href}
-        className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors group"
+        className="flex items-center gap-4 p-4 rounded-xl border border-transparent hover:border-(--ui-border) hover:bg-[var(--bg-base)] transition-all group"
     >
-        <div className="p-3 bg-white rounded-xl shadow-sm">
-            <Icon size={20} className="text-slate-600" />
+        <div className="p-2.5 bg-(--bg-surface) border border-(--ui-border) rounded-lg shadow-sm group-hover:border-(--brand-primary) transition-colors">
+            <Icon size={18} className="text-(--brand-primary)" />
         </div>
         <div className="flex-grow">
-            <p className="text-sm font-black text-slate-900">{label}</p>
-            <p className="text-xs text-slate-500 font-medium">{desc}</p>
+            <p className="text-sm font-bold text-(--text-primary)">{label}</p>
+            <p className="text-xs text-(--text-secondary) font-medium mt-0.5">{desc}</p>
         </div>
-        <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
+        <ChevronRight size={16} className="text-(--text-secondary) group-hover:text-(--brand-primary) group-hover:translate-x-1 transition-all" />
     </a>
 );
 
@@ -80,127 +78,124 @@ const PrincipalDashboard = () => {
     const deptsWithoutHOD = departments.length - hodsAssigned;
 
     return (
-        <div className="flex-grow bg-[#F8FAFC] min-h-screen font-sans">
-            {/* Header */}
-            <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-                <div className="h-20 px-8 flex items-center justify-between">
+        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10">
+            <div className="p-8 max-w-[1600px] mx-auto">
+
+                <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
-                        <Breadcrumbs separator={<ChevronRight size={12} />} className="mb-1">
-                            <Link underline="hover" color="inherit" href="/principal/dashboard"
-                                className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                                Principal Panel
-                            </Link>
-                            <Typography className="text-[10px] font-bold uppercase tracking-widest text-slate-900">
-                                Dashboard
-                            </Typography>
-                        </Breadcrumbs>
-                        <h1 className="text-xl font-black text-slate-900">
-                            Welcome back, {auth.name?.split(" ")[0] ?? "Principal"} 👋
+                        <h1 className="text-3xl font-black text-(--text-primary) tracking-tight">
+                            Welcome back, {auth.name?.split(" ")[0] ?? "Principal"}
                         </h1>
+                        <p className="text-(--text-secondary) text-sm font-medium mt-1">
+                            Institute Overview and Management Dashboard.
+                        </p>
                     </div>
                 </div>
-            </header>
 
-            <main className="p-8 space-y-8 max-w-[1200px] mx-auto">
-                {/* Stats */}
-                <section>
-                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">
-                        Institute Overview
-                    </h2>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <StatCard label="Total Departments" value={departments.length} icon={BookOpen} color="bg-indigo-500" loading={deptLoading} />
-                        <StatCard label="Active Departments" value={activeDepts} icon={CheckCircle2} color="bg-emerald-500" loading={deptLoading} />
-                        <StatCard label="HODs Assigned" value={hodsAssigned} icon={Users} color="bg-blue-500" loading={deptLoading} />
-                        <StatCard label="Depts w/o HOD" value={deptsWithoutHOD} icon={AlertTriangle} color={deptsWithoutHOD > 0 ? "bg-amber-500" : "bg-slate-400"} loading={deptLoading} />
-                    </div>
-                </section>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Quick Actions */}
-                    <section className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
-                        <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">
-                            Quick Actions
+                <div className="space-y-8">
+                    <section>
+                        <h2 className="text-xs font-bold uppercase tracking-widest text-(--text-secondary) mb-4">
+                            Institute Overview
                         </h2>
-                        <div className="space-y-2">
-                            <QuickAction label="Manage Departments" desc="Create, edit or assign HODs" icon={BookOpen} href="/principal/departments" />
-                            <QuickAction label="HOD Management" desc="View and manage all HODs" icon={Users} href="/principal/hods" />
-                            <QuickAction label="Academic Sessions" desc="View and lock sessions" icon={CalendarDays} href="/principal/sessions" />
-                            <QuickAction label="Institute Profile" desc="Update institute information" icon={Building2} href="/principal/institute" />
-                            <QuickAction label="Analytics & Reports" desc="View performance metrics" icon={BarChart3} href="/principal/analytics" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <StatCard
+                                label="Total Departments"
+                                value={departments.length}
+                                icon={BookOpen}
+                                colorClass="text-indigo-600 bg-indigo-50"
+                                loading={deptLoading}
+                            />
+                            <StatCard
+                                label="Active Departments"
+                                value={activeDepts}
+                                icon={CheckCircle2}
+                                colorClass="text-emerald-600 bg-emerald-50"
+                                loading={deptLoading}
+                            />
+                            <StatCard
+                                label="HODs Assigned"
+                                value={hodsAssigned}
+                                icon={Users}
+                                colorClass="text-blue-600 bg-blue-50"
+                                loading={deptLoading}
+                            />
+                            <StatCard
+                                label="Depts w/o HOD"
+                                value={deptsWithoutHOD}
+                                icon={AlertTriangle}
+                                colorClass={deptsWithoutHOD > 0 ? "text-amber-600 bg-amber-50" : "text-slate-500 bg-slate-100"}
+                                loading={deptLoading}
+                            />
                         </div>
                     </section>
 
-                    {/* Departments Summary */}
-                    <section className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">
-                                Departments
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <section className="bg-(--bg-surface) rounded-xl border border-(--ui-border) p-6 shadow-sm">
+                            <h2 className="text-xs font-bold uppercase tracking-widest text-(--text-secondary) mb-4">
+                                Quick Actions
                             </h2>
-                            <a href="/principal/departments"
-                                className="text-[10px] font-black uppercase tracking-widest text-slate-900 hover:underline flex items-center gap-1">
-                                View All <ChevronRight size={12} />
-                            </a>
-                        </div>
+                            <div className="space-y-1">
+                                <QuickAction label="Manage Departments" desc="Create, edit or assign HODs" icon={BookOpen} href="/principal/departments" />
+                                <QuickAction label="HOD Management" desc="View and manage all HODs" icon={Users} href="/principal/hods" />
+                                <QuickAction label="Academic Sessions" desc="View and lock sessions" icon={CalendarDays} href="/principal/sessions" />
+                                <QuickAction label="Institute Profile" desc="Update institute information" icon={Building2} href="/principal/institute" />
+                                <QuickAction label="Analytics & Reports" desc="View performance metrics" icon={BarChart3} href="/principal/analytics" />
+                            </div>
+                        </section>
 
-                        {deptLoading ? (
-                            Array.from({ length: 4 }).map((_, i) => (
-                                <Skeleton key={i} height={48} className="mb-2 rounded-xl" />
-                            ))
-                        ) : departments.length === 0 ? (
-                            <div className="text-center py-8 text-slate-400">
-                                <BookOpen size={32} className="mx-auto mb-2 opacity-30" />
-                                <p className="text-sm font-bold">No departments yet</p>
-                                <a href="/principal/departments" className="text-xs text-blue-600 font-bold hover:underline">
-                                    Create your first department →
+                        <section className="bg-(--bg-surface) rounded-xl border border-(--ui-border) p-6 shadow-sm flex flex-col">
+                            <div className="flex items-center justify-between mb-5">
+                                <h2 className="text-xs font-bold uppercase tracking-widest text-(--text-secondary)">
+                                    Departments
+                                </h2>
+                                <a href="/principal/departments"
+                                    className="text-[10px] font-bold uppercase tracking-widest text-(--brand-primary) hover:underline flex items-center gap-1">
+                                    View All <ChevronRight size={12} />
                                 </a>
                             </div>
-                        ) : (
-                            <div className="space-y-2">
-                                {departments.slice(0, 5).map((dept) => (
-                                    <div key={dept._id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
-                                        <div>
-                                            <p className="text-sm font-bold text-slate-900">{dept.name}</p>
-                                            <p className="text-xs text-slate-400 font-medium">{dept.code}</p>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            {dept.hod ? (
-                                                <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                                                    HOD Assigned
-                                                </span>
-                                            ) : (
-                                                <span className="text-[10px] font-black uppercase text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
-                                                    No HOD
-                                                </span>
-                                            )}
-                                            <span className={`w-2 h-2 rounded-full ${dept.isActive ? "bg-emerald-400" : "bg-slate-300"}`} />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </section>
-                </div>
 
-                {/* Analytics teaser */}
-                <section className="bg-gradient-to-r from-slate-900 to-slate-700 rounded-2xl p-8 text-white">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
-                                Performance Insights
-                            </p>
-                            <h3 className="text-2xl font-black mb-1">View Full Analytics</h3>
-                            <p className="text-slate-400 text-sm font-medium">
-                                Department performance, exam metrics, and enrollment trends.
-                            </p>
-                        </div>
-                        <a href="/principal/analytics"
-                            className="shrink-0 flex items-center gap-2 px-6 py-3 bg-white text-slate-900 rounded-xl font-black text-sm hover:bg-slate-100 transition-colors">
-                            <TrendingUp size={18} />
-                            Analytics
-                        </a>
+                            <div className="flex-grow overflow-y-auto custom-scrollbar pr-1">
+                                {deptLoading ? (
+                                    Array.from({ length: 4 }).map((_, i) => (
+                                        <Skeleton key={i} height={56} sx={{ mb: 1.5, borderRadius: "12px", bgcolor: "var(--ui-divider)" }} variant="rectangular" />
+                                    ))
+                                ) : departments.length === 0 ? (
+                                    <div className="h-full flex flex-col items-center justify-center text-(--text-secondary) opacity-60 py-8">
+                                        <BookOpen size={32} className="mb-3" />
+                                        <p className="text-sm font-semibold">No departments yet</p>
+                                        <a href="/principal/departments" className="text-xs text-(--brand-primary) font-bold hover:underline mt-1">
+                                            Create your first department →
+                                        </a>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2.5">
+                                        {departments.slice(0, 5).map((dept) => (
+                                            <div key={dept._id} className="flex items-center justify-between p-3.5 rounded-xl border border-(--ui-border) bg-[var(--bg-base)] hover:border-(--brand-primary) transition-colors">
+                                                <div>
+                                                    <p className="text-sm font-bold text-(--text-primary)">{dept.name}</p>
+                                                    <p className="text-[11px] text-(--text-secondary) font-semibold mt-0.5">{dept.code}</p>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    {dept.hod ? (
+                                                        <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-md">
+                                                            Assigned
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-[9px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-100 px-2 py-1 rounded-md">
+                                                            Vacant
+                                                        </span>
+                                                    )}
+                                                    <span className={`w-2 h-2 rounded-full ${dept.isActive ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]" : "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.4)]"}`} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </section>
                     </div>
-                </section>
-            </main>
+                </div>
+            </div>
         </div>
     );
 };

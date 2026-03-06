@@ -18,7 +18,6 @@ import Departments from "./pages/principal/Departments";
 import HODManagement from "./pages/principal/HODManagement";
 import AcademicSessions from "./pages/principal/AcademicSessions";
 import InstituteProfile from "./pages/principal/InstituteProfile";
-import Analytics from "./pages/principal/Analytics";
 import PrincipalMessanger from "./pages/principal/Messanger";
 import PrincipalNotifications from "./pages/principal/Notifications";
 
@@ -83,7 +82,6 @@ const AppRouter = createBrowserRouter([
                     { path: "/principal/hods", element: <HODManagement /> },
                     { path: "/principal/sessions", element: <AcademicSessions /> },
                     { path: "/principal/institute", element: <InstituteProfile /> },
-                    { path: "/principal/analytics", element: <Analytics /> },
                     { path: "/principal/messenger", element: <PrincipalMessanger /> },
                     { path: "/principal/notifications", element: <PrincipalNotifications /> },
                 ],

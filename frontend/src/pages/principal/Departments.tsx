@@ -2,26 +2,20 @@ import { useState, useDeferredValue } from "react";
 import {
     Button,
     IconButton,
-    Breadcrumbs,
-    Link,
-    Typography,
     Chip,
     Drawer,
     TextField,
-    Switch,
-    FormControlLabel,
     Skeleton,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
+    TablePagination,
 } from "@mui/material";
 import {
     Plus,
     Search,
-    ChevronRight,
     BookOpen,
-    Users,
     Pencil,
     Trash2,
     UserCheck,
@@ -41,7 +35,27 @@ import {
 } from "../../services/department/department.service";
 import { useGetAllUsersQuery } from "../../services/user/user.service";
 
-// ─── Create / Edit Drawer ─────────────────────────────────────────────────────
+const textFieldSx = {
+    "& .MuiOutlinedInput-root": {
+        borderRadius: "8px",
+        backgroundColor: "var(--bg-base)",
+        color: "var(--text-primary)",
+        fontSize: "14px",
+        fontWeight: 500,
+        "& fieldset": { borderColor: "var(--ui-border)" },
+        "&:hover fieldset": { borderColor: "var(--brand-primary)" },
+        "&.Mui-focused fieldset": { borderColor: "var(--brand-primary)" },
+    },
+    "& .MuiInputLabel-root": { color: "var(--text-secondary)", fontSize: "14px", fontWeight: 600 },
+    "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand-primary)" },
+};
+
+const buttonSx = {
+    borderRadius: "8px",
+    textTransform: "none",
+    fontWeight: 600,
+};
+
 const DeptDrawer = ({
     open,
     editing,
@@ -71,31 +85,35 @@ const DeptDrawer = ({
 
     return (
         <Drawer anchor="right" open={open} onClose={onClose}
-            PaperProps={{ sx: { width: 400, p: 4, bgcolor: "#FAFAFA" } }}>
-            <h2 className="text-lg font-black text-slate-900 mb-1">
+            PaperProps={{ sx: { width: 400, p: 4, bgcolor: "var(--bg-surface)", borderLeft: "1px solid var(--ui-border)" } }}>
+            <h2 className="text-xl font-black text-(--text-primary) tracking-tight mb-1">
                 {editing ? "Edit Department" : "New Department"}
             </h2>
-            <p className="text-xs text-slate-500 font-medium mb-6">
-                {editing ? "Update department information." : "Add a new department to your institute."}
+            <p className="text-xs text-(--text-secondary) font-medium mb-6">
+                {editing ? "Update department information and capacity." : "Add a new academic department to your institute."}
             </p>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <TextField fullWidth label="Department Name" required
-                    value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
+                    value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                    sx={textFieldSx} />
                 <TextField fullWidth label="Department Code (e.g. CS)" required
-                    value={form.code} onChange={(e) => setForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))} />
+                    value={form.code} onChange={(e) => setForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))}
+                    sx={textFieldSx} />
                 <TextField fullWidth label="Description" multiline rows={3}
-                    value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
+                    value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                    sx={textFieldSx} />
                 <TextField fullWidth label="Student Capacity" type="number"
-                    value={form.capacity} onChange={(e) => setForm((p) => ({ ...p, capacity: Number(e.target.value) }))} />
+                    value={form.capacity} onChange={(e) => setForm((p) => ({ ...p, capacity: Number(e.target.value) }))}
+                    sx={textFieldSx} />
 
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-3 pt-4 border-t border-(--ui-divider) mt-2">
                     <Button fullWidth variant="outlined" onClick={onClose}
-                        className="!border-slate-200 !text-slate-600 !normal-case !font-bold !rounded-xl">
+                        sx={{ ...buttonSx, borderColor: "var(--ui-border)", color: "var(--text-secondary)", "&:hover": { borderColor: "var(--text-primary)", bgcolor: "var(--bg-base)" } }}>
                         Cancel
                     </Button>
                     <Button fullWidth type="submit" variant="contained" disabled={isLoading}
-                        className="!bg-slate-900 !text-white !normal-case !font-bold !rounded-xl">
+                        sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", boxShadow: "none", "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
                         {isLoading ? "Saving…" : editing ? "Update" : "Create"}
                     </Button>
                 </div>
@@ -104,7 +122,6 @@ const DeptDrawer = ({
     );
 };
 
-// ─── Assign HOD Dialog ────────────────────────────────────────────────────────
 const AssignHODDialog = ({
     open,
     dept,
@@ -129,37 +146,40 @@ const AssignHODDialog = ({
     };
 
     return (
-        <Dialog open={open} onClose={onClose} PaperProps={{ sx: { borderRadius: 3, minWidth: 400 } }}>
-            <DialogTitle className="font-black text-slate-900">
+        <Dialog open={open} onClose={onClose} PaperProps={{ sx: { borderRadius: "12px", border: "1px solid var(--ui-border)", bgcolor: "var(--bg-surface)", minWidth: 400, boxShadow: "0 10px 25px -5px rgb(0 0 0 / 0.1)" } }}>
+            <DialogTitle sx={{ fontWeight: 800, color: "var(--text-primary)", px: 3, pt: 3, pb: 1, fontSize: "1.125rem" }}>
                 Assign HOD — {dept?.name}
             </DialogTitle>
-            <DialogContent>
-                <p className="text-sm text-slate-500 mb-4">
-                    Select a user with HOD role to assign as Head of Department.
+            <DialogContent sx={{ px: 3 }}>
+                <p className="text-sm text-(--text-secondary) font-medium mb-4">
+                    Select an unassigned user with the HOD role to manage this department.
                 </p>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
+                <div className="space-y-2 max-h-[280px] overflow-y-auto custom-scrollbar pr-1">
                     {hodUsers.length === 0 ? (
-                        <p className="text-sm text-slate-400 text-center py-4">No HOD-role users found.</p>
+                        <div className="text-center py-8 border border-dashed border-(--ui-border) rounded-xl bg-[var(--bg-base)]">
+                            <p className="text-sm font-semibold text-(--text-secondary)">No HOD-role users found.</p>
+                            <p className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-wider mt-1">Provision users in admin panel</p>
+                        </div>
                     ) : (
                         hodUsers.map((u: any) => (
                             <button key={u._id}
                                 onClick={() => setSelected(u._id)}
-                                className={`w-full text-left p-3 rounded-xl border transition-colors ${selected === u._id
-                                    ? "border-slate-900 bg-slate-50"
-                                    : "border-slate-100 hover:border-slate-300"
+                                className={`w-full text-left p-3 rounded-xl border transition-all ${selected === u._id
+                                    ? "border-(--brand-primary) bg-(--brand-primary) bg-opacity-10"
+                                    : "border-(--ui-border) bg-[var(--bg-base)] hover:border-(--brand-primary)"
                                     }`}
                             >
-                                <p className="font-bold text-sm text-slate-900">{u.firstName} {u.lastName}</p>
-                                <p className="text-xs text-slate-500">{u.email}</p>
+                                <p className={`font-bold text-sm ${selected === u._id ? "text-(--brand-primary)" : "text-(--text-primary)"}`}>{u.firstName} {u.lastName}</p>
+                                <p className={`text-xs font-medium mt-0.5 ${selected === u._id ? "text-(--brand-primary) opacity-80" : "text-(--text-secondary)"}`}>{u.email}</p>
                             </button>
                         ))
                     )}
                 </div>
             </DialogContent>
-            <DialogActions sx={{ p: 2, gap: 1 }}>
-                <Button onClick={onClose} className="!text-slate-500 !font-bold !normal-case">Cancel</Button>
+            <DialogActions sx={{ p: 3, pt: 2 }}>
+                <Button onClick={onClose} sx={{ color: "var(--text-secondary)", fontWeight: 600, textTransform: "none" }}>Cancel</Button>
                 <Button onClick={handleAssign} disabled={!selected || isLoading}
-                    variant="contained" className="!bg-slate-900 !text-white !font-bold !normal-case !rounded-xl">
+                    variant="contained" sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", boxShadow: "none", "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
                     {isLoading ? "Assigning…" : "Assign HOD"}
                 </Button>
             </DialogActions>
@@ -167,146 +187,154 @@ const AssignHODDialog = ({
     );
 };
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
 const Departments = () => {
     const [search, setSearch] = useState("");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [editingDept, setEditingDept] = useState<Department | null>(null);
     const [assignDept, setAssignDept] = useState<Department | null>(null);
 
     const deferredSearch = useDeferredValue(search);
-    const { data, isLoading } = useGetDepartmentsQuery({ search: deferredSearch || undefined });
+    const { data, isLoading } = useGetDepartmentsQuery({
+        search: deferredSearch || undefined,
+        page: page + 1,
+        limit: rowsPerPage,
+    });
     const departments = data?.data ?? [];
+    const pagination = data?.pagination;
 
     const [toggleStatus] = useToggleDepartmentStatusMutation();
     const [removeHOD] = useRemoveHODMutation();
     const [deleteDept] = useDeleteDepartmentMutation();
 
     return (
-        <div className="flex-grow bg-[#F8FAFC] min-h-screen font-sans">
-            {/* Header */}
-            <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-                <div className="h-20 px-8 flex items-center justify-between">
+        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10">
+            <div className="p-8 max-w-[1600px] mx-auto">
+                <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
-                        <Breadcrumbs separator={<ChevronRight size={12} />} className="mb-1">
-                            <Link underline="hover" href="/principal/dashboard"
-                                className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                                Principal
-                            </Link>
-                            <Typography className="text-[10px] font-bold uppercase tracking-widest text-slate-900">
-                                Departments
-                            </Typography>
-                        </Breadcrumbs>
-                        <h1 className="text-xl font-black text-slate-900">Departments</h1>
+                        <h1 className="text-3xl font-black text-(--text-primary) tracking-tight">
+                            Departments
+                        </h1>
+                        <p className="text-(--text-secondary) text-sm font-medium mt-1">
+                            Manage academic departments, student capacities, and faculty leadership.
+                        </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="relative">
-                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                            <input placeholder="Search departments…" value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="bg-slate-100 rounded-lg pl-9 pr-4 py-2 text-xs outline-none w-48 border-none" />
+                            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
+                            <input
+                                placeholder="Search departments…"
+                                value={search}
+                                onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                                className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-4 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-64 transition-all text-(--text-primary)"
+                            />
                         </div>
                         <Button variant="contained" startIcon={<Plus size={16} />}
                             onClick={() => { setEditingDept(null); setDrawerOpen(true); }}
-                            className="!bg-slate-900 !text-white !normal-case !font-black !text-xs !rounded-xl !shadow-none">
+                            sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", boxShadow: "none", px: 3, "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
                             New Department
                         </Button>
                     </div>
                 </div>
-            </header>
 
-            {/* Table */}
-            <main className="p-8">
-                <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
-                    <div className="overflow-x-auto">
+                <div className="bg-(--bg-surface) rounded-xl border border-(--ui-border) overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto min-h-[420px]">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-slate-100 text-left">
+                                <tr className="border-b border-(--ui-divider) bg-[var(--bg-base)] text-left">
                                     {["Department", "Code", "HOD", "Capacity", "Status", "Actions"].map((h) => (
-                                        <th key={h} className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                        <th key={h} className="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
                                             {h}
                                         </th>
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-(--ui-divider)">
                                 {isLoading
                                     ? Array.from({ length: 5 }).map((_, i) => (
-                                        <tr key={i} className="border-b border-slate-50">
+                                        <tr key={i} className="hover:bg-[var(--bg-base)] transition-colors">
                                             {Array.from({ length: 6 }).map((_, j) => (
                                                 <td key={j} className="px-6 py-4">
-                                                    <Skeleton height={20} />
+                                                    <Skeleton height={20} sx={{ bgcolor: "var(--ui-divider)", borderRadius: "4px" }} />
                                                 </td>
                                             ))}
                                         </tr>
                                     ))
                                     : departments.map((dept) => (
-                                        <tr key={dept._id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
+                                        <tr key={dept._id} className="hover:bg-[var(--bg-base)] transition-colors group">
                                             <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 bg-indigo-50 rounded-xl flex items-center justify-center">
-                                                        <BookOpen size={16} className="text-indigo-500" />
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 bg-(--brand-primary) bg-opacity-10 border border-(--brand-primary) border-opacity-20 rounded-xl flex items-center justify-center shrink-0">
+                                                        <BookOpen size={18} className="text-(--brand-primary)" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-sm text-slate-900">{dept.name}</p>
-                                                        <p className="text-xs text-slate-400 font-medium">{dept.description || "—"}</p>
+                                                        <p className="font-bold text-sm text-(--text-primary)">{dept.name}</p>
+                                                        <p className="text-xs text-(--text-secondary) font-medium mt-0.5 max-w-[200px] truncate" title={dept.description}>{dept.description || "—"}</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="font-black text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-lg">
+                                                <span className="font-bold text-[11px] bg-[var(--bg-base)] border border-(--ui-border) text-(--text-secondary) px-2.5 py-1 rounded-lg">
                                                     {dept.code}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 {dept.hod ? (
                                                     <div>
-                                                        <p className="font-bold text-sm text-slate-900">
+                                                        <p className="font-bold text-sm text-(--text-primary)">
                                                             {(dept.hod as any).firstName} {(dept.hod as any).lastName}
                                                         </p>
-                                                        <p className="text-xs text-slate-400">{(dept.hod as any).email}</p>
+                                                        <p className="text-xs text-(--text-secondary) font-medium mt-0.5">{(dept.hod as any).email}</p>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs font-bold text-amber-500">Not Assigned</span>
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-md">
+                                                        Not Assigned
+                                                    </span>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-4 text-sm font-bold text-slate-700">
+                                            <td className="px-6 py-4 text-sm font-bold text-(--text-primary)">
                                                 {dept.capacity || "—"}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <Chip
                                                     label={dept.isActive ? "Active" : "Inactive"}
                                                     size="small"
-                                                    className={`!text-[10px] !font-black !uppercase ${dept.isActive ? "!bg-emerald-50 !text-emerald-700" : "!bg-slate-100 !text-slate-500"}`}
+                                                    className={`!text-[10px] !font-bold !uppercase !tracking-wider !h-5 !px-1.5 border ${dept.isActive ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-[var(--bg-base)] text-(--text-secondary) border-(--ui-border)"}`}
                                                 />
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <IconButton size="small" title="Edit"
-                                                        onClick={() => { setEditingDept(dept); setDrawerOpen(true); }}>
-                                                        <Pencil size={15} className="text-slate-500" />
+                                                        onClick={() => { setEditingDept(dept); setDrawerOpen(true); }}
+                                                        sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--brand-primary)", bgcolor: "var(--brand-active)" } }}>
+                                                        <Pencil size={16} />
                                                     </IconButton>
                                                     <IconButton size="small" title={dept.isActive ? "Deactivate" : "Activate"}
-                                                        onClick={() => toggleStatus(dept._id)}>
+                                                        onClick={() => toggleStatus(dept._id)}
+                                                        sx={{ color: "var(--text-secondary)", "&:hover": { bgcolor: "var(--bg-base)" } }}>
                                                         {dept.isActive
-                                                            ? <ToggleRight size={15} className="text-emerald-500" />
-                                                            : <ToggleLeft size={15} className="text-slate-400" />
+                                                            ? <ToggleRight size={16} className="text-emerald-500" />
+                                                            : <ToggleLeft size={16} />
                                                         }
                                                     </IconButton>
                                                     {dept.hod ? (
                                                         <IconButton size="small" title="Remove HOD"
-                                                            onClick={() => removeHOD(dept._id)}>
-                                                            <UserX size={15} className="text-amber-500" />
+                                                            onClick={() => removeHOD(dept._id)}
+                                                            sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--status-danger)", bgcolor: "var(--bg-base)" } }}>
+                                                            <UserX size={16} />
                                                         </IconButton>
                                                     ) : (
                                                         <IconButton size="small" title="Assign HOD"
-                                                            onClick={() => setAssignDept(dept)}>
-                                                            <UserCheck size={15} className="text-blue-500" />
+                                                            onClick={() => setAssignDept(dept)}
+                                                            sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--brand-primary)", bgcolor: "var(--brand-active)" } }}>
+                                                            <UserCheck size={16} />
                                                         </IconButton>
                                                     )}
                                                     <IconButton size="small" title="Delete"
-                                                        onClick={() => deleteDept(dept._id)}>
-                                                        <Trash2 size={15} className="text-rose-400" />
+                                                        onClick={() => deleteDept(dept._id)}
+                                                        sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--status-danger)", bgcolor: "var(--bg-base)" } }}>
+                                                        <Trash2 size={16} />
                                                     </IconButton>
                                                 </div>
                                             </td>
@@ -316,17 +344,31 @@ const Departments = () => {
                         </table>
 
                         {!isLoading && departments.length === 0 && (
-                            <div className="text-center py-16">
-                                <BookOpen size={40} className="mx-auto text-slate-200 mb-3" />
-                                <p className="font-black text-slate-600">No departments yet</p>
-                                <p className="text-sm text-slate-400 mt-1">Click "New Department" to add your first department.</p>
+                            <div className="text-center py-20 bg-[var(--bg-base)]">
+                                <BookOpen size={48} className="mx-auto text-(--text-secondary) opacity-30 mb-4" />
+                                <p className="font-black text-(--text-primary) text-lg">No departments found</p>
+                                <p className="text-sm font-medium text-(--text-secondary) mt-1">Click "New Department" to add your first academic department.</p>
                             </div>
                         )}
                     </div>
+                    <TablePagination
+                        component="div"
+                        count={pagination?.total ?? departments.length}
+                        page={page}
+                        onPageChange={(_, p) => setPage(p)}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        sx={{
+                            borderTop: "1px solid var(--ui-divider)",
+                            ".MuiTablePagination-selectLabel,.MuiTablePagination-displayedRows": {
+                                fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)",
+                            },
+                        }}
+                    />
                 </div>
-            </main>
+            </div>
 
-            {/* Drawers / Dialogs */}
             <DeptDrawer
                 open={drawerOpen}
                 editing={editingDept}

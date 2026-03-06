@@ -27,12 +27,20 @@ export interface Department {
 export interface GetDepartmentsParams {
     search?: string;
     isActive?: boolean | "";
+    page?: number;
+    limit?: number;
 }
 
 export interface GetDepartmentsResponse {
     success: boolean;
     data: Department[];
     total: number;
+    pagination?: {
+        total: number;
+        page: number;
+        pages: number;
+        limit: number;
+    };
 }
 
 export interface DepartmentResponse {

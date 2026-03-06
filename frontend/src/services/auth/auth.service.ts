@@ -18,7 +18,18 @@ export const authApi = baseQuery.injectEndpoints({
             }),
             invalidatesTags: ["Auth"],
         }),
+        logout: builder.mutation({
+            query: () => ({
+                url: "/auth/logout",
+                method: "POST",
+            }),
+            invalidatesTags: ["Auth"],
+            onQueryStarted: () => {
+                localStorage.removeItem("persist:examora_auth");
+            },
+        }),
     }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation, useLogoutMutation } =
+    authApi;

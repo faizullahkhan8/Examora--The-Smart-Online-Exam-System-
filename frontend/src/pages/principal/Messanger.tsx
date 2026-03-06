@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { Tooltip, IconButton } from "@mui/material";
-import { Search, Plus } from "lucide-react";
+import { Tooltip, IconButton, Button } from "@mui/material";
+import { Search, Plus, MessageSquare } from "lucide-react";
 
 import {
     useGetConversationsQuery,
@@ -86,28 +86,33 @@ const Messanger = () => {
     };
 
     return (
-        <div className="flex h-screen bg-[#F8FAFC] overflow-hidden font-sans">
+        <div className="flex h-full min-h-screen bg-[var(--bg-base)] overflow-hidden font-sans relative">
             {/* ─── Sidebar ──────────────────────────────────────────────────── */}
-            <div className="w-[340px] bg-white border-r border-slate-200 flex flex-col shrink-0">
-                <div className="p-6 border-b border-slate-100 space-y-4">
+            <div className="w-[340px] bg-(--bg-surface) border-r border-(--ui-border) flex flex-col shrink-0 z-10 shadow-sm">
+                <div className="p-5 border-b border-(--ui-divider) space-y-5">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-xl font-black text-slate-900">Messaging</h1>
+                        <h1 className="text-2xl font-black text-(--text-primary) tracking-tight">Messaging</h1>
                         <Tooltip title="New Conversation">
                             <IconButton
                                 size="small"
                                 onClick={() => setIsNewMsgModal(true)}
-                                className="!bg-slate-900 !text-white hover:!bg-slate-800"
+                                sx={{
+                                    bgcolor: "var(--brand-primary)",
+                                    color: "#fff",
+                                    "&:hover": { bgcolor: "var(--bg-sidebar)" },
+                                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                                }}
                             >
-                                <Plus size={18} />
+                                <Plus size={16} />
                             </IconButton>
                         </Tooltip>
                     </div>
 
                     {/* Search */}
                     <div className="relative">
-                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
                         <input
-                            className="w-full bg-slate-100 border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-slate-900 outline-none"
+                            className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all placeholder:text-(--text-secondary)/60 text-(--text-primary)"
                             placeholder="Search conversations..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -115,14 +120,14 @@ const Messanger = () => {
                     </div>
 
                     {/* Tabs */}
-                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+                    <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-1">
                         {TABS.map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${activeTab === tab
-                                        ? "bg-slate-900 text-white"
-                                        : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                                className={`px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-all ${activeTab === tab
+                                    ? "bg-(--brand-primary) text-white shadow-sm border border-transparent"
+                                    : "bg-[var(--bg-base)] text-(--text-secondary) border border-(--ui-border) hover:border-(--brand-primary) hover:text-(--text-primary)"
                                     }`}
                             >
                                 {tab}
@@ -131,25 +136,27 @@ const Messanger = () => {
                     </div>
                 </div>
 
-                <ConversationList
-                    conversations={conversations}
-                    isLoading={isConvsLoading}
-                    selectedId={selectedConv?._id ?? null}
-                    currentUserId={authUser.id}
-                    activeTab={activeTab}
-                    search={search}
-                    onSelect={(conv) => {
-                        setSelectedConv(conv);
-                        setShowDetails(false);
-                    }}
-                    onTabChange={setActiveTab}
-                    onSearchChange={setSearch}
-                />
+                <div className="flex-1 overflow-y-auto custom-scrollbar bg-[var(--bg-base)]">
+                    <ConversationList
+                        conversations={conversations}
+                        isLoading={isConvsLoading}
+                        selectedId={selectedConv?._id ?? null}
+                        currentUserId={authUser.id}
+                        activeTab={activeTab}
+                        search={search}
+                        onSelect={(conv) => {
+                            setSelectedConv(conv);
+                            setShowDetails(false);
+                        }}
+                        onTabChange={setActiveTab}
+                        onSearchChange={setSearch}
+                    />
+                </div>
             </div>
 
             {/* ─── Chat Area ────────────────────────────────────────────────── */}
             {selectedConv ? (
-                <div className="flex-grow flex flex-col bg-white min-w-0">
+                <div className="flex-grow flex flex-col bg-(--bg-surface) min-w-0 relative">
                     <ChatHeader
                         conversation={selectedConv}
                         currentUserId={authUser.id}
@@ -160,38 +167,54 @@ const Messanger = () => {
                     <MessageInput conversationId={selectedConv._id} onSend={handleSend} isSending={isSending} />
                 </div>
             ) : (
-                <div className="flex-grow flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] text-slate-300">
+                <div className="flex-grow flex flex-col items-center justify-center gap-4 bg-[var(--bg-base)]">
                     {isConvsLoading ? (
-                        <p className="text-sm font-bold text-slate-400">Loading conversations...</p>
+                        <p className="text-sm font-bold text-(--text-secondary) animate-pulse">Loading secure communications...</p>
                     ) : (
-                        <>
-                            <span className="text-7xl">💬</span>
-                            <div className="text-center space-y-1">
-                                <p className="text-base font-black text-slate-500">No conversation selected</p>
-                                <p className="text-sm font-medium text-slate-400">
-                                    Select one from the sidebar or start a new one.
+                        <div className="flex flex-col items-center max-w-sm px-6">
+                            <div className="w-20 h-20 mb-4 rounded-2xl bg-(--bg-surface) border border-(--ui-border) shadow-sm flex items-center justify-center">
+                                <MessageSquare size={32} className="text-(--brand-primary) opacity-80" />
+                            </div>
+                            <div className="text-center space-y-2 mb-6">
+                                <p className="text-lg font-black text-(--text-primary)">
+                                    No conversation selected
+                                </p>
+                                <p className="text-sm font-medium text-(--text-secondary) leading-relaxed">
+                                    Select an existing conversation from the sidebar panel or initiate a new secure channel.
                                 </p>
                             </div>
-                            <button
+                            <Button
+                                variant="contained"
+                                startIcon={<Plus size={16} />}
                                 onClick={() => setIsNewMsgModal(true)}
-                                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-black hover:bg-slate-800 transition-colors"
+                                sx={{
+                                    borderRadius: "8px",
+                                    px: 4,
+                                    py: 1.25,
+                                    textTransform: "none",
+                                    fontWeight: 700,
+                                    bgcolor: "var(--brand-primary)",
+                                    boxShadow: "none",
+                                    "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" }
+                                }}
                             >
-                                <Plus size={16} />
                                 New Conversation
-                            </button>
-                        </>
+                            </Button>
+                        </div>
                     )}
                 </div>
             )}
 
             {/* ─── Details Panel ────────────────────────────────────────────── */}
             {showDetails && selectedConv && (
-                <ChatDetails
-                    conversation={selectedConv}
-                    currentUserId={authUser.id}
-                    onClose={() => setShowDetails(false)}
-                    onDelete={handleDelete}
-                />
+                <div className="w-[320px] shrink-0 border-l border-(--ui-border) bg-(--bg-surface) z-20 shadow-[-4px_0_15px_-5px_rgba(0,0,0,0.05)]">
+                    <ChatDetails
+                        conversation={selectedConv}
+                        currentUserId={authUser.id}
+                        onClose={() => setShowDetails(false)}
+                        onDelete={handleDelete}
+                    />
+                </div>
             )}
 
             {/* ─── New Conversation Modal ───────────────────────────────────── */}

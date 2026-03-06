@@ -20,6 +20,12 @@ export interface AcademicSession {
 interface SessionListResponse {
     success: boolean;
     data: AcademicSession[];
+    pagination?: {
+        total: number;
+        page: number;
+        pages: number;
+        limit: number;
+    };
 }
 
 interface SessionResponse {
@@ -39,9 +45,15 @@ const academicSessionApi = baseQuery.injectEndpoints({
         // ─── Read ───────────────────────────────────────────────────────────
         getSessionsByDept: builder.query<
             SessionListResponse,
-            { deptId: string }
+            { deptId: string; page?: number; limit?: number }
         >({
-            query: ({ deptId }) => `/sessions/${deptId}`,
+            query: ({ deptId, page, limit }) => {
+                const qs = new URLSearchParams();
+                if (page !== undefined) qs.set("page", String(page));
+                if (limit !== undefined) qs.set("limit", String(limit));
+                const qString = qs.toString();
+                return `/sessions/${deptId}${qString ? `?${qString}` : ""}`;
+            },
             providesTags: ["AcademicSession"],
         }),
 

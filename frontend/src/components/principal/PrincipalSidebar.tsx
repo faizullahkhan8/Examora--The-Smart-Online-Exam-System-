@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
     Drawer,
     List,
@@ -16,7 +15,6 @@ import {
     BookOpen,
     Users,
     CalendarDays,
-    BarChart3,
     BellIcon,
     MessageSquare,
     LogOut,
@@ -24,6 +22,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearAuth } from "../../features/auth/auth.slice";
+import { useLogoutMutation } from "../../services/auth/auth.service";
 
 const drawerWidth = 260;
 
@@ -33,7 +32,6 @@ const menuItems = [
     { label: "Departments", icon: BookOpen, url: "/principal/departments" },
     { label: "HOD Management", icon: Users, url: "/principal/hods" },
     { label: "Academic Sessions", icon: CalendarDays, url: "/principal/sessions" },
-    { label: "Analytics", icon: BarChart3, url: "/principal/analytics" },
     { label: "Notifications", icon: BellIcon, url: "/principal/notifications" },
     { label: "Messenger", icon: MessageSquare, url: "/principal/messenger" },
 ];
@@ -41,12 +39,16 @@ const menuItems = [
 const PrincipalSidebar = () => {
     const location = useLocation();
     const dispatch = useDispatch();
-    const [loggingOut, setLoggingOut] = useState(false);
+    const [logoutMutation, { isLoading: loggingOut }] = useLogoutMutation();
 
-    const handleLogout = () => {
-        setLoggingOut(true);
-        dispatch(clearAuth());
-        window.location.href = "/";
+    const handleLogout = async () => {
+        try {
+            await logoutMutation({}).unwrap();
+        } catch (error) {
+        } finally {
+            dispatch(clearAuth());
+            window.location.href = "/";
+        }
     };
 
     return (
@@ -60,29 +62,33 @@ const PrincipalSidebar = () => {
                     boxSizing: "border-box",
                     backgroundColor: "var(--bg-sidebar)",
                     color: "var(--text-on-dark)",
+                    borderRight: "1px solid var(--ui-divider)",
                 },
             }}
         >
-            {/* Logo / Header */}
-            <Toolbar>
+            <Toolbar sx={{ px: 3, py: 2 }}>
                 <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: "var(--text-on-dark)" }}>
+                    <Typography
+                        variant="h6"
+                        sx={{ fontWeight: 800, color: "var(--text-on-dark)", letterSpacing: "-0.5px" }}
+                    >
                         Examora
                     </Typography>
-                    <Typography variant="caption" sx={{ color: "var(--brand-active)" }}>
+                    <Typography
+                        variant="caption"
+                        sx={{ color: "var(--brand-active)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "1px" }}
+                    >
                         Principal Panel
                     </Typography>
                 </Box>
             </Toolbar>
 
-            <Divider sx={{ backgroundColor: "var(--ui-divider)" }} />
+            <Divider sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }} />
 
-            {/* Menu */}
-            <List sx={{ mt: 1 }}>
+            <List sx={{ mt: 2, px: 2 }}>
                 {menuItems.map((item) => {
                     const Icon = item.icon;
-                    const isActive = location.pathname === item.url ||
-                        location.pathname.startsWith(item.url + "/");
+                    const isActive = location.pathname.startsWith(item.url);
 
                     return (
                         <ListItemButton
@@ -90,26 +96,28 @@ const PrincipalSidebar = () => {
                             to={item.url}
                             key={item.label}
                             sx={{
-                                mx: 1,
                                 mb: 0.5,
-                                borderRadius: 2,
+                                borderRadius: "8px",
                                 backgroundColor: isActive ? "var(--brand-primary)" : "transparent",
-                                "&:hover": { transform: "scale(1.01)" },
+                                transition: "all 0.2s ease-in-out",
+                                "&:hover": {
+                                    backgroundColor: isActive ? "var(--brand-primary)" : "rgba(255,255,255,0.05)",
+                                },
                             }}
                         >
                             <ListItemIcon
                                 sx={{
                                     color: isActive ? "var(--text-on-dark)" : "var(--brand-active)",
-                                    minWidth: 36,
+                                    minWidth: 40,
                                 }}
                             >
-                                <Icon size={20} />
+                                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                             </ListItemIcon>
                             <ListItemText
                                 primary={item.label}
                                 primaryTypographyProps={{
                                     fontSize: 14,
-                                    fontWeight: isActive ? 600 : 400,
+                                    fontWeight: isActive ? 700 : 500,
                                     color: "var(--text-on-dark)",
                                 }}
                             />
@@ -118,28 +126,30 @@ const PrincipalSidebar = () => {
                 })}
             </List>
 
-            {/* Spacer + Logout */}
             <Box sx={{ flexGrow: 1 }} />
-            <Divider sx={{ backgroundColor: "var(--ui-divider)" }} />
-            <List>
+
+            <Divider sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }} />
+
+            <List sx={{ px: 2, py: 2 }}>
                 <ListItemButton
                     onClick={handleLogout}
                     disabled={loggingOut}
                     sx={{
-                        mx: 1,
-                        mb: 1,
-                        borderRadius: 2,
-                        "&:hover": { transform: "scale(1.01)" },
+                        borderRadius: "8px",
+                        transition: "all 0.2s ease-in-out",
+                        "&:hover": {
+                            backgroundColor: "rgba(239, 68, 68, 0.1)",
+                        },
                     }}
                 >
-                    <ListItemIcon sx={{ color: "var(--status-danger)", minWidth: 36 }}>
-                        <LogOut size={20} />
+                    <ListItemIcon sx={{ color: "var(--status-danger)", minWidth: 40 }}>
+                        <LogOut size={20} strokeWidth={2.5} />
                     </ListItemIcon>
                     <ListItemText
-                        primary="Logout"
+                        primary={loggingOut ? "Logging out..." : "Logout"}
                         primaryTypographyProps={{
                             fontSize: 14,
-                            fontWeight: 500,
+                            fontWeight: 600,
                             color: "var(--status-danger)",
                         }}
                     />
