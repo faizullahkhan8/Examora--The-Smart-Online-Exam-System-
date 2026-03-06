@@ -86,7 +86,7 @@ const Messanger = () => {
     };
 
     return (
-        <div className="flex h-full min-h-screen bg-[var(--bg-base)] overflow-hidden font-sans relative">
+        <div className="flex h-full min-h-screen bg-(--bg-base) overflow-hidden font-sans relative">
             {/* ─── Sidebar ──────────────────────────────────────────────────── */}
             <div className="w-[340px] bg-(--bg-surface) border-r border-(--ui-border) flex flex-col shrink-0 z-10 shadow-sm">
                 <div className="p-5 border-b border-(--ui-divider) space-y-5">
@@ -112,7 +112,7 @@ const Messanger = () => {
                     <div className="relative">
                         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
                         <input
-                            className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all placeholder:text-(--text-secondary)/60 text-(--text-primary)"
+                            className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all placeholder:text-(--text-secondary)/60 text-(--text-primary)"
                             placeholder="Search conversations..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -127,7 +127,7 @@ const Messanger = () => {
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-all ${activeTab === tab
                                     ? "bg-(--brand-primary) text-white shadow-sm border border-transparent"
-                                    : "bg-[var(--bg-base)] text-(--text-secondary) border border-(--ui-border) hover:border-(--brand-primary) hover:text-(--text-primary)"
+                                    : "bg-(--bg-base) text-(--text-secondary) border border-(--ui-border) hover:border-(--brand-primary) hover:text-(--text-primary)"
                                     }`}
                             >
                                 {tab}
@@ -136,7 +136,7 @@ const Messanger = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar bg-[var(--bg-base)]">
+                <div className="flex-1 overflow-y-auto custom-scrollbar bg-(--bg-base)">
                     <ConversationList
                         conversations={conversations}
                         isLoading={isConvsLoading}
@@ -156,7 +156,7 @@ const Messanger = () => {
 
             {/* ─── Chat Area ────────────────────────────────────────────────── */}
             {selectedConv ? (
-                <div className="flex-grow flex flex-col bg-(--bg-surface) min-w-0 relative">
+                <div className="grow flex flex-col bg-(--bg-surface) min-w-0 relative">
                     <ChatHeader
                         conversation={selectedConv}
                         currentUserId={authUser.id}
@@ -167,7 +167,7 @@ const Messanger = () => {
                     <MessageInput conversationId={selectedConv._id} onSend={handleSend} isSending={isSending} />
                 </div>
             ) : (
-                <div className="flex-grow flex flex-col items-center justify-center gap-4 bg-[var(--bg-base)]">
+                <div className="grow flex flex-col items-center justify-center gap-4 bg-(--bg-base)">
                     {isConvsLoading ? (
                         <p className="text-sm font-bold text-(--text-secondary) animate-pulse">Loading secure communications...</p>
                     ) : (

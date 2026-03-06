@@ -129,7 +129,7 @@ const NewConversationModal: React.FC<Props> = ({ open, onClose, userRole, onCrea
                                             disabled={isDisabled}
                                             onClick={() => setSelectedType(type.id)}
                                             className={`p-4 rounded-xl border flex flex-col items-center text-center gap-2 transition-all outline-none ${isDisabled
-                                                ? "border-(--ui-border) opacity-40 cursor-not-allowed bg-[var(--bg-base)]"
+                                                ? "border-(--ui-border) opacity-40 cursor-not-allowed bg-(--bg-base)"
                                                 : selectedType === type.id
                                                     ? "border-(--brand-primary) bg-(--brand-primary) text-white shadow-md"
                                                     : "border-(--ui-border) bg-(--bg-surface) hover:border-(--brand-primary)"
@@ -156,7 +156,7 @@ const NewConversationModal: React.FC<Props> = ({ open, onClose, userRole, onCrea
                                     placeholder={selectedType === "group" ? "e.g. Faculty Discussion" : "e.g. Server Maintenance Alert"}
                                     value={groupName}
                                     onChange={(e) => setGroupName(e.target.value)}
-                                    className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all"
+                                    className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all"
                                 />
                             </div>
                         )}
@@ -173,7 +173,7 @@ const NewConversationModal: React.FC<Props> = ({ open, onClose, userRole, onCrea
                 {step === 2 && (
                     <div className="space-y-4 py-2 min-h-[300px]">
                         {selectedUsers.length > 0 && (
-                            <div className="flex flex-wrap gap-2 p-2 bg-[var(--bg-base)] border border-(--ui-border) rounded-lg min-h-[46px]">
+                            <div className="flex flex-wrap gap-2 p-2 bg-(--bg-base) border border-(--ui-border) rounded-lg min-h-[46px]">
                                 {selectedUsers.map((u) => (
                                     <span key={u._id} className="flex items-center gap-1.5 bg-(--brand-primary) text-white text-xs font-bold px-2.5 py-1 rounded-md">
                                         {u.firstName} {u.lastName}
@@ -187,14 +187,14 @@ const NewConversationModal: React.FC<Props> = ({ open, onClose, userRole, onCrea
                             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
                             <input
                                 autoFocus
-                                className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all"
+                                className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all"
                                 placeholder="Search system users by name or email..."
                                 value={searchQ}
                                 onChange={(e) => setSearchQ(e.target.value)}
                             />
                         </div>
 
-                        <div className="max-h-60 overflow-y-auto custom-scrollbar space-y-1 rounded-lg border border-(--ui-border) bg-[var(--bg-base)] p-1">
+                        <div className="max-h-60 overflow-y-auto custom-scrollbar space-y-1 rounded-lg border border-(--ui-border) bg-(--bg-base) p-1">
                             {isSearching ? (
                                 <div className="flex justify-center items-center py-8">
                                     <CircularProgress size={24} sx={{ color: "var(--brand-primary)" }} />
@@ -218,7 +218,7 @@ const NewConversationModal: React.FC<Props> = ({ open, onClose, userRole, onCrea
                                             <Avatar sx={{ width: 32, height: 32, fontSize: "12px", fontWeight: 800 }} className={isSelected ? "!bg-white !text-(--brand-primary)" : "!bg-(--bg-sidebar) !text-(--text-on-dark)"}>
                                                 {user.firstName[0]}{user.lastName[0]}
                                             </Avatar>
-                                            <div className="flex-grow min-w-0">
+                                            <div className="grow min-w-0">
                                                 <p className="text-sm font-bold truncate">
                                                     {user.firstName} {user.lastName}
                                                 </p>

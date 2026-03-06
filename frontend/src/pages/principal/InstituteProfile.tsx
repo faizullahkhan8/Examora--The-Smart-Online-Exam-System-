@@ -64,7 +64,7 @@ const Field = ({
                 }}
             />
         ) : (
-            <div className="py-2 px-3 bg-[var(--bg-base)] border border-(--ui-border) rounded-lg min-h-[38px] flex items-center">
+            <div className="py-2 px-3 bg-(--bg-base) border border-(--ui-border) rounded-lg min-h-[38px] flex items-center">
                 <p className="text-sm font-bold text-(--text-primary)">{value || "—"}</p>
             </div>
         )}
@@ -125,7 +125,7 @@ const InstituteProfile = () => {
     };
 
     return (
-        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10">
+        <div className="w-full bg-(--bg-base) min-h-screen font-sans pb-10">
             <div className="p-8 max-w-[1600px] mx-auto">
                 <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
@@ -208,7 +208,7 @@ const InstituteProfile = () => {
                                 {!isPlaceholder && (
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
                                 )}
-                                <div className={`w-20 h-20 rounded-xl flex items-center justify-center text-3xl font-black shrink-0 relative z-10 ${isPlaceholder ? "bg-[var(--bg-base)] border border-(--ui-border) text-(--text-secondary)" : "bg-white/10 text-white shadow-sm"}`}>
+                                <div className={`w-20 h-20 rounded-xl flex items-center justify-center text-3xl font-black shrink-0 relative z-10 ${isPlaceholder ? "bg-(--bg-base) border border-(--ui-border) text-(--text-secondary)" : "bg-white/10 text-white shadow-sm"}`}>
                                     {institute.logoInitials}
                                 </div>
                                 <div className="relative z-10">

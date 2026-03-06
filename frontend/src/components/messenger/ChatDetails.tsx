@@ -47,7 +47,7 @@ const ChatDetails: React.FC<Props> = ({
                 </IconButton>
             </div>
 
-            <div className="p-6 overflow-y-auto custom-scrollbar space-y-8 text-center flex-grow">
+            <div className="p-6 overflow-y-auto custom-scrollbar space-y-8 text-center grow">
                 {/* Avatar Profile */}
                 <div className="flex flex-col items-center">
                     {conversation.type === "announcement" ? (
@@ -74,7 +74,7 @@ const ChatDetails: React.FC<Props> = ({
                     </p>
                     {displayInstitute && (
                         <div className="mt-3 flex gap-2 justify-center">
-                            <span className="flex items-center gap-1.5 text-[10px] font-bold bg-[var(--bg-base)] border border-(--ui-border) text-(--text-secondary) px-2.5 py-1 rounded-md">
+                            <span className="flex items-center gap-1.5 text-[10px] font-bold bg-(--bg-base) border border-(--ui-border) text-(--text-secondary) px-2.5 py-1 rounded-md">
                                 <Building2 size={12} />
                                 {displayInstitute}
                             </span>
@@ -90,7 +90,7 @@ const ChatDetails: React.FC<Props> = ({
                         </h4>
                         <div className="space-y-1">
                             {conversation.participants.slice(0, 6).map((p) => (
-                                <div key={p._id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--bg-base)] transition-colors">
+                                <div key={p._id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-(--bg-base) transition-colors">
                                     <Avatar sx={{ width: 32, height: 32, fontSize: "11px", fontWeight: 700 }} className="!bg-(--bg-sidebar) !text-(--text-on-dark)">
                                         {p.firstName[0]}{p.lastName[0]}
                                     </Avatar>
@@ -115,7 +115,7 @@ const ChatDetails: React.FC<Props> = ({
 
                 {/* Actions */}
                 <div className="space-y-2 pt-2 border-t border-(--ui-divider)">
-                    <div className="p-3.5 rounded-xl border border-(--ui-border) bg-[var(--bg-base)] flex items-center justify-between">
+                    <div className="p-3.5 rounded-xl border border-(--ui-border) bg-(--bg-base) flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <VolumeX size={16} className="text-(--text-secondary)" />
                             <span className="text-xs font-bold text-(--text-primary)">
@@ -152,7 +152,7 @@ const ChatDetails: React.FC<Props> = ({
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="aspect-square bg-[var(--bg-base)] rounded-lg border border-(--ui-border) flex items-center justify-center transition-colors hover:border-(--brand-primary) cursor-pointer">
+                            <div key={i} className="aspect-square bg-(--bg-base) rounded-lg border border-(--ui-border) flex items-center justify-center transition-colors hover:border-(--brand-primary) cursor-pointer">
                                 <ImageIcon size={18} className="text-(--text-secondary) opacity-50" />
                             </div>
                         ))}

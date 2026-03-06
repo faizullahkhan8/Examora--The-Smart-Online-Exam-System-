@@ -161,7 +161,7 @@ const AuditLogs = () => {
     };
 
     return (
-        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10 relative">
+        <div className="w-full bg-(--bg-base) min-h-screen font-sans pb-10 relative">
             <div className="p-8 max-w-[1600px] mx-auto">
                 <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
@@ -199,7 +199,7 @@ const AuditLogs = () => {
                                 key={kpi.label}
                                 className="bg-(--bg-surface) p-5 rounded-xl border border-(--ui-border) shadow-sm hover:border-(--brand-primary) transition-colors"
                             >
-                                <div className={`p-2.5 rounded-lg bg-[var(--bg-base)] w-fit ${kpi.color}`}>
+                                <div className={`p-2.5 rounded-lg bg-(--bg-base) w-fit ${kpi.color}`}>
                                     <kpi.icon size={20} />
                                 </div>
                                 <h3 className="text-2xl font-black text-(--text-primary) mt-3 tracking-tight">
@@ -217,7 +217,7 @@ const AuditLogs = () => {
                             <div className="bg-rose-100 p-2.5 rounded-lg text-rose-600">
                                 <ShieldAlert size={20} />
                             </div>
-                            <div className="flex-grow">
+                            <div className="grow">
                                 <h4 className="text-sm font-black text-rose-900 uppercase tracking-tight">
                                     {latestSecurityAlert.severity} Alert: {latestSecurityAlert.eventType}
                                 </h4>
@@ -232,7 +232,7 @@ const AuditLogs = () => {
                     <div className="bg-(--bg-surface) rounded-xl border border-(--ui-border) shadow-sm overflow-hidden">
                         <div className="p-5 border-b border-(--ui-divider)">
                             <div className="flex flex-wrap items-center gap-4">
-                                <div className="relative flex-grow max-w-md">
+                                <div className="relative grow max-w-md">
                                     <Search
                                         size={16}
                                         className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)"
@@ -240,7 +240,7 @@ const AuditLogs = () => {
                                     <input
                                         type="text"
                                         placeholder="Search actor, event, target, IP..."
-                                        className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium text-(--text-primary) outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
+                                        className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium text-(--text-primary) outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
                                         value={searchTerm}
                                         onChange={(e) => {
                                             setSearchTerm(e.target.value);
@@ -251,7 +251,7 @@ const AuditLogs = () => {
 
                                 <select
                                     title="severity filter"
-                                    className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium text-(--text-primary) outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
+                                    className="bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium text-(--text-primary) outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
                                     value={severityFilter}
                                     onChange={(e) => {
                                         setSeverityFilter(e.target.value as AuditSeverity | "");
@@ -266,7 +266,7 @@ const AuditLogs = () => {
 
                                 <select
                                     title="status filter"
-                                    className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium text-(--text-primary) outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
+                                    className="bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium text-(--text-primary) outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
                                     value={statusFilter}
                                     onChange={(e) => {
                                         setStatusFilter(e.target.value as AuditStatus | "");
@@ -280,7 +280,7 @@ const AuditLogs = () => {
 
                                 <select
                                     title="method filter"
-                                    className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium text-(--text-primary) outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
+                                    className="bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium text-(--text-primary) outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
                                     value={methodFilter}
                                     onChange={(e) => {
                                         setMethodFilter(e.target.value);
@@ -308,7 +308,7 @@ const AuditLogs = () => {
                             ) : (
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="bg-[var(--bg-base)] border-b border-(--ui-divider)">
+                                        <tr className="bg-(--bg-base) border-b border-(--ui-divider)">
                                             <th className="px-5 py-3 text-xs font-bold text-(--text-secondary) uppercase tracking-wider">
                                                 Timestamp
                                             </th>
@@ -338,7 +338,7 @@ const AuditLogs = () => {
                                             return (
                                                 <tr
                                                     key={log._id}
-                                                    className="hover:bg-[var(--bg-base)] transition-colors"
+                                                    className="hover:bg-(--bg-base) transition-colors"
                                                 >
                                                     <td className="px-5 py-3">
                                                         <div className="flex flex-col">
@@ -385,7 +385,7 @@ const AuditLogs = () => {
                                                         </div>
                                                     </td>
                                                     <td className="px-5 py-3">
-                                                        <span className="text-[11px] font-bold text-(--text-secondary) bg-[var(--bg-base)] border border-(--ui-border) px-2 py-1 rounded truncate max-w-[150px] inline-block">
+                                                        <span className="text-[11px] font-bold text-(--text-secondary) bg-(--bg-base) border border-(--ui-border) px-2 py-1 rounded truncate max-w-[150px] inline-block">
                                                             {log.targetLabel || log.targetId || "-"}
                                                         </span>
                                                     </td>
@@ -447,7 +447,7 @@ const AuditLogs = () => {
             >
                 {selectedLog && (
                     <div className="h-full flex flex-col">
-                        <div className="p-6 border-b border-(--ui-divider) flex items-center justify-between bg-[var(--bg-base)]">
+                        <div className="p-6 border-b border-(--ui-divider) flex items-center justify-between bg-(--bg-base)">
                             <div>
                                 <h2 className="text-lg font-black text-(--text-primary) tracking-tight">
                                     Event Inspection
@@ -464,9 +464,9 @@ const AuditLogs = () => {
                             </IconButton>
                         </div>
 
-                        <div className="flex-grow overflow-y-auto custom-scrollbar p-6 space-y-6">
+                        <div className="grow overflow-y-auto custom-scrollbar p-6 space-y-6">
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 rounded-xl border border-(--ui-border) bg-[var(--bg-base)]">
+                                <div className="p-4 rounded-xl border border-(--ui-border) bg-(--bg-base)">
                                     <p className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-wider mb-2">
                                         Execution Status
                                     </p>
@@ -483,7 +483,7 @@ const AuditLogs = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-xl border border-(--ui-border) bg-[var(--bg-base)]">
+                                <div className="p-4 rounded-xl border border-(--ui-border) bg-(--bg-base)">
                                     <p className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-wider mb-2">
                                         Timestamp
                                     </p>

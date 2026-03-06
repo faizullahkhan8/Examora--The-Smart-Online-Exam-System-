@@ -64,11 +64,11 @@ const NewIntakeDrawer = ({
                 />
                 <div className="flex gap-3 pt-4">
                     <Button fullWidth variant="outlined" onClick={onClose}
-                        className="!border-slate-200 !text-slate-600 !normal-case !font-bold !rounded-xl">
+                        className="border-slate-200! !text-slate-600 normal-case! font-bold! rounded-xl!">
                         Cancel
                     </Button>
                     <Button fullWidth type="submit" variant="contained" disabled={isLoading}
-                        className="!bg-slate-900 !text-white !normal-case !font-bold !rounded-xl">
+                        className="bg-slate-900! text-white! normal-case! font-bold! rounded-xl!">
                         {isLoading ? "Creating…" : "Approve Intake"}
                     </Button>
                 </div>
@@ -141,7 +141,7 @@ const HODAcademicSessions = () => {
                     startIcon={<Plus size={16} />}
                     onClick={() => setDrawerOpen((prev) => !prev)}
                     disabled={!deptId}
-                    className="!bg-slate-900 !text-white !rounded-xl !border-slate-300 !font-bold !normal-case !shadow-none hover:shadow-lg transition-all disabled:opacity-50"
+                    className="bg-slate-900! text-white! rounded-xl! !border-slate-300 font-bold! normal-case! shadow-none! hover:shadow-lg transition-all disabled:opacity-50"
                 >
                     Approve New Intake
                 </Button>
@@ -215,7 +215,7 @@ const HODAcademicSessions = () => {
                         variant="contained" startIcon={<Plus size={16} />}
                         onClick={() => setDrawerOpen(true)}
                         disabled={!deptId}
-                        className="!bg-slate-900 !text-white !normal-case !font-bold !rounded-xl !shadow-none disabled:opacity-50"
+                        className="bg-slate-900! text-white! normal-case! font-bold! rounded-xl! shadow-none! disabled:opacity-50"
                     >
                         Approve First Intake
                     </Button>
@@ -237,9 +237,9 @@ const HODAcademicSessions = () => {
                                             <Chip
                                                 label={session.status}
                                                 size="small"
-                                                className={`!text-[10px] !font-black !uppercase !tracking-widest border ${session.status === "active" ? "!bg-emerald-50 !text-emerald-700 !border-emerald-200" :
+                                                className={`text-[10px]! font-black! uppercase! !tracking-widest border ${session.status === "active" ? "bg-emerald-50! text-emerald-700! border-emerald-200!" :
                                                     session.status === "locked" ? "!bg-amber-50 !text-amber-700 !border-amber-200" :
-                                                        "!bg-slate-100 !text-slate-500 !border-slate-200"
+                                                        "bg-slate-100! text-slate-500! border-slate-200!"
                                                     }`}
                                             />
                                         </div>
@@ -286,20 +286,20 @@ const HODAcademicSessions = () => {
                                             {session.status !== "completed" && session.enrollmentOpen && (
                                                 <Button size="small" variant="outlined" startIcon={<UserCheck size={13} />}
                                                     onClick={() => closeEnrollment({ deptId, id: session._id })}
-                                                    className="!border-slate-200 !text-slate-600 !normal-case !font-bold !text-[11px] !rounded-xl">
+                                                    className="border-slate-200! !text-slate-600 normal-case! font-bold! !text-[11px] rounded-xl!">
                                                     Close Enrollment
                                                 </Button>
                                             )}
                                             {session.status !== "completed" && session.status === "locked" ? (
                                                 <Button size="small" variant="outlined" startIcon={<LockOpen size={13} />}
                                                     onClick={() => unlockSession({ deptId, id: session._id })}
-                                                    className="!border-amber-200 !text-amber-600 !normal-case !font-bold !text-[11px] !rounded-xl">
+                                                    className="!border-amber-200 !text-amber-600 normal-case! font-bold! !text-[11px] rounded-xl!">
                                                     Unlock
                                                 </Button>
                                             ) : session.status !== "completed" ? (
                                                 <Button size="small" variant="outlined" startIcon={<Lock size={13} />}
                                                     onClick={() => lockSession({ deptId, id: session._id })}
-                                                    className="!border-slate-200 !text-slate-500 !normal-case !font-bold !text-[11px] !rounded-xl">
+                                                    className="border-slate-200! text-slate-500! normal-case! font-bold! !text-[11px] rounded-xl!">
                                                     Lock
                                                 </Button>
                                             ) : null}
@@ -308,13 +308,13 @@ const HODAcademicSessions = () => {
                                         {isOverdue && session.status === "active" ? (
                                             <Button variant="contained" size="small" startIcon={<Play size={14} />}
                                                 onClick={() => setModal({ open: true, sessionId: session._id })}
-                                                className="!bg-rose-500 hover:!bg-rose-600 !text-white !font-black !text-[10px] !uppercase !tracking-widest !rounded-lg !shadow-none">
+                                                className="!bg-rose-500 hover:!bg-rose-600 text-white! font-black! text-[10px]! uppercase! !tracking-widest !rounded-lg shadow-none!">
                                                 Promote Now
                                             </Button>
                                         ) : session.status === "active" ? (
                                             <Button variant="outlined" size="small" startIcon={<ArrowUpCircle size={14} />}
                                                 onClick={() => setModal({ open: true, sessionId: session._id })}
-                                                className="!border-indigo-200 !text-indigo-600 !font-black !text-[10px] !uppercase !tracking-widest !rounded-lg !shadow-none">
+                                                className="!border-indigo-200 !text-indigo-600 font-black! text-[10px]! uppercase! !tracking-widest !rounded-lg shadow-none!">
                                                 Manual Promote
                                             </Button>
                                         ) : (
@@ -347,13 +347,13 @@ const HODAcademicSessions = () => {
                     />
                 </DialogContent>
                 <DialogActions className="px-6 pb-4">
-                    <Button onClick={() => setModal({ open: false, sessionId: "" })} disabled={isPromoting} className="!text-slate-500 !font-bold">
+                    <Button onClick={() => setModal({ open: false, sessionId: "" })} disabled={isPromoting} className="text-slate-500! font-bold!">
                         Cancel
                     </Button>
                     <Button
                         variant="contained" disabled={!reason.trim() || isPromoting}
                         onClick={handlePromote}
-                        className="!bg-slate-900 hover:!bg-slate-800 !rounded-xl !font-bold !px-6"
+                        className="bg-slate-900! hover:bg-slate-800! rounded-xl! font-bold! px-6!"
                     >
                         {isPromoting ? "Promoting…" : "Promote"}
                     </Button>

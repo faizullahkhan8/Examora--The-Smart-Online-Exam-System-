@@ -28,7 +28,7 @@ const ROLE_CONFIG: Record<string, { color: string; icon: React.ElementType }> = 
     principal: { color: "bg-blue-50 text-blue-600 border-blue-100", icon: Building2 },
     hod: { color: "bg-amber-50 text-amber-600 border-amber-100", icon: Users },
     teacher: { color: "bg-emerald-50 text-emerald-600 border-emerald-100", icon: Users },
-    student: { color: "bg-[var(--bg-base)] text-slate-600 border-slate-200", icon: Users },
+    student: { color: "bg-(--bg-base) text-slate-600 border-slate-200", icon: Users },
 };
 
 const ROLES: UserRole[] = ["admin", "principal", "hod", "teacher", "student"];
@@ -199,7 +199,7 @@ const UserManagement: React.FC = () => {
                 value={form[key] as string}
                 onChange={(e) => { setForm((p) => ({ ...p, [key]: e.target.value })); setFormErrors((p) => ({ ...p, [key]: undefined })); }}
                 placeholder={placeholder}
-                className={`w-full bg-[var(--bg-base)] border rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-(--brand-primary) outline-none transition-colors ${formErrors[key] ? "border-rose-400 focus:border-rose-400" : "border-(--ui-border) focus:border-(--brand-primary)"}`}
+                className={`w-full bg-(--bg-base) border rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-(--brand-primary) outline-none transition-colors ${formErrors[key] ? "border-rose-400 focus:border-rose-400" : "border-(--ui-border) focus:border-(--brand-primary)"}`}
             />
             {formErrors[key] && <p className="text-[10px] text-rose-500 font-semibold mt-1">{formErrors[key]}</p>}
         </div>
@@ -212,7 +212,7 @@ const UserManagement: React.FC = () => {
     };
 
     return (
-        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10">
+        <div className="w-full bg-(--bg-base) min-h-screen font-sans pb-10">
             <div className="p-8 max-w-[1600px] mx-auto">
                 <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
@@ -243,7 +243,7 @@ const UserManagement: React.FC = () => {
                         return (
                             <div key={i} className="p-5 bg-(--bg-surface) border border-(--ui-border) rounded-xl hover:border-(--brand-primary) transition-colors shadow-sm">
                                 <div className="flex justify-between items-start mb-3">
-                                    <div className="p-2.5 rounded-lg bg-[var(--bg-base)]">
+                                    <div className="p-2.5 rounded-lg bg-(--bg-base)">
                                         <Icon size={20} className="text-(--brand-primary)" />
                                     </div>
                                 </div>
@@ -261,21 +261,21 @@ const UserManagement: React.FC = () => {
                 <div className="bg-(--bg-surface) rounded-xl border border-(--ui-border) shadow-sm overflow-hidden">
                     <div className="p-5 border-b border-(--ui-divider)">
                         <div className="flex flex-wrap items-center gap-4">
-                            <div className="relative flex-grow max-w-md">
+                            <div className="relative grow max-w-md">
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
                                 <input type="text" placeholder="Search by name or email..."
-                                    className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
+                                    className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) transition-all"
                                     value={searchTerm} onChange={handleSearchChange} />
                             </div>
                             <select title="role filter" value={roleFilter}
                                 onChange={(e) => { setRoleFilter(e.target.value); setPage(0); }}
-                                className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary)">
+                                className="bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary)">
                                 <option value="">All Roles</option>
                                 {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                             </select>
                             <select title="institute filter" value={instFilter}
                                 onChange={(e) => { setInstFilter(e.target.value); setPage(0); }}
-                                className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary)">
+                                className="bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary)">
                                 <option value="">All Institutes</option>
                                 {institutes.map((inst) => <option key={inst._id} value={inst._id}>{inst.name}</option>)}
                             </select>
@@ -306,7 +306,7 @@ const UserManagement: React.FC = () => {
                         ) : (
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-[var(--bg-base)] border-b border-(--ui-divider)">
+                                    <tr className="bg-(--bg-base) border-b border-(--ui-divider)">
                                         <th className="px-5 py-3 w-10"><Checkbox size="small" sx={{ p: 0 }} /></th>
                                         <th className="px-5 py-3 text-xs font-bold text-(--text-secondary) uppercase tracking-wider">User Profile</th>
                                         <th className="px-5 py-3 text-xs font-bold text-(--text-secondary) uppercase tracking-wider">Role</th>
@@ -317,7 +317,7 @@ const UserManagement: React.FC = () => {
                                 </thead>
                                 <tbody className="divide-y divide-(--ui-divider)">
                                     {users.map((user) => (
-                                        <tr key={user._id} className="hover:bg-[var(--bg-base)] transition-colors">
+                                        <tr key={user._id} className="hover:bg-(--bg-base) transition-colors">
                                             <td className="px-5 py-3"><Checkbox size="small" sx={{ p: 0 }} /></td>
                                             <td className="px-5 py-3">
                                                 <div className="flex items-center gap-3">
@@ -387,11 +387,11 @@ const UserManagement: React.FC = () => {
             <div className={`fixed inset-y-0 right-0 w-full md:w-[480px] bg-(--bg-surface) shadow-2xl z-50 transform transition-transform duration-300 border-l border-(--ui-border) ${selectedUser ? "translate-x-0" : "translate-x-full"}`}>
                 {selectedUser && (
                     <div className="h-full flex flex-col">
-                        <div className="p-5 border-b border-(--ui-divider) flex items-center justify-between bg-[var(--bg-base)]">
+                        <div className="p-5 border-b border-(--ui-divider) flex items-center justify-between bg-(--bg-base)">
                             <h2 className="text-base font-bold text-(--text-primary)">User Profile</h2>
                             <IconButton onClick={() => setSelectedUser(null)} size="small"><X size={18} /></IconButton>
                         </div>
-                        <div className="flex-grow overflow-y-auto p-6 space-y-6">
+                        <div className="grow overflow-y-auto p-6 space-y-6">
                             <div className="flex flex-col items-center text-center">
                                 <Avatar sx={{ width: 72, height: 72, mb: 2, fontSize: "1.75rem", fontWeight: 800, bgcolor: "var(--brand-primary)" }}>
                                     {selectedUser.firstName.charAt(0)}
@@ -402,7 +402,7 @@ const UserManagement: React.FC = () => {
                             </div>
 
                             <div className="grid grid-cols-1 gap-3">
-                                <div className="p-4 rounded-xl border border-(--ui-border) bg-[var(--bg-base)] flex items-center gap-4">
+                                <div className="p-4 rounded-xl border border-(--ui-border) bg-(--bg-base) flex items-center gap-4">
                                     <Mail size={16} className="text-(--text-secondary)" />
                                     <div>
                                         <p className="text-xs font-semibold text-(--text-secondary)">Email Address</p>
@@ -410,7 +410,7 @@ const UserManagement: React.FC = () => {
                                     </div>
                                 </div>
                                 {typeof selectedUser.institute === "object" && selectedUser.institute && (
-                                    <div className="p-4 rounded-xl border border-(--ui-border) bg-[var(--bg-base)] flex items-center gap-4">
+                                    <div className="p-4 rounded-xl border border-(--ui-border) bg-(--bg-base) flex items-center gap-4">
                                         <Building2 size={16} className="text-(--text-secondary)" />
                                         <div>
                                             <p className="text-xs font-semibold text-(--text-secondary)">Associated Institute</p>
@@ -418,7 +418,7 @@ const UserManagement: React.FC = () => {
                                         </div>
                                     </div>
                                 )}
-                                <div className="p-4 rounded-xl border border-(--ui-border) bg-[var(--bg-base)] flex items-center gap-4">
+                                <div className="p-4 rounded-xl border border-(--ui-border) bg-(--bg-base) flex items-center gap-4">
                                     <Lock size={16} className="text-(--text-secondary)" />
                                     <div>
                                         <p className="text-xs font-semibold text-(--text-secondary)">Last Known Login</p>
@@ -509,7 +509,7 @@ const UserManagement: React.FC = () => {
                                     <label className="text-xs font-semibold text-(--text-secondary)">System Role</label>
                                     <select value={form.role} title="select role"
                                         onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as UserRole }))}
-                                        className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary)">
+                                        className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary)">
                                         {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                                     </select>
                                 </div>
@@ -517,7 +517,7 @@ const UserManagement: React.FC = () => {
                                     <label className="text-xs font-semibold text-(--text-secondary)">Primary Institute (Optional)</label>
                                     <select value={form.institute ?? ""} title="select institute"
                                         onChange={(e) => setForm((p) => ({ ...p, institute: e.target.value }))}
-                                        className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary)">
+                                        className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary)">
                                         <option value="">None</option>
                                         {institutes.map((inst) => <option key={inst._id} value={inst._id}>{inst.name}</option>)}
                                     </select>
@@ -528,7 +528,7 @@ const UserManagement: React.FC = () => {
                         {activeStep === 2 && (
                             <div className="space-y-3">
                                 <h4 className="text-sm font-bold text-(--text-primary) mb-2">Review Information</h4>
-                                <div className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg p-1">
+                                <div className="bg-(--bg-base) border border-(--ui-border) rounded-lg p-1">
                                     {[
                                         ["Full Name", `${form.firstName} ${form.lastName}`],
                                         ["Email Address", form.email],
@@ -547,7 +547,7 @@ const UserManagement: React.FC = () => {
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 3 }}>
                     <Button onClick={() => setIsCreateOpen(false)} sx={{ color: "var(--text-secondary)", fontWeight: 600, textTransform: "none" }}>Cancel</Button>
-                    <div className="flex-grow" />
+                    <div className="grow" />
                     {activeStep > 0 && (
                         <Button onClick={() => setActiveStep((p) => p - 1)} sx={{ fontWeight: 600, color: "var(--text-primary)", textTransform: "none" }}>Back</Button>
                     )}
@@ -566,7 +566,7 @@ const UserManagement: React.FC = () => {
                         <label className="text-xs font-semibold text-(--text-secondary)">New Password</label>
                         <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
                             placeholder="Minimum 6 characters"
-                            className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-colors" />
+                            className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-colors" />
                         {newPassword.length > 0 && newPassword.length < 6 && (
                             <p className="text-[10px] text-rose-500 font-semibold mt-1">Password must be at least 6 characters</p>
                         )}

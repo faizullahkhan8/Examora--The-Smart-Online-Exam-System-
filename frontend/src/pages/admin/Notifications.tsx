@@ -54,7 +54,7 @@ const getPriorityColor = (priority: string) => {
         case "medium":
             return "bg-amber-50 text-amber-600 border-amber-100";
         default:
-            return "bg-[var(--bg-base)] text-(--text-secondary) border-(--ui-border)";
+            return "bg-(--bg-base) text-(--text-secondary) border-(--ui-border)";
     }
 };
 
@@ -90,14 +90,14 @@ const TABS: {
 // ─── Skeleton row ─────────────────────────────────────────────────────────────
 const NotifSkeleton = () => (
     <div className="flex gap-4 p-5 rounded-xl border border-(--ui-border) bg-(--bg-surface) animate-pulse shadow-sm">
-        <div className="w-12 h-12 rounded-lg bg-[var(--bg-base)] shrink-0 border border-(--ui-divider)" />
-        <div className="flex-grow space-y-2 pt-1">
+        <div className="w-12 h-12 rounded-lg bg-(--bg-base) shrink-0 border border-(--ui-divider)" />
+        <div className="grow space-y-2 pt-1">
             <div className="flex justify-between">
-                <div className="h-3 bg-[var(--bg-base)] rounded w-48" />
-                <div className="h-2 bg-[var(--bg-base)] rounded w-20" />
+                <div className="h-3 bg-(--bg-base) rounded w-48" />
+                <div className="h-2 bg-(--bg-base) rounded w-20" />
             </div>
-            <div className="h-2 bg-[var(--bg-base)] rounded w-full" />
-            <div className="h-2 bg-[var(--bg-base)] rounded w-3/4" />
+            <div className="h-2 bg-(--bg-base) rounded w-full" />
+            <div className="h-2 bg-(--bg-base) rounded w-3/4" />
         </div>
     </div>
 );
@@ -146,7 +146,7 @@ const Notifications = () => {
     };
 
     return (
-        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10">
+        <div className="w-full bg-(--bg-base) min-h-screen font-sans pb-10">
             <div className="p-8 max-w-[1600px] mx-auto">
                 {/* ─── Inline Header ─── */}
                 <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -229,7 +229,7 @@ const Notifications = () => {
                                 placeholder="Filter alerts..."
                                 value={search}
                                 onChange={(e) => handleSearchChange(e.target.value)}
-                                className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-4 py-2 text-xs font-medium text-(--text-primary) focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-56 transition-all"
+                                className="bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-4 py-2 text-xs font-medium text-(--text-primary) focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-56 transition-all"
                             />
                         </div>
                         {/* <IconButton size="small" sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--text-primary)" } }}>
@@ -259,8 +259,8 @@ const Notifications = () => {
                                 <div className="shrink-0 pt-1">
                                     <div
                                         className={`p-2.5 rounded-lg border ${notif.isRead
-                                            ? "bg-[var(--bg-base)] border-(--ui-border)"
-                                            : "bg-[var(--bg-base)] border-(--brand-primary)/30"
+                                            ? "bg-(--bg-base) border-(--ui-border)"
+                                            : "bg-(--bg-base) border-(--brand-primary)/30"
                                             }`}
                                     >
                                         {getIcon(notif.type)}
@@ -268,7 +268,7 @@ const Notifications = () => {
                                 </div>
 
                                 {/* Content */}
-                                <div className="flex-grow space-y-1.5 min-w-0">
+                                <div className="grow space-y-1.5 min-w-0">
                                     <div className="flex items-center justify-between flex-wrap gap-2">
                                         <div className="flex items-center gap-2.5">
                                             <h3
@@ -289,7 +289,7 @@ const Notifications = () => {
                                             <Chip
                                                 label={notif.priority}
                                                 size="small"
-                                                className={`!text-[9px] !font-bold !uppercase !tracking-wider !h-5 !px-1.5 border ${getPriorityColor(
+                                                className={`text-[9px]! font-bold! uppercase! tracking-wider! h-5! px-1.5! border ${getPriorityColor(
                                                     notif.priority
                                                 )}`}
                                             />
@@ -350,7 +350,7 @@ const Notifications = () => {
                     {/* Empty state */}
                     {!isLoading && notifications.length === 0 && (
                         <div className="text-center py-20 bg-(--bg-surface) rounded-xl border border-dashed border-(--ui-border)">
-                            <div className="w-16 h-16 bg-[var(--bg-base)] border border-(--ui-border) rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div className="w-16 h-16 bg-(--bg-base) border border-(--ui-border) rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Bell size={28} className="text-(--text-secondary) opacity-50" />
                             </div>
                             <h3 className="text-(--text-primary) font-black text-lg">

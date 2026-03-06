@@ -63,7 +63,7 @@ const getStatusConfig = (status: string) => {
         case "locked":
             return { label: "Locked", className: "bg-amber-50 text-amber-600 border-amber-100" };
         case "completed":
-            return { label: "Completed", className: "bg-[var(--bg-base)] text-(--text-secondary) border-(--ui-border)" };
+            return { label: "Completed", className: "bg-(--bg-base) text-(--text-secondary) border-(--ui-border)" };
         case "upcoming":
         default:
             return { label: "Upcoming", className: "bg-blue-50 text-blue-600 border-blue-100" };
@@ -256,7 +256,7 @@ const AcademicSessions = () => {
     };
 
     return (
-        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10">
+        <div className="w-full bg-(--bg-base) min-h-screen font-sans pb-10">
             <div className="p-8 max-w-[1600px] mx-auto">
                 <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
@@ -272,7 +272,7 @@ const AcademicSessions = () => {
                             value={selectedDept}
                             onChange={(e) => { setSelectedDept(e.target.value); setPage(0); }}
                             disabled={deptsLoading || departments.length === 0}
-                            className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-4 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-64 transition-all text-(--text-primary) disabled:opacity-60"
+                            className="bg-(--bg-base) border border-(--ui-border) rounded-lg px-4 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-64 transition-all text-(--text-primary) disabled:opacity-60"
                         >
                             {deptsLoading ? (
                                 <option value="">Loading Departments...</option>
@@ -297,7 +297,7 @@ const AcademicSessions = () => {
                     <div className="overflow-x-auto min-h-[420px]">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-(--ui-divider) bg-[var(--bg-base)] text-left">
+                                <tr className="border-b border-(--ui-divider) bg-(--bg-base) text-left">
                                     {["Academic Year", "Semester", "Enrollment", "Capacity", "Status", "Actions"].map((h, i) => (
                                         <th key={h} className={`px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-(--text-secondary) ${i === 5 ? "text-right" : ""}`}>
                                             {h}
@@ -316,7 +316,7 @@ const AcademicSessions = () => {
                                     </tr>
                                 ) : sessionsLoading ? (
                                     Array.from({ length: 4 }).map((_, i) => (
-                                        <tr key={i} className="hover:bg-[var(--bg-base)] transition-colors">
+                                        <tr key={i} className="hover:bg-(--bg-base) transition-colors">
                                             {Array.from({ length: 6 }).map((_, j) => (
                                                 <td key={j} className="px-6 py-4">
                                                     <Skeleton height={20} sx={{ bgcolor: "var(--ui-divider)", borderRadius: "4px" }} />
@@ -326,7 +326,7 @@ const AcademicSessions = () => {
                                     ))
                                 ) : sessions.length === 0 ? (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-16 text-center bg-[var(--bg-base)]">
+                                        <td colSpan={6} className="px-6 py-16 text-center bg-(--bg-base)">
                                             <CalendarDays size={48} className="mx-auto text-(--text-secondary) opacity-30 mb-4" />
                                             <p className="font-black text-(--text-primary) text-lg">No sessions configured</p>
                                             <p className="text-sm font-medium text-(--text-secondary) mt-1">Click "New Session" to initialize an academic year for this department.</p>
@@ -335,7 +335,7 @@ const AcademicSessions = () => {
                                 ) : sessions.map((session) => {
                                     const config = getStatusConfig(session.status);
                                     return (
-                                        <tr key={session._id} className="hover:bg-[var(--bg-base)] transition-colors group">
+                                        <tr key={session._id} className="hover:bg-(--bg-base) transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-10 h-10 bg-(--brand-primary) bg-opacity-10 border border-(--brand-primary) border-opacity-20 rounded-xl flex items-center justify-center shrink-0">
@@ -356,7 +356,7 @@ const AcademicSessions = () => {
                                                 <Chip
                                                     label={session.enrollmentOpen ? "Open" : "Closed"}
                                                     size="small"
-                                                    className={`!text-[10px] !font-bold !uppercase !tracking-wider !h-5 !px-1.5 border ${session.enrollmentOpen ? "bg-blue-50 text-blue-600 border-blue-100" : "bg-[var(--bg-base)] text-(--text-secondary) border-(--ui-border)"}`}
+                                                    className={`text-[10px]! font-bold! uppercase! tracking-wider! h-5! px-1.5! border ${session.enrollmentOpen ? "bg-blue-50 text-blue-600 border-blue-100" : "bg-(--bg-base) text-(--text-secondary) border-(--ui-border)"}`}
                                                 />
                                             </td>
                                             <td className="px-6 py-4">
@@ -369,7 +369,7 @@ const AcademicSessions = () => {
                                                 <Chip
                                                     label={config.label}
                                                     size="small"
-                                                    className={`!text-[10px] !font-bold !uppercase !tracking-wider !h-5 !px-1.5 border ${config.className}`}
+                                                    className={`text-[10px]! font-bold! uppercase! tracking-wider! h-5! px-1.5! border ${config.className}`}
                                                 />
                                             </td>
                                             <td className="px-6 py-4 text-right">

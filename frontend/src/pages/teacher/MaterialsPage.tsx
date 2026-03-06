@@ -20,7 +20,7 @@ const typeIcon: Record<string, React.ReactNode> = {
 };
 
 const typeCls: Record<string, string> = {
-    pdf: "!bg-rose-50 !text-rose-700 !border-rose-200",
+    pdf: "bg-rose-50! text-rose-700! border-rose-200!",
     link: "!bg-blue-50 !text-blue-700 !border-blue-200",
     note: "!bg-amber-50 !text-amber-700 !border-amber-200",
 };
@@ -33,7 +33,7 @@ const MaterialsPage = () => {
     const [dialog, setDialog] = useState(false);
     const [form, setForm] = useState({ title: "", type: "link" as "pdf" | "link" | "note", content: "" });
 
-    const { data, isLoading, refetch } = useGetMaterialsBySubjectQuery(selectedSubject, { skip: !selectedSubject });
+    const { data, isLoading } = useGetMaterialsBySubjectQuery(selectedSubject, { skip: !selectedSubject });
     const [create, { isLoading: creating }] = useCreateMaterialMutation();
     const [del, { isLoading: deleting }] = useDeleteMaterialMutation();
 
@@ -70,7 +70,7 @@ const MaterialsPage = () => {
                 </div>
                 <Button variant="contained" startIcon={<Plus size={16} />}
                     onClick={() => setDialog(true)} disabled={!selectedSubject}
-                    className="!bg-slate-900 !text-white !rounded-xl !font-bold !normal-case !shadow-none disabled:opacity-50">
+                    className="bg-slate-900! text-white! rounded-xl! font-bold! normal-case! shadow-none! disabled:opacity-50">
                     Share Material
                 </Button>
             </div>
@@ -108,7 +108,7 @@ const MaterialsPage = () => {
                                 <div className="flex items-center gap-2">
                                     {typeIcon[m.type]}
                                     <Chip label={m.type.toUpperCase()} size="small"
-                                        className={`!text-[10px] !font-black border ${typeCls[m.type]}`} />
+                                        className={`text-[10px]! font-black! border ${typeCls[m.type]}`} />
                                 </div>
                                 <button onClick={() => handleDelete(m._id)} disabled={deleting}
                                     className="opacity-0 group-hover:opacity-100 text-rose-400 hover:text-rose-600 transition-all">
@@ -154,9 +154,9 @@ const MaterialsPage = () => {
                         value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} />
                 </DialogContent>
                 <DialogActions className="px-6 pb-4">
-                    <Button onClick={() => setDialog(false)} className="!text-slate-500 !font-bold">Cancel</Button>
+                    <Button onClick={() => setDialog(false)} className="text-slate-500! font-bold!">Cancel</Button>
                     <Button onClick={handleCreate} disabled={creating} variant="contained"
-                        className="!bg-slate-900 !rounded-xl !font-bold !normal-case">
+                        className="bg-slate-900! rounded-xl! font-bold! normal-case!">
                         {creating ? "Sharing…" : "Share"}
                     </Button>
                 </DialogActions>

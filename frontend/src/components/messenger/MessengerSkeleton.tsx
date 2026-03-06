@@ -13,7 +13,7 @@ const MessengerSkeleton: React.FC<Props> = ({ rows = 4 }) => {
                     className="p-4 flex gap-3 border-b border-slate-50 animate-pulse"
                 >
                     <div className="w-11 h-11 rounded-full bg-slate-200 shrink-0" />
-                    <div className="flex-grow space-y-2 pt-1">
+                    <div className="grow space-y-2 pt-1">
                         <div className="flex justify-between">
                             <div className="h-3 bg-slate-200 rounded w-32" />
                             <div className="h-2 bg-slate-100 rounded w-12" />

@@ -156,7 +156,7 @@ const AssignHODDialog = ({
                 </p>
                 <div className="space-y-2 max-h-[280px] overflow-y-auto custom-scrollbar pr-1">
                     {hodUsers.length === 0 ? (
-                        <div className="text-center py-8 border border-dashed border-(--ui-border) rounded-xl bg-[var(--bg-base)]">
+                        <div className="text-center py-8 border border-dashed border-(--ui-border) rounded-xl bg-(--bg-base)">
                             <p className="text-sm font-semibold text-(--text-secondary)">No HOD-role users found.</p>
                             <p className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-wider mt-1">Provision users in admin panel</p>
                         </div>
@@ -166,7 +166,7 @@ const AssignHODDialog = ({
                                 onClick={() => setSelected(u._id)}
                                 className={`w-full text-left p-3 rounded-xl border transition-all ${selected === u._id
                                     ? "border-(--brand-primary) bg-(--brand-primary) bg-opacity-10"
-                                    : "border-(--ui-border) bg-[var(--bg-base)] hover:border-(--brand-primary)"
+                                    : "border-(--ui-border) bg-(--bg-base) hover:border-(--brand-primary)"
                                     }`}
                             >
                                 <p className={`font-bold text-sm ${selected === u._id ? "text-(--brand-primary)" : "text-(--text-primary)"}`}>{u.firstName} {u.lastName}</p>
@@ -209,7 +209,7 @@ const Departments = () => {
     const [deleteDept] = useDeleteDepartmentMutation();
 
     return (
-        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10">
+        <div className="w-full bg-(--bg-base) min-h-screen font-sans pb-10">
             <div className="p-8 max-w-[1600px] mx-auto">
                 <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
@@ -227,7 +227,7 @@ const Departments = () => {
                                 placeholder="Search departments…"
                                 value={search}
                                 onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-                                className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-4 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-64 transition-all text-(--text-primary)"
+                                className="bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-4 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-64 transition-all text-(--text-primary)"
                             />
                         </div>
                         <Button variant="contained" startIcon={<Plus size={16} />}
@@ -242,7 +242,7 @@ const Departments = () => {
                     <div className="overflow-x-auto min-h-[420px]">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-(--ui-divider) bg-[var(--bg-base)] text-left">
+                                <tr className="border-b border-(--ui-divider) bg-(--bg-base) text-left">
                                     {["Department", "Code", "HOD", "Capacity", "Status", "Actions"].map((h) => (
                                         <th key={h} className="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
                                             {h}
@@ -253,7 +253,7 @@ const Departments = () => {
                             <tbody className="divide-y divide-(--ui-divider)">
                                 {isLoading
                                     ? Array.from({ length: 5 }).map((_, i) => (
-                                        <tr key={i} className="hover:bg-[var(--bg-base)] transition-colors">
+                                        <tr key={i} className="hover:bg-(--bg-base) transition-colors">
                                             {Array.from({ length: 6 }).map((_, j) => (
                                                 <td key={j} className="px-6 py-4">
                                                     <Skeleton height={20} sx={{ bgcolor: "var(--ui-divider)", borderRadius: "4px" }} />
@@ -262,7 +262,7 @@ const Departments = () => {
                                         </tr>
                                     ))
                                     : departments.map((dept) => (
-                                        <tr key={dept._id} className="hover:bg-[var(--bg-base)] transition-colors group">
+                                        <tr key={dept._id} className="hover:bg-(--bg-base) transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-10 h-10 bg-(--brand-primary) bg-opacity-10 border border-(--brand-primary) border-opacity-20 rounded-xl flex items-center justify-center shrink-0">
@@ -275,7 +275,7 @@ const Departments = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="font-bold text-[11px] bg-[var(--bg-base)] border border-(--ui-border) text-(--text-secondary) px-2.5 py-1 rounded-lg">
+                                                <span className="font-bold text-[11px] bg-(--bg-base) border border-(--ui-border) text-(--text-secondary) px-2.5 py-1 rounded-lg">
                                                     {dept.code}
                                                 </span>
                                             </td>
@@ -300,7 +300,7 @@ const Departments = () => {
                                                 <Chip
                                                     label={dept.isActive ? "Active" : "Inactive"}
                                                     size="small"
-                                                    className={`!text-[10px] !font-bold !uppercase !tracking-wider !h-5 !px-1.5 border ${dept.isActive ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-[var(--bg-base)] text-(--text-secondary) border-(--ui-border)"}`}
+                                                    className={`text-[10px]! font-bold! uppercase! tracking-wider! h-5! px-1.5! border ${dept.isActive ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-(--bg-base) text-(--text-secondary) border-(--ui-border)"}`}
                                                 />
                                             </td>
                                             <td className="px-6 py-4">
@@ -344,7 +344,7 @@ const Departments = () => {
                         </table>
 
                         {!isLoading && departments.length === 0 && (
-                            <div className="text-center py-20 bg-[var(--bg-base)]">
+                            <div className="text-center py-20 bg-(--bg-base)">
                                 <BookOpen size={48} className="mx-auto text-(--text-secondary) opacity-30 mb-4" />
                                 <p className="font-black text-(--text-primary) text-lg">No departments found</p>
                                 <p className="text-sm font-medium text-(--text-secondary) mt-1">Click "New Department" to add your first academic department.</p>

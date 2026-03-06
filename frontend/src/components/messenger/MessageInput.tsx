@@ -39,7 +39,7 @@ const MessageInput: React.FC<Props> = ({ conversationId, onSend, isSending }) =>
 
     return (
         <div className="p-5 bg-(--bg-surface) border-t border-(--ui-divider) z-10">
-            <div className="bg-[var(--bg-base)] rounded-xl p-2 flex items-end gap-2 border border-(--ui-border) focus-within:border-(--brand-primary) focus-within:ring-1 focus-within:ring-(--brand-primary) transition-all shadow-sm">
+            <div className="bg-(--bg-base) rounded-xl p-2 flex items-end gap-2 border border-(--ui-border) focus-within:border-(--brand-primary) focus-within:ring-1 focus-within:ring-(--brand-primary) transition-all shadow-sm">
                 <IconButton size="small" disabled sx={{ color: "var(--text-secondary)" }}>
                     <Paperclip size={18} />
                 </IconButton>
@@ -50,7 +50,7 @@ const MessageInput: React.FC<Props> = ({ conversationId, onSend, isSending }) =>
                     ref={textareaRef}
                     rows={1}
                     placeholder="Type a message..."
-                    className="flex-grow bg-transparent border-none outline-none py-2 px-2 text-sm font-medium resize-none max-h-32 text-(--text-primary) placeholder:text-(--text-secondary) placeholder:opacity-60 custom-scrollbar"
+                    className="grow bg-transparent border-none outline-none py-2 px-2 text-sm font-medium resize-none max-h-32 text-(--text-primary) placeholder:text-(--text-secondary) placeholder:opacity-60 custom-scrollbar"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={handleKeyDown}

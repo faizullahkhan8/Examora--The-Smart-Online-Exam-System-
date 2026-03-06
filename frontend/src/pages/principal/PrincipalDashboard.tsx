@@ -4,7 +4,6 @@ import {
     Users,
     CheckCircle2,
     AlertTriangle,
-    TrendingUp,
     BarChart3,
     ChevronRight,
     Building2,
@@ -29,7 +28,7 @@ const StatCard = ({
 }) => (
     <div className="p-5 bg-(--bg-surface) border border-(--ui-border) rounded-xl hover:border-(--brand-primary) transition-colors shadow-sm">
         <div className="flex justify-between items-start mb-3">
-            <div className={`p-2.5 rounded-lg bg-[var(--bg-base)] w-fit ${colorClass}`}>
+            <div className={`p-2.5 rounded-lg bg-(--bg-base) w-fit ${colorClass}`}>
                 <Icon size={20} className="text-current" />
             </div>
         </div>
@@ -55,12 +54,12 @@ const QuickAction = ({
 }) => (
     <a
         href={href}
-        className="flex items-center gap-4 p-4 rounded-xl border border-transparent hover:border-(--ui-border) hover:bg-[var(--bg-base)] transition-all group"
+        className="flex items-center gap-4 p-4 rounded-xl border border-transparent hover:border-(--ui-border) hover:bg-(--bg-base) transition-all group"
     >
         <div className="p-2.5 bg-(--bg-surface) border border-(--ui-border) rounded-lg shadow-sm group-hover:border-(--brand-primary) transition-colors">
             <Icon size={18} className="text-(--brand-primary)" />
         </div>
-        <div className="flex-grow">
+        <div className="grow">
             <p className="text-sm font-bold text-(--text-primary)">{label}</p>
             <p className="text-xs text-(--text-secondary) font-medium mt-0.5">{desc}</p>
         </div>
@@ -78,7 +77,7 @@ const PrincipalDashboard = () => {
     const deptsWithoutHOD = departments.length - hodsAssigned;
 
     return (
-        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10">
+        <div className="w-full bg-(--bg-base) min-h-screen font-sans pb-10">
             <div className="p-8 max-w-[1600px] mx-auto">
 
                 <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -154,7 +153,7 @@ const PrincipalDashboard = () => {
                                 </a>
                             </div>
 
-                            <div className="flex-grow overflow-y-auto custom-scrollbar pr-1">
+                            <div className="grow overflow-y-auto custom-scrollbar pr-1">
                                 {deptLoading ? (
                                     Array.from({ length: 4 }).map((_, i) => (
                                         <Skeleton key={i} height={56} sx={{ mb: 1.5, borderRadius: "12px", bgcolor: "var(--ui-divider)" }} variant="rectangular" />
@@ -170,7 +169,7 @@ const PrincipalDashboard = () => {
                                 ) : (
                                     <div className="space-y-2.5">
                                         {departments.slice(0, 5).map((dept) => (
-                                            <div key={dept._id} className="flex items-center justify-between p-3.5 rounded-xl border border-(--ui-border) bg-[var(--bg-base)] hover:border-(--brand-primary) transition-colors">
+                                            <div key={dept._id} className="flex items-center justify-between p-3.5 rounded-xl border border-(--ui-border) bg-(--bg-base) hover:border-(--brand-primary) transition-colors">
                                                 <div>
                                                     <p className="text-sm font-bold text-(--text-primary)">{dept.name}</p>
                                                     <p className="text-[11px] text-(--text-secondary) font-semibold mt-0.5">{dept.code}</p>

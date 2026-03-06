@@ -8,7 +8,7 @@ import { useMarkAttendanceMutation, useGetAttendanceBySubjectQuery } from "../..
 
 // ─── Attendance Page ───────────────────────────────────────────────────────────
 const AttendancePage = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams, _] = useSearchParams();
     const preSelected = searchParams.get("subject") ?? "";
 
     const { data: subjectsData } = useGetMySubjectsQuery();
@@ -129,7 +129,7 @@ const AttendancePage = () => {
                                             <td className="px-6 py-4 text-slate-500">{s.email}</td>
                                             <td className="px-6 py-4">
                                                 <Chip label={present ? "Present" : "Absent"} size="small"
-                                                    className={`!text-[10px] !font-black !uppercase border ${present ? "!bg-emerald-50 !text-emerald-700 !border-emerald-200" : "!bg-rose-50 !text-rose-700 !border-rose-200"}`} />
+                                                    className={`text-[10px]! font-black! uppercase! border ${present ? "bg-emerald-50! text-emerald-700! border-emerald-200!" : "bg-rose-50! text-rose-700! border-rose-200!"}`} />
                                             </td>
                                             <td className="px-6 py-4">
                                                 <button onClick={() => toggle(s._id)}
@@ -147,7 +147,7 @@ const AttendancePage = () => {
                     <div className="mt-6 flex justify-end">
                         <Button onClick={handleSave} disabled={saving} variant="contained"
                             startIcon={<Save size={16} />}
-                            className="!bg-slate-900 !text-white !rounded-xl !font-bold !normal-case !shadow-none">
+                            className="bg-slate-900! text-white! rounded-xl! font-bold! normal-case! shadow-none!">
                             {saving ? "Saving…" : "Save Attendance"}
                         </Button>
                     </div>

@@ -365,7 +365,7 @@ const AdminDashboard = () => {
                                 className="p-5 bg-(--bg-surface) border border-(--ui-border) rounded-xl hover:border-(--brand-primary) transition-colors shadow-sm"
                             >
                                 <div className="flex justify-between items-start mb-3">
-                                    <div className="p-2.5 rounded-lg bg-[var(--bg-base)]">
+                                    <div className="p-2.5 rounded-lg bg-(--bg-base)">
                                         <Icon size={20} className="text-(--brand-primary)" />
                                     </div>
                                     <span
@@ -396,7 +396,7 @@ const AdminDashboard = () => {
                                     Distribution of sessions by lifecycle state
                                 </p>
                             </div>
-                            <div className="px-2.5 py-1 bg-[var(--bg-base)] rounded-md border border-(--ui-border) flex items-center gap-2">
+                            <div className="px-2.5 py-1 bg-(--bg-base) rounded-md border border-(--ui-border) flex items-center gap-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-(--status-danger) animate-pulse" />
                                 <span className="text-[10px] font-bold text-(--text-primary) tracking-wider uppercase">
                                     Live
@@ -459,7 +459,7 @@ const AdminDashboard = () => {
                                 value={newTodo}
                                 onChange={(e) => setNewTodo(e.target.value)}
                                 placeholder="Quick task add..."
-                                className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-3 pr-10 py-2.5 text-sm font-medium text-(--text-primary) focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all placeholder:text-(--text-secondary)/60"
+                                className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg pl-3 pr-10 py-2.5 text-sm font-medium text-(--text-primary) focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all placeholder:text-(--text-secondary)/60"
                             />
                             <button
                                 title="submit"
@@ -480,7 +480,7 @@ const AdminDashboard = () => {
                                 todos.map((todo) => (
                                     <div
                                         key={todo.id}
-                                        className={`flex items-start gap-3 p-3 rounded-lg border transition-all group ${todo.completed ? "bg-[var(--bg-base)] border-transparent" : "bg-(--bg-surface) border-(--ui-border)"}`}
+                                        className={`flex items-start gap-3 p-3 rounded-lg border transition-all group ${todo.completed ? "bg-(--bg-base) border-transparent" : "bg-(--bg-surface) border-(--ui-border)"}`}
                                     >
                                         <Checkbox
                                             size="small"
@@ -540,7 +540,7 @@ const AdminDashboard = () => {
                                     title="recipient"
                                     value={broadcastForm.recipient}
                                     onChange={(e) => setBroadcastForm((prev) => ({ ...prev, recipient: e.target.value }))}
-                                    className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary)"
+                                    className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary)"
                                 >
                                     <option value="">Select Target User</option>
                                     {users.map((user) => (
@@ -558,7 +558,7 @@ const AdminDashboard = () => {
                                         title="type"
                                         value={broadcastForm.type}
                                         onChange={(e) => setBroadcastForm((prev) => ({ ...prev, type: e.target.value as NotificationType }))}
-                                        className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary)"
+                                        className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary)"
                                     >
                                         <option value="security">Security</option>
                                         <option value="system">System</option>
@@ -572,7 +572,7 @@ const AdminDashboard = () => {
                                         title="priority"
                                         value={broadcastForm.priority}
                                         onChange={(e) => setBroadcastForm((prev) => ({ ...prev, priority: e.target.value as NotificationPriority }))}
-                                        className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary)"
+                                        className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary)"
                                     >
                                         <option value="high">High</option>
                                         <option value="medium">Medium</option>
@@ -588,7 +588,7 @@ const AdminDashboard = () => {
                                     value={broadcastForm.title}
                                     onChange={(e) => setBroadcastForm((prev) => ({ ...prev, title: e.target.value }))}
                                     placeholder="Brief alert title"
-                                    className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary)"
+                                    className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary)"
                                 />
                             </div>
 
@@ -599,7 +599,7 @@ const AdminDashboard = () => {
                                     onChange={(e) => setBroadcastForm((prev) => ({ ...prev, message: e.target.value }))}
                                     placeholder="Provide necessary context..."
                                     rows={3}
-                                    className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary) resize-none"
+                                    className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-(--brand-primary) focus:ring-1 focus:ring-(--brand-primary) resize-none"
                                 />
                             </div>
                         </div>

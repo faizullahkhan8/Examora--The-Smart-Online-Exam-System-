@@ -88,7 +88,7 @@ const TeacherDashboard = () => {
                                         <td className="px-6 py-4 font-medium text-slate-500">{s.session?.startYear}–{s.session?.endYear}</td>
                                         <td className="px-6 py-4">
                                             <Chip label={s.isActive ? "Active" : "Inactive"} size="small"
-                                                className={`!text-[10px] !font-black !uppercase border ${s.isActive ? "!bg-emerald-50 !text-emerald-700 !border-emerald-200" : "!bg-slate-100 !text-slate-500 !border-slate-200"}`} />
+                                                className={`text-[10px]! font-black! uppercase! border ${s.isActive ? "bg-emerald-50! text-emerald-700! border-emerald-200!" : "bg-slate-100! text-slate-500! border-slate-200!"}`} />
                                         </td>
                                     </tr>
                                 ))}

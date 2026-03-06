@@ -12,10 +12,10 @@ import {
 } from "../../services/examPaper/examPaper.service";
 
 const statusColors: Record<string, string> = {
-    draft: "!bg-slate-100 !text-slate-600 !border-slate-200",
+    draft: "bg-slate-100! !text-slate-600 border-slate-200!",
     submitted: "!bg-amber-50 !text-amber-700 !border-amber-200",
-    approved: "!bg-emerald-50 !text-emerald-700 !border-emerald-200",
-    rejected: "!bg-rose-50 !text-rose-700 !border-rose-200",
+    approved: "bg-emerald-50! text-emerald-700! border-emerald-200!",
+    rejected: "bg-rose-50! text-rose-700! border-rose-200!",
 };
 
 const ExamPapers = () => {
@@ -47,7 +47,7 @@ const ExamPapers = () => {
                 </div>
                 <Button component={Link} to="/teacher/exam-papers/builder"
                     variant="contained" startIcon={<Plus size={16} />}
-                    className="bg-slate-900! !text-white !rounded-xl !font-bold !normal-case !shadow-none">
+                    className="bg-slate-900! text-white! rounded-xl! font-bold! normal-case! shadow-none!">
                     New Paper
                 </Button>
             </div>
@@ -60,7 +60,7 @@ const ExamPapers = () => {
                     <h3 className="font-black text-slate-500">No exam papers yet</h3>
                     <p className="text-sm text-slate-400 mt-1">Use the <strong>New Paper</strong> button to open the Paper Builder.</p>
                     <Button component={Link} to="/teacher/exam-papers/builder"
-                        variant="contained" className="!mt-5 !bg-indigo-600 !rounded-xl !font-bold !normal-case !shadow-none">
+                        variant="contained" className="!mt-5 !bg-indigo-600 rounded-xl! font-bold! normal-case! shadow-none!">
                         Open Paper Builder
                     </Button>
                 </Paper>
@@ -87,17 +87,17 @@ const ExamPapers = () => {
                                     </div>
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <Chip label={p.status} size="small"
-                                            className={`!text-[10px] !font-black !uppercase border ${statusColors[p.status]}`} />
+                                            className={`text-[10px]! font-black! uppercase! border ${statusColors[p.status]}`} />
                                         {p.status === "draft" && (
                                             <>
                                                 <Button component={Link} to={`/teacher/exam-papers/builder?edit=${p._id}`}
                                                     size="small" variant="outlined" startIcon={<Edit2 size={12} />}
-                                                    className="!text-[11px] !font-bold !normal-case !rounded-xl !border-slate-200 !text-slate-600">
+                                                    className="!text-[11px] font-bold! normal-case! rounded-xl! border-slate-200! !text-slate-600">
                                                     Edit in Builder
                                                 </Button>
                                                 <Button size="small" variant="contained" startIcon={<Send size={12} />}
                                                     onClick={() => setConfirmId(p._id)}
-                                                    className="!bg-indigo-600 !text-white !text-[11px] !font-bold !normal-case !rounded-xl !shadow-none">
+                                                    className="!bg-indigo-600 text-white! !text-[11px] font-bold! normal-case! rounded-xl! shadow-none!">
                                                     Submit
                                                 </Button>
                                             </>
@@ -118,9 +118,9 @@ const ExamPapers = () => {
                     <DialogContentText>Once submitted, the HOD will review and approve or reject this paper. You won't be able to edit it.</DialogContentText>
                 </DialogContent>
                 <DialogActions className="px-6 pb-4">
-                    <Button onClick={() => setConfirmId(null)} className="!text-slate-500 !font-bold">Cancel</Button>
+                    <Button onClick={() => setConfirmId(null)} className="text-slate-500! font-bold!">Cancel</Button>
                     <Button onClick={handleSubmit} disabled={submitting} variant="contained"
-                        className="!bg-indigo-600 !rounded-xl !font-bold">
+                        className="!bg-indigo-600 rounded-xl! font-bold!">
                         {submitting ? "Submitting…" : "Submit"}
                     </Button>
                 </DialogActions>

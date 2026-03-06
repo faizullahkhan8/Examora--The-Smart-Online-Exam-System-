@@ -41,7 +41,7 @@ const INST_TYPES = [
 ];
 
 const inputCls =
-    "w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-colors";
+    "w-full bg-(--bg-base) border border-(--ui-border) rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-colors";
 const labelCls =
     "text-xs font-semibold text-(--text-secondary)";
 
@@ -184,7 +184,7 @@ const Institutes = () => {
     };
 
     return (
-        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10 relative">
+        <div className="w-full bg-(--bg-base) min-h-screen font-sans pb-10 relative">
             {toast && (
                 <div className={`fixed bottom-6 right-6 z-[200] px-4 py-2.5 rounded-lg shadow-lg text-sm font-semibold text-white transition-all ${toast.ok ? "bg-emerald-600" : "bg-rose-600"}`}>
                     {toast.msg}
@@ -217,7 +217,7 @@ const Institutes = () => {
                     {kpiData.map((kpi, i) => (
                         <div key={i} className="p-5 bg-(--bg-surface) border border-(--ui-border) rounded-xl hover:border-(--brand-primary) transition-colors shadow-sm">
                             <div className="flex justify-between items-start mb-3">
-                                <div className="p-2.5 rounded-lg bg-[var(--bg-base)]">
+                                <div className="p-2.5 rounded-lg bg-(--bg-base)">
                                     <kpi.icon size={20} className="text-(--brand-primary)" />
                                 </div>
                                 <div className="h-8 w-16 opacity-70">
@@ -246,7 +246,7 @@ const Institutes = () => {
                         <div className="relative w-full md:w-96">
                             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
                             <input type="text" placeholder="Search institutes..."
-                                className="w-full bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all"
+                                className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all"
                                 value={search} onChange={(e) => { setSearch(e.target.value); setPage(0); }} />
                         </div>
                         <div className="flex items-center gap-3">
@@ -259,7 +259,7 @@ const Institutes = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-[var(--bg-base)] border-b border-(--ui-divider)">
+                                <tr className="bg-(--bg-base) border-b border-(--ui-divider)">
                                     {["Institute Details", "Lead Principal", "Resources", "Status", "Management"].map((h, i) => (
                                         <th key={i} className={`px-5 py-3 text-xs font-bold text-(--text-secondary) uppercase tracking-wider ${i === 2 ? "text-center" : i === 4 ? "text-right" : ""}`}>{h}</th>
                                     ))}
@@ -271,7 +271,7 @@ const Institutes = () => {
                                         <tr key={i}>
                                             {Array.from({ length: 5 }).map((__, j) => (
                                                 <td key={j} className="px-5 py-3">
-                                                    <div className="h-4 bg-[var(--bg-base)] rounded w-2/3 animate-pulse" />
+                                                    <div className="h-4 bg-(--bg-base) rounded w-2/3 animate-pulse" />
                                                 </td>
                                             ))}
                                         </tr>
@@ -285,7 +285,7 @@ const Institutes = () => {
                                     </tr>
                                 ) : (
                                     institutes.map((inst) => (
-                                        <tr key={inst._id} className="hover:bg-[var(--bg-base)] transition-colors">
+                                        <tr key={inst._id} className="hover:bg-(--bg-base) transition-colors">
                                             <td className="px-5 py-3">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-lg bg-(--bg-sidebar) flex items-center justify-center text-(--text-on-dark) font-bold text-xs shadow-sm">{inst.logoInitials}</div>
@@ -353,11 +353,11 @@ const Institutes = () => {
             <div className={`fixed inset-y-0 right-0 w-full md:w-[480px] bg-(--bg-surface) shadow-2xl z-50 transform transition-transform duration-300 border-l border-(--ui-border) ${selectedInstitute ? "translate-x-0" : "translate-x-full"}`}>
                 {selectedInstitute && (
                     <div className="h-full flex flex-col">
-                        <div className="p-5 border-b border-(--ui-divider) flex items-center justify-between bg-[var(--bg-base)]">
+                        <div className="p-5 border-b border-(--ui-divider) flex items-center justify-between bg-(--bg-base)">
                             <h2 className="text-base font-bold text-(--text-primary) tracking-tight">Institutional Profile</h2>
                             <IconButton onClick={() => setSelectedInstitute(null)} size="small"><X size={18} /></IconButton>
                         </div>
-                        <div className="flex-grow overflow-y-auto p-6 space-y-6">
+                        <div className="grow overflow-y-auto p-6 space-y-6">
                             <div className="flex flex-col items-center text-center">
                                 <div className="w-20 h-20 rounded-xl bg-(--bg-sidebar) flex items-center justify-center text-white text-2xl font-black mb-4 shadow-sm">{selectedInstitute.logoInitials}</div>
                                 <h3 className="text-xl font-bold text-(--text-primary)">{selectedInstitute.name}</h3>
@@ -376,7 +376,7 @@ const Institutes = () => {
                                     { val: selectedInstitute.facultyCount ?? 0, lbl: "Faculty" },
                                     { val: selectedInstitute.type, lbl: "Type" },
                                 ].map(({ val, lbl }) => (
-                                    <div key={lbl} className="bg-[var(--bg-base)] p-3 rounded-xl text-center border border-(--ui-border)">
+                                    <div key={lbl} className="bg-(--bg-base) p-3 rounded-xl text-center border border-(--ui-border)">
                                         <p className="text-base font-bold text-(--text-primary) truncate">{val}</p>
                                         <p className="text-[10px] font-semibold text-(--text-secondary) uppercase tracking-wider">{lbl}</p>
                                     </div>
@@ -384,7 +384,7 @@ const Institutes = () => {
                             </div>
 
                             {selectedInstitute.domain && (
-                                <div className="bg-[var(--bg-base)] p-3.5 rounded-xl border border-(--ui-border) text-sm flex flex-col">
+                                <div className="bg-(--bg-base) p-3.5 rounded-xl border border-(--ui-border) text-sm flex flex-col">
                                     <span className="text-xs font-semibold text-(--text-secondary) mb-0.5">Primary Domain</span>
                                     <span className="font-bold text-(--text-primary)">{selectedInstitute.domain}</span>
                                 </div>
@@ -392,7 +392,7 @@ const Institutes = () => {
 
                             <div className="space-y-3">
                                 <h4 className="text-xs font-semibold text-(--text-secondary) uppercase tracking-wider border-b border-(--ui-divider) pb-2">Leadership Team</h4>
-                                <div className="p-4 rounded-xl border border-(--ui-border) bg-[var(--bg-base)] flex items-center justify-between">
+                                <div className="p-4 rounded-xl border border-(--ui-border) bg-(--bg-base) flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <Avatar sx={{ width: 40, height: 40, bgcolor: "var(--bg-sidebar)", fontSize: "16px", fontWeight: 700 }}>
                                             {selectedInstitute.principal?.firstName?.charAt(0) ?? "?"}
@@ -509,7 +509,7 @@ const Institutes = () => {
                                     <h4 className="text-lg font-bold text-(--text-primary)">{formData.name || "Unnamed"}</h4>
                                     <p className="text-sm text-(--text-secondary) font-medium">{formData.domain}</p>
                                 </div>
-                                <div className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg p-1">
+                                <div className="bg-(--bg-base) border border-(--ui-border) rounded-lg p-1">
                                     {[
                                         { label: "Location", value: `${formData.location.city}, ${formData.location.country}` },
                                         { label: "Type", value: formData.type },

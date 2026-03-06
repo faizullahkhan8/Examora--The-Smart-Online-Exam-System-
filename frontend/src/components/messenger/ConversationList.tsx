@@ -46,7 +46,7 @@ const ConversationList: React.FC<Props> = ({
     });
 
     return (
-        <div className="flex-grow overflow-y-auto custom-scrollbar">
+        <div className="grow overflow-y-auto custom-scrollbar">
             {isLoading ? (
                 <MessengerSkeleton rows={5} />
             ) : filtered.length === 0 ? (

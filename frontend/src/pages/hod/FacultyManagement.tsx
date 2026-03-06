@@ -68,7 +68,7 @@ const FacultyManagement = () => {
                         variant="contained"
                         startIcon={<Plus size={18} />}
                         onClick={() => setOpen(true)}
-                        className="!bg-slate-900 !text-white !font-bold !rounded-xl !px-6 !py-2.5 !normal-case hover:!bg-slate-800"
+                        className="bg-slate-900! text-white! font-bold! rounded-xl! px-6! py-2.5! normal-case! hover:bg-slate-800!"
                     >
                         Add Faculty
                     </Button>
@@ -110,9 +110,9 @@ const FacultyManagement = () => {
                                             <Chip
                                                 label={t.isActive ? "Active" : "Suspended"}
                                                 size="small"
-                                                className={`!text-[10px] !font-black !uppercase !tracking-widest border ${t.isActive
-                                                        ? "!bg-emerald-50 !text-emerald-700 !border-emerald-200"
-                                                        : "!bg-rose-50 !text-rose-700 !border-rose-200"
+                                                className={`text-[10px]! font-black! uppercase! !tracking-widest border ${t.isActive
+                                                    ? "bg-emerald-50! text-emerald-700! border-emerald-200!"
+                                                    : "bg-rose-50! text-rose-700! border-rose-200!"
                                                     }`}
                                             />
                                         </td>
@@ -122,9 +122,9 @@ const FacultyManagement = () => {
                                                 variant="text"
                                                 onClick={() => handleToggle(t._id, t.isActive)}
                                                 startIcon={t.isActive ? <ShieldBan size={14} /> : <CheckCircle size={14} />}
-                                                className={`!font-black !text-[10px] !uppercase !tracking-widest !rounded-lg ${t.isActive
-                                                        ? "!text-rose-600 hover:!bg-rose-50"
-                                                        : "!text-emerald-600 hover:!bg-emerald-50"
+                                                className={`font-black! text-[10px]! uppercase! !tracking-widest !rounded-lg ${t.isActive
+                                                    ? "!text-rose-600 hover:bg-rose-50!"
+                                                    : "!text-emerald-600 hover:bg-emerald-50!"
                                                     }`}
                                             >
                                                 {t.isActive ? "Suspend" : "Activate"}
@@ -176,13 +176,13 @@ const FacultyManagement = () => {
                         <Button
                             fullWidth variant="outlined" disabled={busy}
                             onClick={() => setOpen(false)}
-                            className="!rounded-xl !border-slate-300 !text-slate-700 !font-bold hover:!bg-slate-100 !normal-case"
+                            className="rounded-xl! !border-slate-300 !text-slate-700 font-bold! hover:bg-slate-100! normal-case!"
                         >
                             Cancel
                         </Button>
                         <Button
                             fullWidth type="submit" variant="contained" disabled={busy}
-                            className="!rounded-xl !bg-slate-900 hover:!bg-slate-800 !text-white !font-bold !normal-case"
+                            className="rounded-xl! bg-slate-900! hover:bg-slate-800! text-white! font-bold! normal-case!"
                         >
                             {busy ? "Adding…" : "Add Faculty"}
                         </Button>

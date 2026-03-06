@@ -118,7 +118,7 @@ const ConversationItem: React.FC<Props> = ({
             </div>
 
             {/* Content */}
-            <div className="flex-grow min-w-0">
+            <div className="grow min-w-0">
                 <div className="flex justify-between items-start mb-0.5">
                     <h3 className="text-sm font-black text-slate-900 truncate">
                         {display.name}

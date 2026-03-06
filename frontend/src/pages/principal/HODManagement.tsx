@@ -194,7 +194,7 @@ const HODManagement = () => {
     };
 
     return (
-        <div className="w-full bg-[var(--bg-base)] min-h-screen font-sans pb-10">
+        <div className="w-full bg-(--bg-base) min-h-screen font-sans pb-10">
             <div className="p-8 max-w-[1600px] mx-auto">
                 <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
@@ -212,7 +212,7 @@ const HODManagement = () => {
                                 placeholder="Search personnel…"
                                 value={search}
                                 onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-                                className="bg-[var(--bg-base)] border border-(--ui-border) rounded-lg pl-9 pr-4 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-64 transition-all text-(--text-primary)"
+                                className="bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-4 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-64 transition-all text-(--text-primary)"
                             />
                         </div>
                         <Button variant="contained" startIcon={<Plus size={16} />}
@@ -227,7 +227,7 @@ const HODManagement = () => {
                     <div className="overflow-x-auto min-h-[420px]">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-(--ui-divider) bg-[var(--bg-base)] text-left">
+                                <tr className="border-b border-(--ui-divider) bg-(--bg-base) text-left">
                                     {["Personnel Profile", "Contact Email", "Account Status", "System Actions"].map((h, i) => (
                                         <th key={h} className={`px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-(--text-secondary) ${i === 3 ? "text-right" : ""}`}>
                                             {h}
@@ -238,7 +238,7 @@ const HODManagement = () => {
                             <tbody className="divide-y divide-(--ui-divider)">
                                 {isLoading
                                     ? Array.from({ length: 5 }).map((_, i) => (
-                                        <tr key={i} className="hover:bg-[var(--bg-base)] transition-colors">
+                                        <tr key={i} className="hover:bg-(--bg-base) transition-colors">
                                             {Array.from({ length: 4 }).map((_, j) => (
                                                 <td key={j} className="px-6 py-4">
                                                     <Skeleton height={20} sx={{ bgcolor: "var(--ui-divider)", borderRadius: "4px" }} />
@@ -247,7 +247,7 @@ const HODManagement = () => {
                                         </tr>
                                     ))
                                     : hods.map((user) => (
-                                        <tr key={user._id} className="hover:bg-[var(--bg-base)] transition-colors group">
+                                        <tr key={user._id} className="hover:bg-(--bg-base) transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-4">
                                                     <Avatar sx={{ width: 40, height: 40, bgcolor: "var(--bg-sidebar)", color: "var(--text-on-dark)", fontSize: "14px", fontWeight: 700, borderRadius: "10px" }}>
@@ -269,7 +269,7 @@ const HODManagement = () => {
                                                 <Chip
                                                     label={user.isActive ? "Active" : "Suspended"}
                                                     size="small"
-                                                    className={`!text-[10px] !font-bold !uppercase !tracking-wider !h-5 !px-1.5 border ${user.isActive ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-[var(--bg-base)] text-(--text-secondary) border-(--ui-border)"}`}
+                                                    className={`text-[10px]! font-bold! uppercase! tracking-wider! h-5! px-1.5! border ${user.isActive ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-(--bg-base) text-(--text-secondary) border-(--ui-border)"}`}
                                                 />
                                             </td>
                                             <td className="px-6 py-4 text-right">
@@ -300,7 +300,7 @@ const HODManagement = () => {
                         </table>
 
                         {!isLoading && hods.length === 0 && (
-                            <div className="text-center py-20 bg-[var(--bg-base)]">
+                            <div className="text-center py-20 bg-(--bg-base)">
                                 <Users size={48} className="mx-auto text-(--text-secondary) opacity-30 mb-4" />
                                 <p className="font-black text-(--text-primary) text-lg">No HOD accounts found</p>
                                 <p className="text-sm font-medium text-(--text-secondary) mt-1">Click "Provision HOD" to onboard your first department head.</p>

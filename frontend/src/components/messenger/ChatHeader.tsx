@@ -55,7 +55,7 @@ const ChatHeader: React.FC<Props> = ({
                         <Users size={20} className="text-violet-600" />
                     </div>
                 ) : (
-                    <Avatar sx={{ width: 44, height: 44 }} className="!bg-(--bg-sidebar) !text-(--text-on-dark) !font-bold !text-sm !rounded-xl !shadow-sm">
+                    <Avatar sx={{ width: 44, height: 44 }} className="!bg-(--bg-sidebar) !text-(--text-on-dark) font-bold! !text-sm rounded-xl! !shadow-sm">
                         {initials}
                     </Avatar>
                 )}

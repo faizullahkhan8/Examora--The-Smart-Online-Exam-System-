@@ -42,7 +42,7 @@ const MessageList: React.FC<Props> = ({ messages, isLoading, currentUserId }) =>
 
     if (isLoading) {
         return (
-            <div className="flex-grow flex items-center justify-center bg-[var(--bg-base)]">
+            <div className="grow flex items-center justify-center bg-(--bg-base)">
                 <CircularProgress size={28} sx={{ color: "var(--brand-primary)" }} />
             </div>
         );
@@ -50,7 +50,7 @@ const MessageList: React.FC<Props> = ({ messages, isLoading, currentUserId }) =>
 
     if (messages.length === 0) {
         return (
-            <div className="flex-grow flex flex-col items-center justify-center gap-3 bg-[var(--bg-base)] text-(--text-secondary) opacity-70">
+            <div className="grow flex flex-col items-center justify-center gap-3 bg-(--bg-base) text-(--text-secondary) opacity-70">
                 <span className="text-4xl">💬</span>
                 <p className="text-sm font-semibold">
                     No messages yet. Start the conversation!
@@ -62,7 +62,7 @@ const MessageList: React.FC<Props> = ({ messages, isLoading, currentUserId }) =>
     const groups = groupByDate(messages);
 
     return (
-        <div className="flex-grow overflow-y-auto p-6 space-y-8 bg-[var(--bg-base)] custom-scrollbar">
+        <div className="grow overflow-y-auto p-6 space-y-8 bg-(--bg-base) custom-scrollbar">
             {groups.map((group) => (
                 <div key={group.label} className="space-y-4">
                     <div className="flex justify-center sticky top-2 z-10">

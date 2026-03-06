@@ -130,9 +130,9 @@ const HODDashboard = () => {
                                         <td className="px-6 py-4">
                                             <Chip
                                                 label={s.status} size="small"
-                                                className={`!text-[10px] !font-black !uppercase !tracking-widest border ${s.status === "active" ? "!bg-emerald-50 !text-emerald-700 !border-emerald-200" :
-                                                        s.status === "locked" ? "!bg-amber-50 !text-amber-700 !border-amber-200" :
-                                                            "!bg-slate-100 !text-slate-500 !border-slate-200"
+                                                className={`text-[10px]! font-black! uppercase! !tracking-widest border ${s.status === "active" ? "bg-emerald-50! text-emerald-700! border-emerald-200!" :
+                                                    s.status === "locked" ? "!bg-amber-50 !text-amber-700 !border-amber-200" :
+                                                        "bg-slate-100! text-slate-500! border-slate-200!"
                                                     }`}
                                             />
                                         </td>

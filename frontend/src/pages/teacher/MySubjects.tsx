@@ -8,10 +8,10 @@ import { useGetAttendanceBySubjectQuery } from "../../services/attendance/attend
 import { useGetMaterialsBySubjectQuery } from "../../services/material/material.service";
 
 const statusCls: Record<string, string> = {
-    active: "!bg-emerald-50 !text-emerald-700 !border-emerald-200",
-    upcoming: "!bg-slate-100 !text-slate-500 !border-slate-200",
+    active: "bg-emerald-50! text-emerald-700! border-emerald-200!",
+    upcoming: "bg-slate-100! text-slate-500! border-slate-200!",
     locked: "!bg-amber-50 !text-amber-700 !border-amber-200",
-    completed: "!bg-rose-50 !text-rose-700 !border-rose-200",
+    completed: "bg-rose-50! text-rose-700! border-rose-200!",
 };
 
 // ─── Subject card with mini-stats ────────────────────────────────────────────
@@ -30,7 +30,7 @@ const SubjectCard = ({ subject }: { subject: any }) => {
                     </p>
                 </div>
                 <Chip label={subject.session?.status ?? "active"} size="small"
-                    className={`!text-[10px] !font-black !uppercase border ${statusCls[subject.session?.status] ?? statusCls.active}`} />
+                    className={`text-[10px]! font-black! uppercase! border ${statusCls[subject.session?.status] ?? statusCls.active}`} />
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-5">
@@ -51,17 +51,17 @@ const SubjectCard = ({ subject }: { subject: any }) => {
             <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-100">
                 <Button component={Link} to={`/teacher/exam-papers?subject=${subject._id}`}
                     size="small" startIcon={<FileText size={13} />} variant="outlined"
-                    className="!text-[11px] !font-bold !normal-case !rounded-xl !border-slate-200 !text-slate-600">
+                    className="!text-[11px] font-bold! normal-case! rounded-xl! border-slate-200! !text-slate-600">
                     Exam Papers
                 </Button>
                 <Button component={Link} to={`/teacher/attendance?subject=${subject._id}`}
                     size="small" startIcon={<CalendarCheck size={13} />} variant="outlined"
-                    className="!text-[11px] !font-bold !normal-case !rounded-xl !border-slate-200 !text-slate-600">
+                    className="!text-[11px] font-bold! normal-case! rounded-xl! border-slate-200! !text-slate-600">
                     Attendance
                 </Button>
                 <Button component={Link} to={`/teacher/materials?subject=${subject._id}`}
                     size="small" startIcon={<BookMarked size={13} />} variant="outlined"
-                    className="!text-[11px] !font-bold !normal-case !rounded-xl !border-slate-200 !text-slate-600">
+                    className="!text-[11px] font-bold! normal-case! rounded-xl! border-slate-200! !text-slate-600">
                     Materials
                 </Button>
             </div>
