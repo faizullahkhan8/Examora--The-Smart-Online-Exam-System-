@@ -1,11 +1,24 @@
 import { useState } from "react";
 import {
-    Drawer, List, ListItemButton, ListItemIcon,
-    ListItemText, Toolbar, Divider, Typography, Box,
+    Drawer,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Toolbar,
+    Divider,
+    Typography,
+    Box,
 } from "@mui/material";
 import {
-    LayoutDashboard, BookOpen, FileText,
-    CalendarCheck, BookMarked, BellIcon, MessageSquare, LogOut,
+    LayoutDashboard,
+    BookOpen,
+    FileText,
+    CalendarCheck,
+    BookMarked,
+    BellIcon,
+    LogOut,
+    MailIcon,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -20,7 +33,7 @@ const menuItems = [
     { label: "Attendance", icon: CalendarCheck, url: "/teacher/attendance" },
     { label: "Materials", icon: BookMarked, url: "/teacher/materials" },
     { label: "Notifications", icon: BellIcon, url: "/teacher/notifications" },
-    { label: "Messenger", icon: MessageSquare, url: "/teacher/messenger" },
+    { label: "Messenger", icon: MailIcon, url: "/teacher/messenger" },
 ];
 
 const TeacherSidebar = () => {
@@ -50,10 +63,16 @@ const TeacherSidebar = () => {
         >
             <Toolbar>
                 <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: "var(--text-on-dark)" }}>
+                    <Typography
+                        variant="h6"
+                        sx={{ fontWeight: 600, color: "var(--text-on-dark)" }}
+                    >
                         Examora
                     </Typography>
-                    <Typography variant="caption" sx={{ color: "var(--brand-active)" }}>
+                    <Typography
+                        variant="caption"
+                        sx={{ color: "var(--brand-active)" }}
+                    >
                         Teacher Panel
                     </Typography>
                 </Box>
@@ -63,24 +82,41 @@ const TeacherSidebar = () => {
 
             <List sx={{ mt: 1 }}>
                 {menuItems.map(({ label, icon: Icon, url }) => {
-                    const isActive = location.pathname === url || location.pathname.startsWith(url + "/");
+                    const isActive =
+                        location.pathname === url ||
+                        location.pathname.startsWith(url + "/");
                     return (
                         <ListItemButton
                             key={label}
                             component={Link}
                             to={url}
                             sx={{
-                                mx: 1, mb: 0.5, borderRadius: 2,
-                                backgroundColor: isActive ? "var(--brand-primary)" : "transparent",
+                                mx: 1,
+                                mb: 0.5,
+                                borderRadius: 2,
+                                backgroundColor: isActive
+                                    ? "var(--brand-primary)"
+                                    : "transparent",
                                 "&:hover": { transform: "scale(1.01)" },
                             }}
                         >
-                            <ListItemIcon sx={{ color: isActive ? "var(--text-on-dark)" : "var(--brand-active)", minWidth: 36 }}>
+                            <ListItemIcon
+                                sx={{
+                                    color: isActive
+                                        ? "var(--text-on-dark)"
+                                        : "var(--brand-active)",
+                                    minWidth: 36,
+                                }}
+                            >
                                 <Icon size={20} />
                             </ListItemIcon>
                             <ListItemText
                                 primary={label}
-                                primaryTypographyProps={{ fontSize: 14, fontWeight: isActive ? 600 : 400, color: "var(--text-on-dark)" }}
+                                primaryTypographyProps={{
+                                    fontSize: 14,
+                                    fontWeight: isActive ? 600 : 400,
+                                    color: "var(--text-on-dark)",
+                                }}
                             />
                         </ListItemButton>
                     );
@@ -93,14 +129,25 @@ const TeacherSidebar = () => {
                 <ListItemButton
                     onClick={handleLogout}
                     disabled={logging}
-                    sx={{ mx: 1, mb: 1, borderRadius: 2, "&:hover": { transform: "scale(1.01)" } }}
+                    sx={{
+                        mx: 1,
+                        mb: 1,
+                        borderRadius: 2,
+                        "&:hover": { transform: "scale(1.01)" },
+                    }}
                 >
-                    <ListItemIcon sx={{ color: "var(--status-danger)", minWidth: 36 }}>
+                    <ListItemIcon
+                        sx={{ color: "var(--status-danger)", minWidth: 36 }}
+                    >
                         <LogOut size={20} />
                     </ListItemIcon>
                     <ListItemText
                         primary="Logout"
-                        primaryTypographyProps={{ fontSize: 14, fontWeight: 500, color: "var(--status-danger)" }}
+                        primaryTypographyProps={{
+                            fontSize: 14,
+                            fontWeight: 500,
+                            color: "var(--status-danger)",
+                        }}
                     />
                 </ListItemButton>
             </List>

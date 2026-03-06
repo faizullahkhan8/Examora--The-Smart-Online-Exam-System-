@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IconButton, Button, CircularProgress } from "@mui/material";
-import { Paperclip, Smile, Send, Image as ImageIcon, FileText } from "lucide-react";
+import {
+    Paperclip,
+    Smile,
+    Send,
+    Image as ImageIcon,
+    FileText,
+} from "lucide-react";
 
 interface Props {
     conversationId: string;
@@ -8,7 +14,11 @@ interface Props {
     isSending: boolean;
 }
 
-const MessageInput: React.FC<Props> = ({ conversationId, onSend, isSending }) => {
+const MessageInput: React.FC<Props> = ({
+    conversationId,
+    onSend,
+    isSending,
+}) => {
     const [message, setMessage] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -40,10 +50,18 @@ const MessageInput: React.FC<Props> = ({ conversationId, onSend, isSending }) =>
     return (
         <div className="p-5 bg-(--bg-surface) border-t border-(--ui-divider) z-10">
             <div className="bg-(--bg-base) rounded-xl p-2 flex items-end gap-2 border border-(--ui-border) focus-within:border-(--brand-primary) focus-within:ring-1 focus-within:ring-(--brand-primary) transition-all shadow-sm">
-                <IconButton size="small" disabled sx={{ color: "var(--text-secondary)" }}>
+                <IconButton
+                    size="small"
+                    disabled
+                    sx={{ color: "var(--text-secondary)" }}
+                >
                     <Paperclip size={18} />
                 </IconButton>
-                <IconButton size="small" disabled sx={{ color: "var(--text-secondary)" }}>
+                <IconButton
+                    size="small"
+                    disabled
+                    sx={{ color: "var(--text-secondary)" }}
+                >
                     <Smile size={18} />
                 </IconButton>
                 <textarea
@@ -66,8 +84,14 @@ const MessageInput: React.FC<Props> = ({ conversationId, onSend, isSending }) =>
                         minWidth: 0,
                         p: 1.25,
                         boxShadow: "none",
-                        "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" },
-                        "&.Mui-disabled": { bgcolor: "var(--ui-border)", color: "var(--text-secondary)" }
+                        "&:hover": {
+                            bgcolor: "var(--bg-sidebar)",
+                            boxShadow: "none",
+                        },
+                        "&.Mui-disabled": {
+                            bgcolor: "var(--ui-border)",
+                            color: "var(--text-secondary)",
+                        },
                     }}
                 >
                     {isSending ? (
@@ -87,7 +111,9 @@ const MessageInput: React.FC<Props> = ({ conversationId, onSend, isSending }) =>
                     </span>
                 </div>
                 <span className="text-[10px] font-semibold text-(--text-secondary)">
-                    <strong className="font-bold">Enter</strong> to send · <strong className="font-bold">Shift+Enter</strong> for line break
+                    <strong className="font-bold">Enter</strong> to send ·{" "}
+                    <strong className="font-bold">Shift+Enter</strong> for line
+                    break
                 </span>
             </div>
         </div>

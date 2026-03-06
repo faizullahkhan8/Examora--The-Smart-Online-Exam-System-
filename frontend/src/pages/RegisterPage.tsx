@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-    TextField,
-    Button,
-    Paper,
-    Typography,
-    Box,
-} from "@mui/material";
+import { TextField, Button, Paper, Typography, Box } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import { useRegisterMutation } from "../services/auth/auth.service";
 import { Loader2 } from "lucide-react";
@@ -27,9 +21,10 @@ const RegisterPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent
+        e:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | SelectChangeEvent,
     ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -44,11 +39,10 @@ const RegisterPage = () => {
         const response = await register(formData).unwrap();
         if (response.success) {
             toast.success("Registered successfully.");
-            dispatch(setAuth(response.user))
-            navigate("/admin/dashboard")
+            dispatch(setAuth(response.user));
+            navigate("/admin/dashboard");
         }
-
-    }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-(--bg-base) p-4">
@@ -57,11 +51,18 @@ const RegisterPage = () => {
                 className="w-full max-w-lg p-10 bg-(--bg-surface) border border-(--ui-border) rounded-2xl"
             >
                 <Box className="mb-8">
-                    <Typography variant="h4" className="font-bold text-(--text-primary) mb-2">
+                    <Typography
+                        variant="h4"
+                        className="font-bold text-(--text-primary) mb-2"
+                    >
                         Examora
                     </Typography>
-                    <Typography variant="body2" className="text-(--text-secondary)">
-                        Create an account to access the smart proctoring dashboard.
+                    <Typography
+                        variant="body2"
+                        className="text-(--text-secondary)"
+                    >
+                        Create an account to access the smart proctoring
+                        dashboard.
                     </Typography>
                 </Box>
 
@@ -73,7 +74,13 @@ const RegisterPage = () => {
                             name="firstName"
                             value={formData.firstName}
                             onChange={handleChange}
-                            sx={{ "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "var(--ui-border)" } } }}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    "& fieldset": {
+                                        borderColor: "var(--ui-border)",
+                                    },
+                                },
+                            }}
                         />
                         <TextField
                             fullWidth
@@ -81,7 +88,13 @@ const RegisterPage = () => {
                             name="lastName"
                             value={formData.lastName}
                             onChange={handleChange}
-                            sx={{ "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "var(--ui-border)" } } }}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    "& fieldset": {
+                                        borderColor: "var(--ui-border)",
+                                    },
+                                },
+                            }}
                         />
                     </div>
 
@@ -91,7 +104,13 @@ const RegisterPage = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        sx={{ "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "var(--ui-border)" } } }}
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "var(--ui-border)",
+                                },
+                            },
+                        }}
                     />
 
                     <TextField
@@ -101,7 +120,13 @@ const RegisterPage = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        sx={{ "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "var(--ui-border)" } } }}
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "var(--ui-border)",
+                                },
+                            },
+                        }}
                     />
 
                     {isError && (
@@ -118,7 +143,11 @@ const RegisterPage = () => {
                         className="py-3 mt-2 normal-case text-lg font-medium shadow-none bg-(--brand-primary) hover:bg-(--text-secondary)"
                         sx={{ backgroundColor: "var(--brand-primary)" }}
                     >
-                        {isLoading ? <Loader2 className="animate-spin" size={24} /> : "Register Admin"}
+                        {isLoading ? (
+                            <Loader2 className="animate-spin" size={24} />
+                        ) : (
+                            "Register Admin"
+                        )}
                     </Button>
                 </form>
             </Paper>

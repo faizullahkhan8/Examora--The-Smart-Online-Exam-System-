@@ -16,8 +16,8 @@ import {
     Users,
     CalendarDays,
     BellIcon,
-    MessageSquare,
     LogOut,
+    MailIcon,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -28,12 +28,20 @@ const drawerWidth = 260;
 
 const menuItems = [
     { label: "Dashboard", icon: LayoutDashboard, url: "/principal/dashboard" },
-    { label: "Institute Profile", icon: Building2, url: "/principal/institute" },
+    {
+        label: "Institute Profile",
+        icon: Building2,
+        url: "/principal/institute",
+    },
     { label: "Departments", icon: BookOpen, url: "/principal/departments" },
     { label: "HOD Management", icon: Users, url: "/principal/hods" },
-    { label: "Academic Sessions", icon: CalendarDays, url: "/principal/sessions" },
+    {
+        label: "Academic Sessions",
+        icon: CalendarDays,
+        url: "/principal/sessions",
+    },
     { label: "Notifications", icon: BellIcon, url: "/principal/notifications" },
-    { label: "Messenger", icon: MessageSquare, url: "/principal/messenger" },
+    { label: "Messenger", icon: MailIcon, url: "/principal/messenger" },
 ];
 
 const PrincipalSidebar = () => {
@@ -70,20 +78,31 @@ const PrincipalSidebar = () => {
                 <Box>
                     <Typography
                         variant="h6"
-                        sx={{ fontWeight: 800, color: "var(--text-on-dark)", letterSpacing: "-0.5px" }}
+                        sx={{
+                            fontWeight: 800,
+                            color: "var(--text-on-dark)",
+                            letterSpacing: "-0.5px",
+                        }}
                     >
                         Examora
                     </Typography>
                     <Typography
                         variant="caption"
-                        sx={{ color: "var(--brand-active)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "1px" }}
+                        sx={{
+                            color: "var(--brand-active)",
+                            fontWeight: 600,
+                            textTransform: "uppercase",
+                            letterSpacing: "1px",
+                        }}
                     >
                         Principal Panel
                     </Typography>
                 </Box>
             </Toolbar>
 
-            <Divider sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }} />
+            <Divider
+                sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }}
+            />
 
             <List sx={{ mt: 2, px: 2 }}>
                 {menuItems.map((item) => {
@@ -98,20 +117,29 @@ const PrincipalSidebar = () => {
                             sx={{
                                 mb: 0.5,
                                 borderRadius: "8px",
-                                backgroundColor: isActive ? "var(--brand-primary)" : "transparent",
+                                backgroundColor: isActive
+                                    ? "var(--brand-primary)"
+                                    : "transparent",
                                 transition: "all 0.2s ease-in-out",
                                 "&:hover": {
-                                    backgroundColor: isActive ? "var(--brand-primary)" : "rgba(255,255,255,0.05)",
+                                    backgroundColor: isActive
+                                        ? "var(--brand-primary)"
+                                        : "rgba(255,255,255,0.05)",
                                 },
                             }}
                         >
                             <ListItemIcon
                                 sx={{
-                                    color: isActive ? "var(--text-on-dark)" : "var(--brand-active)",
+                                    color: isActive
+                                        ? "var(--text-on-dark)"
+                                        : "var(--brand-active)",
                                     minWidth: 40,
                                 }}
                             >
-                                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                                <Icon
+                                    size={20}
+                                    strokeWidth={isActive ? 2.5 : 2}
+                                />
                             </ListItemIcon>
                             <ListItemText
                                 primary={item.label}
@@ -128,7 +156,9 @@ const PrincipalSidebar = () => {
 
             <Box sx={{ flexGrow: 1 }} />
 
-            <Divider sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }} />
+            <Divider
+                sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }}
+            />
 
             <List sx={{ px: 2, py: 2 }}>
                 <ListItemButton
@@ -142,7 +172,9 @@ const PrincipalSidebar = () => {
                         },
                     }}
                 >
-                    <ListItemIcon sx={{ color: "var(--status-danger)", minWidth: 40 }}>
+                    <ListItemIcon
+                        sx={{ color: "var(--status-danger)", minWidth: 40 }}
+                    >
                         <LogOut size={20} strokeWidth={2.5} />
                     </ListItemIcon>
                     <ListItemText

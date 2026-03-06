@@ -10,6 +10,7 @@ import UserModel from "../models/user.model.ts";
 import {
     createConversationValidation,
     sendMessageValidation,
+    addMembersValidation,
 } from "../validations/messenger.validations.ts";
 
 // Helper to build a lean participant object for populating
@@ -323,6 +324,97 @@ export const searchUsers = expressAsyncHandler(
                 .limit(20);
 
             res.status(200).json({ success: true, data: users });
+        } catch (error: any) {
+            return next(new ErrorResponse(error.message, 500));
+        }
+    },
+);
+// ─── ADD MEMBERS TO GROUP ─────────────────────────────────────────────────────
+export const addMembers = expressAsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id } = req.params;
+            const userId = req.session.user?.id;
+
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return next(new ErrorResponse("Invalid conversation ID", 400));
+            }
+
+            const validation = addMembersValidation.safeParse(req.body);
+            if (!validation.success) {
+                return next(new ErrorResponse(validation.error.message, 400));
+            }
+
+            const conversation = await ConversationModel.findOne({
+                _id: id,
+                isActive: true,
+            });
+            if (!conversation) {
+                return next(new ErrorResponse("Conversation not found", 404));
+            }
+
+            // Only the group creator can add members
+            if (
+                conversation.type !== "group" &&
+                conversation.type !== "announcement"
+            ) {
+                return next(
+                    new ErrorResponse(
+                        "Members can only be added to group conversations",
+                        400,
+                    ),
+                );
+            }
+
+            if (String(conversation.createdBy) !== String(userId)) {
+                return next(
+                    new ErrorResponse(
+                        "Only the group creator can add members",
+                        403,
+                    ),
+                );
+            }
+
+            const { members } = validation.data;
+
+            // Validate all new member IDs exist
+            const usersExist = await UserModel.countDocuments({
+                _id: { $in: members },
+                isActive: true,
+            });
+            if (usersExist !== members.length) {
+                return next(
+                    new ErrorResponse("One or more users not found", 404),
+                );
+            }
+
+            // Add only users not already in the group
+            const existingIds = conversation.participants.map((p) => String(p));
+            const newMembers = members.filter(
+                (m) => !existingIds.includes(String(m)),
+            );
+
+            if (newMembers.length === 0) {
+                return next(
+                    new ErrorResponse(
+                        "All selected users are already members",
+                        400,
+                    ),
+                );
+            }
+
+            conversation.participants.push(...(newMembers as any));
+            await conversation.save();
+
+            const updated = await ConversationModel.findById(conversation._id)
+                .populate("participants", PARTICIPANT_FIELDS)
+                .populate("createdBy", "firstName lastName role");
+
+            res.status(200).json({
+                success: true,
+                message: `${newMembers.length} member(s) added successfully`,
+                data: updated,
+            });
         } catch (error: any) {
             return next(new ErrorResponse(error.message, 500));
         }

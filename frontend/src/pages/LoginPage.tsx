@@ -57,7 +57,9 @@ const LoginPage = () => {
             // Role-based redirect — no cross-access
             navigate(getDashboardForRole(user.role), { replace: true });
         } catch (err: any) {
-            setError(err?.data?.message ?? "Invalid credentials. Please try again.");
+            setError(
+                err?.data?.message ?? "Invalid credentials. Please try again.",
+            );
         }
     };
 
@@ -68,16 +70,26 @@ const LoginPage = () => {
                 className="w-full max-w-md p-10 bg-(--bg-surface) border border-(--ui-border) rounded-2xl"
             >
                 <Box className="mb-8 text-center">
-                    <Typography variant="h4" className="font-bold text-(--text-primary) mb-2">
+                    <Typography
+                        variant="h4"
+                        className="font-bold text-(--text-primary) mb-2"
+                    >
                         Welcome Back
                     </Typography>
-                    <Typography variant="body2" className="text-(--text-secondary)">
+                    <Typography
+                        variant="body2"
+                        className="text-(--text-secondary)"
+                    >
                         Secure login for Examora smart sessions.
                     </Typography>
                 </Box>
 
                 {error && (
-                    <Alert severity="error" className="mb-4 rounded-xl" onClose={() => setError("")}>
+                    <Alert
+                        severity="error"
+                        className="mb-4 rounded-xl"
+                        onClose={() => setError("")}
+                    >
                         {error}
                     </Alert>
                 )}
@@ -89,7 +101,13 @@ const LoginPage = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        sx={{ "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "var(--ui-border)" } } }}
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "var(--ui-border)",
+                                },
+                            },
+                        }}
                     />
 
                     <TextField
@@ -99,7 +117,13 @@ const LoginPage = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        sx={{ "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "var(--ui-border)" } } }}
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "var(--ui-border)",
+                                },
+                            },
+                        }}
                     />
 
                     <Box className="flex items-center justify-between -mt-2">
@@ -113,7 +137,10 @@ const LoginPage = () => {
                                 />
                             }
                             label={
-                                <Typography variant="body2" className="text-(--text-primary)">
+                                <Typography
+                                    variant="body2"
+                                    className="text-(--text-primary)"
+                                >
                                     Remember me
                                 </Typography>
                             }
@@ -136,10 +163,16 @@ const LoginPage = () => {
                         className="py-3 mt-2 normal-case text-lg font-medium shadow-none"
                         sx={{
                             backgroundColor: "var(--brand-primary)",
-                            "&:hover": { backgroundColor: "var(--text-secondary)" },
+                            "&:hover": {
+                                backgroundColor: "var(--text-secondary)",
+                            },
                         }}
                     >
-                        {isLoading ? <Loader2 className="animate-spin" size={24} /> : "Sign In"}
+                        {isLoading ? (
+                            <Loader2 className="animate-spin" size={24} />
+                        ) : (
+                            "Sign In"
+                        )}
                     </Button>
                 </form>
             </Paper>

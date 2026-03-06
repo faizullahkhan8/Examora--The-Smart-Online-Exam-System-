@@ -23,11 +23,15 @@ const ChatHeader: React.FC<Props> = ({
     let isGroup = false;
 
     if (conversation.type === "direct") {
-        const other = conversation.participants.find((p) => p._id !== currentUserId);
+        const other = conversation.participants.find(
+            (p) => p._id !== currentUserId,
+        );
         name = other ? `${other.firstName} ${other.lastName}` : "Unknown User";
         subtitle = [
             other?.role,
-            typeof other?.institute === "object" && other?.institute ? other.institute.name : "",
+            typeof other?.institute === "object" && other?.institute
+                ? other.institute.name
+                : "",
         ]
             .filter(Boolean)
             .join(" • ");
@@ -55,7 +59,10 @@ const ChatHeader: React.FC<Props> = ({
                         <Users size={20} className="text-violet-600" />
                     </div>
                 ) : (
-                    <Avatar sx={{ width: 44, height: 44 }} className="!bg-(--bg-sidebar) !text-(--text-on-dark) font-bold! !text-sm rounded-xl! !shadow-sm">
+                    <Avatar
+                        sx={{ width: 44, height: 44 }}
+                        className="!bg-(--bg-sidebar) !text-(--text-on-dark) font-bold! !text-sm rounded-xl! !shadow-sm"
+                    >
                         {initials}
                     </Avatar>
                 )}
@@ -73,15 +80,47 @@ const ChatHeader: React.FC<Props> = ({
                     </p>
                 </div>
             </div>
-            <div className="flex items-center gap-1.5">
-                <IconButton size="small" sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--text-primary)", bgcolor: "var(--bg-base)" } }}>
+            <div className="flex items-center justify-end gap-1.5">
+                <IconButton
+                    size="small"
+                    sx={{
+                        color: "var(--text-secondary)",
+                        "&:hover": {
+                            color: "var(--text-primary)",
+                            bgcolor: "var(--bg-base)",
+                        },
+                    }}
+                >
                     <Search size={18} />
                 </IconButton>
-                <IconButton size="small" onClick={onToggleDetails} sx={{ color: showDetails ? "var(--brand-primary)" : "var(--text-secondary)", bgcolor: showDetails ? "var(--brand-active)" : "transparent", "&:hover": { color: "var(--brand-primary)", bgcolor: "var(--bg-base)" } }}>
+                <IconButton
+                    size="small"
+                    onClick={onToggleDetails}
+                    sx={{
+                        color: showDetails
+                            ? "var(--brand-primary)"
+                            : "var(--text-secondary)",
+                        bgcolor: showDetails
+                            ? "var(--brand-active)"
+                            : "transparent",
+                        "&:hover": {
+                            color: "var(--brand-primary)",
+                            bgcolor: "var(--bg-base)",
+                        },
+                    }}
+                >
                     <Info size={18} />
                 </IconButton>
-                <IconButton size="small" sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--text-primary)", bgcolor: "var(--bg-base)" } }}>
-                    <MoreVertical size={18} />
+                <IconButton
+                    size="small"
+                    sx={{
+                        color: "var(--text-secondary)",
+                        "&:hover": {
+                            color: "var(--text-primary)",
+                            bgcolor: "var(--bg-base)",
+                        },
+                    }}
+                >
                 </IconButton>
             </div>
         </div>

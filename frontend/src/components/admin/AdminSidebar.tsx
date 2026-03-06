@@ -12,13 +12,13 @@ import {
 import {
     LayoutDashboard,
     Building2,
-    Layers,
     Users,
     FileText,
     LogOut,
     VideoIcon,
     BellIcon,
     Loader2,
+    MailIcon,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useLogoutMutation } from "../../services/auth/auth.service";
@@ -29,12 +29,12 @@ const drawerWidth = 260;
 
 const menuItems = [
     { label: "Dashboard", icon: LayoutDashboard, url: "/admin/dashboard" },
-    { label: "Messanger", icon: Layers, url: "/admin/messanger" },
     { label: "Meetings", icon: VideoIcon, url: "/admin/meetings" },
     { label: "Institutes", icon: Building2, url: "/admin/institutes" },
     { label: "Users", icon: Users, url: "/admin/users" },
     { label: "Audit Logs", icon: FileText, url: "/admin/audit-logs" },
     { label: "Notifications", icon: BellIcon, url: "/admin/notifications" },
+    { label: "Messanger", icon: MailIcon, url: "/admin/messanger" },
 ];
 
 const AdminSidebar = () => {
@@ -46,7 +46,7 @@ const AdminSidebar = () => {
     const handleLogout = async () => {
         await logout({}).unwrap();
         dispatch(clearAuth());
-    }
+    };
 
     return (
         <Drawer
@@ -67,20 +67,31 @@ const AdminSidebar = () => {
                 <Box>
                     <Typography
                         variant="h6"
-                        sx={{ fontWeight: 800, color: "var(--text-on-dark)", letterSpacing: "-0.5px" }}
+                        sx={{
+                            fontWeight: 800,
+                            color: "var(--text-on-dark)",
+                            letterSpacing: "-0.5px",
+                        }}
                     >
                         Examora
                     </Typography>
                     <Typography
                         variant="caption"
-                        sx={{ color: "var(--brand-active)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "1px" }}
+                        sx={{
+                            color: "var(--brand-active)",
+                            fontWeight: 600,
+                            textTransform: "uppercase",
+                            letterSpacing: "1px",
+                        }}
                     >
                         Admin Panel
                     </Typography>
                 </Box>
             </Toolbar>
 
-            <Divider sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }} />
+            <Divider
+                sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }}
+            />
 
             <List sx={{ mt: 2, px: 2 }}>
                 {menuItems.map((item) => {
@@ -95,20 +106,29 @@ const AdminSidebar = () => {
                             sx={{
                                 mb: 0.5,
                                 borderRadius: "8px",
-                                backgroundColor: isActive ? "var(--brand-primary)" : "transparent",
+                                backgroundColor: isActive
+                                    ? "var(--brand-primary)"
+                                    : "transparent",
                                 transition: "all 0.2s ease-in-out",
                                 "&:hover": {
-                                    backgroundColor: isActive ? "var(--brand-primary)" : "rgba(255,255,255,0.05)",
+                                    backgroundColor: isActive
+                                        ? "var(--brand-primary)"
+                                        : "rgba(255,255,255,0.05)",
                                 },
                             }}
                         >
                             <ListItemIcon
                                 sx={{
-                                    color: isActive ? "var(--text-on-dark)" : "var(--brand-active)",
+                                    color: isActive
+                                        ? "var(--text-on-dark)"
+                                        : "var(--brand-active)",
                                     minWidth: 40,
                                 }}
                             >
-                                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                                <Icon
+                                    size={20}
+                                    strokeWidth={isActive ? 2.5 : 2}
+                                />
                             </ListItemIcon>
 
                             <ListItemText
@@ -126,7 +146,9 @@ const AdminSidebar = () => {
 
             <Box sx={{ flexGrow: 1 }} />
 
-            <Divider sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }} />
+            <Divider
+                sx={{ backgroundColor: "var(--ui-divider)", opacity: 0.5 }}
+            />
 
             <List sx={{ px: 2, py: 2 }}>
                 <ListItemButton
@@ -139,8 +161,14 @@ const AdminSidebar = () => {
                         },
                     }}
                 >
-                    <ListItemIcon sx={{ color: "var(--status-danger)", minWidth: 40 }}>
-                        {isLoading ? <Loader2 className="animate-spin" size={20} /> : <LogOut size={20} strokeWidth={2.5} />}
+                    <ListItemIcon
+                        sx={{ color: "var(--status-danger)", minWidth: 40 }}
+                    >
+                        {isLoading ? (
+                            <Loader2 className="animate-spin" size={20} />
+                        ) : (
+                            <LogOut size={20} strokeWidth={2.5} />
+                        )}
                     </ListItemIcon>
                     <ListItemText
                         primary="Logout"

@@ -46,7 +46,11 @@ const textFieldSx = {
         "&:hover fieldset": { borderColor: "var(--brand-primary)" },
         "&.Mui-focused fieldset": { borderColor: "var(--brand-primary)" },
     },
-    "& .MuiInputLabel-root": { color: "var(--text-secondary)", fontSize: "14px", fontWeight: 600 },
+    "& .MuiInputLabel-root": {
+        color: "var(--text-secondary)",
+        fontSize: "14px",
+        fontWeight: 600,
+    },
     "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand-primary)" },
 };
 
@@ -65,7 +69,12 @@ const DeptDrawer = ({
     editing?: Department | null;
     onClose: () => void;
 }) => {
-    const [form, setForm] = useState({ name: editing?.name ?? "", code: editing?.code ?? "", description: editing?.description ?? "", capacity: editing?.capacity ?? 0 });
+    const [form, setForm] = useState({
+        name: editing?.name ?? "",
+        code: editing?.code ?? "",
+        description: editing?.description ?? "",
+        capacity: editing?.capacity ?? 0,
+    });
     const [createDept, { isLoading: creating }] = useCreateDepartmentMutation();
     const [updateDept, { isLoading: updating }] = useUpdateDepartmentMutation();
 
@@ -84,36 +93,109 @@ const DeptDrawer = ({
     };
 
     return (
-        <Drawer anchor="right" open={open} onClose={onClose}
-            PaperProps={{ sx: { width: 400, p: 4, bgcolor: "var(--bg-surface)", borderLeft: "1px solid var(--ui-border)" } }}>
+        <Drawer
+            anchor="right"
+            open={open}
+            onClose={onClose}
+            PaperProps={{
+                sx: {
+                    width: 400,
+                    p: 4,
+                    bgcolor: "var(--bg-surface)",
+                    borderLeft: "1px solid var(--ui-border)",
+                },
+            }}
+        >
             <h2 className="text-xl font-black text-(--text-primary) tracking-tight mb-1">
                 {editing ? "Edit Department" : "New Department"}
             </h2>
             <p className="text-xs text-(--text-secondary) font-medium mb-6">
-                {editing ? "Update department information and capacity." : "Add a new academic department to your institute."}
+                {editing
+                    ? "Update department information and capacity."
+                    : "Add a new academic department to your institute."}
             </p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                <TextField fullWidth label="Department Name" required
-                    value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                    sx={textFieldSx} />
-                <TextField fullWidth label="Department Code (e.g. CS)" required
-                    value={form.code} onChange={(e) => setForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))}
-                    sx={textFieldSx} />
-                <TextField fullWidth label="Description" multiline rows={3}
-                    value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                    sx={textFieldSx} />
-                <TextField fullWidth label="Student Capacity" type="number"
-                    value={form.capacity} onChange={(e) => setForm((p) => ({ ...p, capacity: Number(e.target.value) }))}
-                    sx={textFieldSx} />
+                <TextField
+                    fullWidth
+                    label="Department Name"
+                    required
+                    value={form.name}
+                    onChange={(e) =>
+                        setForm((p) => ({ ...p, name: e.target.value }))
+                    }
+                    sx={textFieldSx}
+                />
+                <TextField
+                    fullWidth
+                    label="Department Code (e.g. CS)"
+                    required
+                    value={form.code}
+                    onChange={(e) =>
+                        setForm((p) => ({
+                            ...p,
+                            code: e.target.value.toUpperCase(),
+                        }))
+                    }
+                    sx={textFieldSx}
+                />
+                <TextField
+                    fullWidth
+                    label="Description"
+                    multiline
+                    rows={3}
+                    value={form.description}
+                    onChange={(e) =>
+                        setForm((p) => ({ ...p, description: e.target.value }))
+                    }
+                    sx={textFieldSx}
+                />
+                <TextField
+                    fullWidth
+                    label="Student Capacity"
+                    type="number"
+                    value={form.capacity}
+                    onChange={(e) =>
+                        setForm((p) => ({
+                            ...p,
+                            capacity: Number(e.target.value),
+                        }))
+                    }
+                    sx={textFieldSx}
+                />
 
                 <div className="flex gap-3 pt-4 border-t border-(--ui-divider) mt-2">
-                    <Button fullWidth variant="outlined" onClick={onClose}
-                        sx={{ ...buttonSx, borderColor: "var(--ui-border)", color: "var(--text-secondary)", "&:hover": { borderColor: "var(--text-primary)", bgcolor: "var(--bg-base)" } }}>
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={onClose}
+                        sx={{
+                            ...buttonSx,
+                            borderColor: "var(--ui-border)",
+                            color: "var(--text-secondary)",
+                            "&:hover": {
+                                borderColor: "var(--text-primary)",
+                                bgcolor: "var(--bg-base)",
+                            },
+                        }}
+                    >
                         Cancel
                     </Button>
-                    <Button fullWidth type="submit" variant="contained" disabled={isLoading}
-                        sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", boxShadow: "none", "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
+                    <Button
+                        fullWidth
+                        type="submit"
+                        variant="contained"
+                        disabled={isLoading}
+                        sx={{
+                            ...buttonSx,
+                            bgcolor: "var(--brand-primary)",
+                            boxShadow: "none",
+                            "&:hover": {
+                                bgcolor: "var(--bg-sidebar)",
+                                boxShadow: "none",
+                            },
+                        }}
+                    >
                         {isLoading ? "Saving…" : editing ? "Update" : "Create"}
                     </Button>
                 </div>
@@ -146,40 +228,96 @@ const AssignHODDialog = ({
     };
 
     return (
-        <Dialog open={open} onClose={onClose} PaperProps={{ sx: { borderRadius: "12px", border: "1px solid var(--ui-border)", bgcolor: "var(--bg-surface)", minWidth: 400, boxShadow: "0 10px 25px -5px rgb(0 0 0 / 0.1)" } }}>
-            <DialogTitle sx={{ fontWeight: 800, color: "var(--text-primary)", px: 3, pt: 3, pb: 1, fontSize: "1.125rem" }}>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            PaperProps={{
+                sx: {
+                    borderRadius: "12px",
+                    border: "1px solid var(--ui-border)",
+                    bgcolor: "var(--bg-surface)",
+                    minWidth: 400,
+                    boxShadow: "0 10px 25px -5px rgb(0 0 0 / 0.1)",
+                },
+            }}
+        >
+            <DialogTitle
+                sx={{
+                    fontWeight: 800,
+                    color: "var(--text-primary)",
+                    px: 3,
+                    pt: 3,
+                    pb: 1,
+                    fontSize: "1.125rem",
+                }}
+            >
                 Assign HOD — {dept?.name}
             </DialogTitle>
             <DialogContent sx={{ px: 3 }}>
                 <p className="text-sm text-(--text-secondary) font-medium mb-4">
-                    Select an unassigned user with the HOD role to manage this department.
+                    Select an unassigned user with the HOD role to manage this
+                    department.
                 </p>
                 <div className="space-y-2 max-h-[280px] overflow-y-auto custom-scrollbar pr-1">
                     {hodUsers.length === 0 ? (
                         <div className="text-center py-8 border border-dashed border-(--ui-border) rounded-xl bg-(--bg-base)">
-                            <p className="text-sm font-semibold text-(--text-secondary)">No HOD-role users found.</p>
-                            <p className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-wider mt-1">Provision users in admin panel</p>
+                            <p className="text-sm font-semibold text-(--text-secondary)">
+                                No HOD-role users found.
+                            </p>
+                            <p className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-wider mt-1">
+                                Provision users in admin panel
+                            </p>
                         </div>
                     ) : (
                         hodUsers.map((u: any) => (
-                            <button key={u._id}
+                            <button
+                                key={u._id}
                                 onClick={() => setSelected(u._id)}
                                 className={`w-full text-left p-3 rounded-xl border transition-all ${selected === u._id
                                     ? "border-(--brand-primary) bg-(--brand-primary) bg-opacity-10"
                                     : "border-(--ui-border) bg-(--bg-base) hover:border-(--brand-primary)"
                                     }`}
                             >
-                                <p className={`font-bold text-sm ${selected === u._id ? "text-(--brand-primary)" : "text-(--text-primary)"}`}>{u.firstName} {u.lastName}</p>
-                                <p className={`text-xs font-medium mt-0.5 ${selected === u._id ? "text-(--brand-primary) opacity-80" : "text-(--text-secondary)"}`}>{u.email}</p>
+                                <p
+                                    className={`font-bold text-sm ${selected === u._id ? "text-(--brand-primary)" : "text-(--text-primary)"}`}
+                                >
+                                    {u.firstName} {u.lastName}
+                                </p>
+                                <p
+                                    className={`text-xs font-medium mt-0.5 ${selected === u._id ? "text-(--brand-primary) opacity-80" : "text-(--text-secondary)"}`}
+                                >
+                                    {u.email}
+                                </p>
                             </button>
                         ))
                     )}
                 </div>
             </DialogContent>
             <DialogActions sx={{ p: 3, pt: 2 }}>
-                <Button onClick={onClose} sx={{ color: "var(--text-secondary)", fontWeight: 600, textTransform: "none" }}>Cancel</Button>
-                <Button onClick={handleAssign} disabled={!selected || isLoading}
-                    variant="contained" sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", boxShadow: "none", "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
+                <Button
+                    onClick={onClose}
+                    sx={{
+                        color: "var(--text-secondary)",
+                        fontWeight: 600,
+                        textTransform: "none",
+                    }}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    onClick={handleAssign}
+                    disabled={!selected || isLoading}
+                    variant="contained"
+                    sx={{
+                        ...buttonSx,
+                        bgcolor: "var(--brand-primary)",
+                        boxShadow: "none",
+                        "&:hover": {
+                            bgcolor: "var(--bg-sidebar)",
+                            boxShadow: "none",
+                        },
+                    }}
+                >
                     {isLoading ? "Assigning…" : "Assign HOD"}
                 </Button>
             </DialogActions>
@@ -217,22 +355,44 @@ const Departments = () => {
                             Departments
                         </h1>
                         <p className="text-(--text-secondary) text-sm font-medium mt-1">
-                            Manage academic departments, student capacities, and faculty leadership.
+                            Manage academic departments, student capacities, and
+                            faculty leadership.
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="relative">
-                            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
+                            <Search
+                                size={16}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)"
+                            />
                             <input
                                 placeholder="Search departments…"
                                 value={search}
-                                onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                    setPage(0);
+                                }}
                                 className="bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-4 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none w-64 transition-all text-(--text-primary)"
                             />
                         </div>
-                        <Button variant="contained" startIcon={<Plus size={16} />}
-                            onClick={() => { setEditingDept(null); setDrawerOpen(true); }}
-                            sx={{ ...buttonSx, bgcolor: "var(--brand-primary)", boxShadow: "none", px: 3, "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" } }}>
+                        <Button
+                            variant="contained"
+                            startIcon={<Plus size={16} />}
+                            onClick={() => {
+                                setEditingDept(null);
+                                setDrawerOpen(true);
+                            }}
+                            sx={{
+                                ...buttonSx,
+                                bgcolor: "var(--brand-primary)",
+                                boxShadow: "none",
+                                px: 3,
+                                "&:hover": {
+                                    bgcolor: "var(--bg-sidebar)",
+                                    boxShadow: "none",
+                                },
+                            }}
+                        >
                             New Department
                         </Button>
                     </div>
@@ -243,8 +403,18 @@ const Departments = () => {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-(--ui-divider) bg-(--bg-base) text-left">
-                                    {["Department", "Code", "HOD", "Capacity", "Status", "Actions"].map((h) => (
-                                        <th key={h} className="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
+                                    {[
+                                        "Department",
+                                        "Code",
+                                        "HOD",
+                                        "Capacity",
+                                        "Status",
+                                        "Actions",
+                                    ].map((h) => (
+                                        <th
+                                            key={h}
+                                            className="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-(--text-secondary)"
+                                        >
                                             {h}
                                         </th>
                                     ))}
@@ -253,24 +423,56 @@ const Departments = () => {
                             <tbody className="divide-y divide-(--ui-divider)">
                                 {isLoading
                                     ? Array.from({ length: 5 }).map((_, i) => (
-                                        <tr key={i} className="hover:bg-(--bg-base) transition-colors">
-                                            {Array.from({ length: 6 }).map((_, j) => (
-                                                <td key={j} className="px-6 py-4">
-                                                    <Skeleton height={20} sx={{ bgcolor: "var(--ui-divider)", borderRadius: "4px" }} />
-                                                </td>
-                                            ))}
+                                        <tr
+                                            key={i}
+                                            className="hover:bg-(--bg-base) transition-colors"
+                                        >
+                                            {Array.from({ length: 6 }).map(
+                                                (_, j) => (
+                                                    <td
+                                                        key={j}
+                                                        className="px-6 py-4"
+                                                    >
+                                                        <Skeleton
+                                                            height={20}
+                                                            sx={{
+                                                                bgcolor:
+                                                                    "var(--ui-divider)",
+                                                                borderRadius:
+                                                                    "4px",
+                                                            }}
+                                                        />
+                                                    </td>
+                                                ),
+                                            )}
                                         </tr>
                                     ))
                                     : departments.map((dept) => (
-                                        <tr key={dept._id} className="hover:bg-(--bg-base) transition-colors group">
+                                        <tr
+                                            key={dept._id}
+                                            className="hover:bg-(--bg-base) transition-colors group"
+                                        >
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-10 h-10 bg-(--brand-primary) bg-opacity-10 border border-(--brand-primary) border-opacity-20 rounded-xl flex items-center justify-center shrink-0">
-                                                        <BookOpen size={18} className="text-(--brand-primary)" />
+                                                        <BookOpen
+                                                            size={18}
+                                                            className="text-(--brand-primary)"
+                                                        />
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-sm text-(--text-primary)">{dept.name}</p>
-                                                        <p className="text-xs text-(--text-secondary) font-medium mt-0.5 max-w-[200px] truncate" title={dept.description}>{dept.description || "—"}</p>
+                                                        <p className="font-bold text-sm text-(--text-primary)">
+                                                            {dept.name}
+                                                        </p>
+                                                        <p
+                                                            className="text-xs text-(--text-secondary) font-medium mt-0.5 max-w-[200px] truncate"
+                                                            title={
+                                                                dept.description
+                                                            }
+                                                        >
+                                                            {dept.description ||
+                                                                "—"}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -283,9 +485,24 @@ const Departments = () => {
                                                 {dept.hod ? (
                                                     <div>
                                                         <p className="font-bold text-sm text-(--text-primary)">
-                                                            {(dept.hod as any).firstName} {(dept.hod as any).lastName}
+                                                            {
+                                                                (
+                                                                    dept.hod as any
+                                                                ).firstName
+                                                            }{" "}
+                                                            {
+                                                                (
+                                                                    dept.hod as any
+                                                                ).lastName
+                                                            }
                                                         </p>
-                                                        <p className="text-xs text-(--text-secondary) font-medium mt-0.5">{(dept.hod as any).email}</p>
+                                                        <p className="text-xs text-(--text-secondary) font-medium mt-0.5">
+                                                            {
+                                                                (
+                                                                    dept.hod as any
+                                                                ).email
+                                                            }
+                                                        </p>
                                                     </div>
                                                 ) : (
                                                     <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-md">
@@ -298,42 +515,132 @@ const Departments = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <Chip
-                                                    label={dept.isActive ? "Active" : "Inactive"}
+                                                    label={
+                                                        dept.isActive
+                                                            ? "Active"
+                                                            : "Inactive"
+                                                    }
                                                     size="small"
                                                     className={`text-[10px]! font-bold! uppercase! tracking-wider! h-5! px-1.5! border ${dept.isActive ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-(--bg-base) text-(--text-secondary) border-(--ui-border)"}`}
                                                 />
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <IconButton size="small" title="Edit"
-                                                        onClick={() => { setEditingDept(dept); setDrawerOpen(true); }}
-                                                        sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--brand-primary)", bgcolor: "var(--brand-active)" } }}>
+                                                <div className="flex items-center gap-1">
+                                                    <IconButton
+                                                        size="small"
+                                                        title="Edit"
+                                                        onClick={() => {
+                                                            setEditingDept(
+                                                                dept,
+                                                            );
+                                                            setDrawerOpen(
+                                                                true,
+                                                            );
+                                                        }}
+                                                        sx={{
+                                                            color: "var(--text-secondary)",
+                                                            "&:hover": {
+                                                                color: "var(--brand-primary)",
+                                                                bgcolor:
+                                                                    "var(--brand-active)",
+                                                            },
+                                                        }}
+                                                    >
                                                         <Pencil size={16} />
                                                     </IconButton>
-                                                    <IconButton size="small" title={dept.isActive ? "Deactivate" : "Activate"}
-                                                        onClick={() => toggleStatus(dept._id)}
-                                                        sx={{ color: "var(--text-secondary)", "&:hover": { bgcolor: "var(--bg-base)" } }}>
-                                                        {dept.isActive
-                                                            ? <ToggleRight size={16} className="text-emerald-500" />
-                                                            : <ToggleLeft size={16} />
+                                                    <IconButton
+                                                        size="small"
+                                                        title={
+                                                            dept.isActive
+                                                                ? "Deactivate"
+                                                                : "Activate"
                                                         }
+                                                        onClick={() =>
+                                                            toggleStatus(
+                                                                dept._id,
+                                                            )
+                                                        }
+                                                        sx={{
+                                                            color: "var(--text-secondary)",
+                                                            "&:hover": {
+                                                                bgcolor:
+                                                                    "var(--bg-base)",
+                                                            },
+                                                        }}
+                                                    >
+                                                        {dept.isActive ? (
+                                                            <ToggleRight
+                                                                size={16}
+                                                                className="text-emerald-500"
+                                                            />
+                                                        ) : (
+                                                            <ToggleLeft
+                                                                size={16}
+                                                            />
+                                                        )}
                                                     </IconButton>
                                                     {dept.hod ? (
-                                                        <IconButton size="small" title="Remove HOD"
-                                                            onClick={() => removeHOD(dept._id)}
-                                                            sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--status-danger)", bgcolor: "var(--bg-base)" } }}>
-                                                            <UserX size={16} />
+                                                        <IconButton
+                                                            size="small"
+                                                            title="Remove HOD"
+                                                            onClick={() =>
+                                                                removeHOD(
+                                                                    dept._id,
+                                                                )
+                                                            }
+                                                            sx={{
+                                                                color: "var(--text-secondary)",
+                                                                "&:hover": {
+                                                                    color: "var(--status-danger)",
+                                                                    bgcolor:
+                                                                        "var(--bg-base)",
+                                                                },
+                                                            }}
+                                                        >
+                                                            <UserX
+                                                                size={16}
+                                                            />
                                                         </IconButton>
                                                     ) : (
-                                                        <IconButton size="small" title="Assign HOD"
-                                                            onClick={() => setAssignDept(dept)}
-                                                            sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--brand-primary)", bgcolor: "var(--brand-active)" } }}>
-                                                            <UserCheck size={16} />
+                                                        <IconButton
+                                                            size="small"
+                                                            title="Assign HOD"
+                                                            onClick={() =>
+                                                                setAssignDept(
+                                                                    dept,
+                                                                )
+                                                            }
+                                                            sx={{
+                                                                color: "var(--text-secondary)",
+                                                                "&:hover": {
+                                                                    color: "var(--brand-primary)",
+                                                                    bgcolor:
+                                                                        "var(--brand-active)",
+                                                                },
+                                                            }}
+                                                        >
+                                                            <UserCheck
+                                                                size={16}
+                                                            />
                                                         </IconButton>
                                                     )}
-                                                    <IconButton size="small" title="Delete"
-                                                        onClick={() => deleteDept(dept._id)}
-                                                        sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--status-danger)", bgcolor: "var(--bg-base)" } }}>
+                                                    <IconButton
+                                                        size="small"
+                                                        title="Delete"
+                                                        onClick={() =>
+                                                            deleteDept(
+                                                                dept._id,
+                                                            )
+                                                        }
+                                                        sx={{
+                                                            color: "var(--text-secondary)",
+                                                            "&:hover": {
+                                                                color: "var(--status-danger)",
+                                                                bgcolor:
+                                                                    "var(--bg-base)",
+                                                            },
+                                                        }}
+                                                    >
                                                         <Trash2 size={16} />
                                                     </IconButton>
                                                 </div>
@@ -345,9 +652,17 @@ const Departments = () => {
 
                         {!isLoading && departments.length === 0 && (
                             <div className="text-center py-20 bg-(--bg-base)">
-                                <BookOpen size={48} className="mx-auto text-(--text-secondary) opacity-30 mb-4" />
-                                <p className="font-black text-(--text-primary) text-lg">No departments found</p>
-                                <p className="text-sm font-medium text-(--text-secondary) mt-1">Click "New Department" to add your first academic department.</p>
+                                <BookOpen
+                                    size={48}
+                                    className="mx-auto text-(--text-secondary) opacity-30 mb-4"
+                                />
+                                <p className="font-black text-(--text-primary) text-lg">
+                                    No departments found
+                                </p>
+                                <p className="text-sm font-medium text-(--text-secondary) mt-1">
+                                    Click "New Department" to add your first
+                                    academic department.
+                                </p>
                             </div>
                         )}
                     </div>
@@ -357,12 +672,18 @@ const Departments = () => {
                         page={page}
                         onPageChange={(_, p) => setPage(p)}
                         rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+                        onRowsPerPageChange={(e) => {
+                            setRowsPerPage(parseInt(e.target.value, 10));
+                            setPage(0);
+                        }}
                         rowsPerPageOptions={[5, 10, 25]}
                         sx={{
                             borderTop: "1px solid var(--ui-divider)",
-                            ".MuiTablePagination-selectLabel,.MuiTablePagination-displayedRows": {
-                                fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)",
+                            ".MuiTablePagination-selectLabel,.MuiTablePagination-displayedRows":
+                            {
+                                fontSize: "12px",
+                                fontWeight: 600,
+                                color: "var(--text-secondary)",
                             },
                         }}
                     />
@@ -372,7 +693,10 @@ const Departments = () => {
             <DeptDrawer
                 open={drawerOpen}
                 editing={editingDept}
-                onClose={() => { setDrawerOpen(false); setEditingDept(null); }}
+                onClose={() => {
+                    setDrawerOpen(false);
+                    setEditingDept(null);
+                }}
             />
             <AssignHODDialog
                 open={!!assignDept}

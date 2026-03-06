@@ -66,8 +66,7 @@ function formatTime(dateStr: string | undefined): string {
         });
     }
     if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7)
-        return date.toLocaleDateString([], { weekday: "short" });
+    if (diffDays < 7) return date.toLocaleDateString([], { weekday: "short" });
     return date.toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
@@ -80,9 +79,7 @@ const ConversationItem: React.FC<Props> = ({
     const display = getConversationDisplay(conversation, currentUserId);
     const lastMsg = conversation.lastMessage;
     const lastText = lastMsg?.text ?? "No messages yet";
-    const lastTime = formatTime(
-        lastMsg?.createdAt ?? conversation.updatedAt,
-    );
+    const lastTime = formatTime(lastMsg?.createdAt ?? conversation.updatedAt);
 
     return (
         <div

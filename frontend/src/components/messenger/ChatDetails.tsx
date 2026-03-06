@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, Switch, IconButton } from "@mui/material";
-import { Building2, VolumeX, Trash2, LogOut, X, Users, Image as ImageIcon } from "lucide-react";
+import {
+    Building2,
+    VolumeX,
+    Trash2,
+    LogOut,
+    X,
+    Users,
+    Image as ImageIcon,
+    UserPlus,
+} from "lucide-react";
 import type { Conversation } from "../../services/messenger/messenger.service";
+import AddMembersModal from "./AddMembersModal";
 
 interface Props {
     conversation: Conversation;
@@ -16,7 +26,10 @@ const ChatDetails: React.FC<Props> = ({
     onClose,
     onDelete,
 }) => {
-    const isGroup = conversation.type === "group" || conversation.type === "announcement";
+    const [addMembersOpen, setAddMembersOpen] = useState(false);
+
+    const isGroup =
+        conversation.type === "group" || conversation.type === "announcement";
 
     let displayName = "";
     let displayRole = "";
@@ -24,10 +37,17 @@ const ChatDetails: React.FC<Props> = ({
     let initials = "";
 
     if (conversation.type === "direct") {
-        const other = conversation.participants.find((p) => p._id !== currentUserId);
-        displayName = other ? `${other.firstName} ${other.lastName}` : "Unknown User";
+        const other = conversation.participants.find(
+            (p) => p._id !== currentUserId,
+        );
+        displayName = other
+            ? `${other.firstName} ${other.lastName}`
+            : "Unknown User";
         displayRole = other?.role ?? "";
-        displayInstitute = typeof other?.institute === "object" && other?.institute ? other.institute.name : "";
+        displayInstitute =
+            typeof other?.institute === "object" && other?.institute
+                ? other.institute.name
+                : "";
         initials = other ? `${other.firstName[0]}${other.lastName[0]}` : "??";
     } else {
         displayName = conversation.name ?? "Group Chat";
@@ -42,7 +62,17 @@ const ChatDetails: React.FC<Props> = ({
                 <h3 className="text-sm font-bold text-(--text-primary)">
                     Conversation Info
                 </h3>
-                <IconButton size="small" onClick={onClose} sx={{ color: "var(--text-secondary)", "&:hover": { color: "var(--text-primary)", bgcolor: "var(--bg-base)" } }}>
+                <IconButton
+                    size="small"
+                    onClick={onClose}
+                    sx={{
+                        color: "var(--text-secondary)",
+                        "&:hover": {
+                            color: "var(--text-primary)",
+                            bgcolor: "var(--bg-base)",
+                        },
+                    }}
+                >
                     <X size={18} />
                 </IconButton>
             </div>
@@ -60,7 +90,13 @@ const ChatDetails: React.FC<Props> = ({
                         </div>
                     ) : (
                         <Avatar
-                            sx={{ width: 80, height: 80, mb: 2, fontSize: "1.75rem", fontWeight: 800 }}
+                            sx={{
+                                width: 80,
+                                height: 80,
+                                mb: 2,
+                                fontSize: "1.75rem",
+                                fontWeight: 800,
+                            }}
                             className="!bg-(--bg-sidebar) !text-(--text-on-dark) !rounded-2xl !shadow-sm"
                         >
                             {initials}
@@ -85,14 +121,42 @@ const ChatDetails: React.FC<Props> = ({
                 {/* Group Members List */}
                 {isGroup && (
                     <div className="text-left space-y-3 pt-2">
-                        <h4 className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-wider mb-2">
-                            Participants ({conversation.participants.length})
-                        </h4>
+                        <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-[10px] font-bold text-(--text-secondary) uppercase tracking-wider">
+                                Participants ({conversation.participants.length})
+                            </h4>
+                            {/* Add Members button — only for group creator */}
+                            {conversation.type === "group" &&
+                                String(conversation.createdBy?._id) ===
+                                    String(currentUserId) && (
+                                    <button
+                                        onClick={() =>
+                                            setAddMembersOpen(true)
+                                        }
+                                        className="flex items-center gap-1.5 text-[10px] font-bold text-(--brand-primary) hover:underline outline-none"
+                                    >
+                                        <UserPlus size={12} />
+                                        Add Members
+                                    </button>
+                                )}
+                        </div>
                         <div className="space-y-1">
                             {conversation.participants.slice(0, 6).map((p) => (
-                                <div key={p._id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-(--bg-base) transition-colors">
-                                    <Avatar sx={{ width: 32, height: 32, fontSize: "11px", fontWeight: 700 }} className="!bg-(--bg-sidebar) !text-(--text-on-dark)">
-                                        {p.firstName[0]}{p.lastName[0]}
+                                <div
+                                    key={p._id}
+                                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-(--bg-base) transition-colors"
+                                >
+                                    <Avatar
+                                        sx={{
+                                            width: 32,
+                                            height: 32,
+                                            fontSize: "11px",
+                                            fontWeight: 700,
+                                        }}
+                                        className="!bg-(--bg-sidebar) !text-(--text-on-dark)"
+                                    >
+                                        {p.firstName[0]}
+                                        {p.lastName[0]}
                                     </Avatar>
                                     <div className="min-w-0">
                                         <p className="text-xs font-bold text-(--text-primary) truncate">
@@ -107,7 +171,8 @@ const ChatDetails: React.FC<Props> = ({
                         </div>
                         {conversation.participants.length > 6 && (
                             <p className="text-[10px] text-(--brand-primary) font-bold text-center cursor-pointer hover:underline">
-                                View {conversation.participants.length - 6} more participants
+                                View {conversation.participants.length - 6} more
+                                participants
                             </p>
                         )}
                     </div>
@@ -117,26 +182,45 @@ const ChatDetails: React.FC<Props> = ({
                 <div className="space-y-2 pt-2 border-t border-(--ui-divider)">
                     <div className="p-3.5 rounded-xl border border-(--ui-border) bg-(--bg-base) flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <VolumeX size={16} className="text-(--text-secondary)" />
+                            <VolumeX
+                                size={16}
+                                className="text-(--text-secondary)"
+                            />
                             <span className="text-xs font-bold text-(--text-primary)">
                                 Mute Notifications
                             </span>
                         </div>
-                        <Switch size="small" sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--brand-primary)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--brand-primary)" } }} />
+                        <Switch
+                            size="small"
+                            sx={{
+                                "& .MuiSwitch-switchBase.Mui-checked": {
+                                    color: "var(--brand-primary)",
+                                },
+                                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                                    { backgroundColor: "var(--brand-primary)" },
+                            }}
+                        />
                     </div>
 
                     {conversation.type === "group" && (
                         <div className="p-3.5 rounded-xl border border-rose-100 bg-rose-50/50 flex items-center justify-between text-rose-600 cursor-pointer hover:bg-rose-50 transition-colors">
                             <div className="flex items-center gap-3">
                                 <LogOut size={16} />
-                                <span className="text-xs font-bold">Leave Group Chat</span>
+                                <span className="text-xs font-bold">
+                                    Leave Group Chat
+                                </span>
                             </div>
                         </div>
                     )}
 
-                    <div onClick={onDelete} className="p-3.5 rounded-xl border border-rose-100 bg-rose-50/50 flex items-center gap-3 text-rose-600 cursor-pointer hover:bg-rose-50 transition-colors">
+                    <div
+                        onClick={onDelete}
+                        className="p-3.5 rounded-xl border border-rose-100 bg-rose-50/50 flex items-center gap-3 text-rose-600 cursor-pointer hover:bg-rose-50 transition-colors"
+                    >
                         <Trash2 size={16} />
-                        <span className="text-xs font-bold">Delete Conversation</span>
+                        <span className="text-xs font-bold">
+                            Delete Conversation
+                        </span>
                     </div>
                 </div>
 
@@ -152,13 +236,28 @@ const ChatDetails: React.FC<Props> = ({
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="aspect-square bg-(--bg-base) rounded-lg border border-(--ui-border) flex items-center justify-center transition-colors hover:border-(--brand-primary) cursor-pointer">
-                                <ImageIcon size={18} className="text-(--text-secondary) opacity-50" />
+                            <div
+                                key={i}
+                                className="aspect-square bg-(--bg-base) rounded-lg border border-(--ui-border) flex items-center justify-center transition-colors hover:border-(--brand-primary) cursor-pointer"
+                            >
+                                <ImageIcon
+                                    size={18}
+                                    className="text-(--text-secondary) opacity-50"
+                                />
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
+
+            {/* Add Members Modal */}
+            <AddMembersModal
+                open={addMembersOpen}
+                onClose={() => setAddMembersOpen(false)}
+                conversationId={conversation._id}
+                existingMemberIds={conversation.participants.map((p) => p._id)}
+                onMembersAdded={() => setAddMembersOpen(false)}
+            />
         </div>
     );
 };

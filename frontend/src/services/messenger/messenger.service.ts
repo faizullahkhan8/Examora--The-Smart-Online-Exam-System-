@@ -93,6 +93,11 @@ export interface SendMessagePayload {
     text: string;
 }
 
+export interface AddMembersPayload {
+    conversationId: string;
+    members: string[];
+}
+
 export interface SearchUsersResponse {
     success: boolean;
     data: ParticipantUser[];
@@ -157,6 +162,15 @@ export const messengerApi = baseQuery.injectEndpoints({
             query: (q) =>
                 `/messenger/users/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
         }),
+
+        addMembers: builder.mutation<ConversationResponse, AddMembersPayload>({
+            query: ({ conversationId, members }) => ({
+                url: `/messenger/conversations/${conversationId}/members`,
+                method: "PATCH",
+                body: { members },
+            }),
+            invalidatesTags: ["Messenger"],
+        }),
     }),
 });
 
@@ -167,4 +181,5 @@ export const {
     useSendMessageMutation,
     useDeleteConversationMutation,
     useSearchUsersQuery,
+    useAddMembersMutation,
 } = messengerApi;

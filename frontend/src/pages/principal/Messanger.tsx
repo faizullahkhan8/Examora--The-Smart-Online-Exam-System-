@@ -91,7 +91,9 @@ const Messanger = () => {
             <div className="w-[340px] bg-(--bg-surface) border-r border-(--ui-border) flex flex-col shrink-0 z-10 shadow-sm">
                 <div className="p-5 border-b border-(--ui-divider) space-y-5">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-black text-(--text-primary) tracking-tight">Messaging</h1>
+                        <h1 className="text-2xl font-black text-(--text-primary) tracking-tight">
+                            Messaging
+                        </h1>
                         <Tooltip title="New Conversation">
                             <IconButton
                                 size="small"
@@ -100,7 +102,7 @@ const Messanger = () => {
                                     bgcolor: "var(--brand-primary)",
                                     color: "#fff",
                                     "&:hover": { bgcolor: "var(--bg-sidebar)" },
-                                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                                 }}
                             >
                                 <Plus size={16} />
@@ -110,7 +112,10 @@ const Messanger = () => {
 
                     {/* Search */}
                     <div className="relative">
-                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)" />
+                        <Search
+                            size={16}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-secondary)"
+                        />
                         <input
                             className="w-full bg-(--bg-base) border border-(--ui-border) rounded-lg pl-9 pr-3 py-2 text-sm font-medium focus:ring-1 focus:ring-(--brand-primary) focus:border-(--brand-primary) outline-none transition-all placeholder:text-(--text-secondary)/60 text-(--text-primary)"
                             placeholder="Search conversations..."
@@ -126,8 +131,8 @@ const Messanger = () => {
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-all ${activeTab === tab
-                                    ? "bg-(--brand-primary) text-white shadow-sm border border-transparent"
-                                    : "bg-(--bg-base) text-(--text-secondary) border border-(--ui-border) hover:border-(--brand-primary) hover:text-(--text-primary)"
+                                        ? "bg-(--brand-primary) text-white shadow-sm border border-transparent"
+                                        : "bg-(--bg-base) text-(--text-secondary) border border-(--ui-border) hover:border-(--brand-primary) hover:text-(--text-primary)"
                                     }`}
                             >
                                 {tab}
@@ -163,24 +168,39 @@ const Messanger = () => {
                         showDetails={showDetails}
                         onToggleDetails={() => setShowDetails((v) => !v)}
                     />
-                    <MessageList messages={messages} isLoading={isMsgsLoading} currentUserId={authUser.id} />
-                    <MessageInput conversationId={selectedConv._id} onSend={handleSend} isSending={isSending} />
+                    <MessageList
+                        messages={messages}
+                        isLoading={isMsgsLoading}
+                        currentUserId={authUser.id}
+                    />
+                    <MessageInput
+                        conversationId={selectedConv._id}
+                        onSend={handleSend}
+                        isSending={isSending}
+                    />
                 </div>
             ) : (
                 <div className="grow flex flex-col items-center justify-center gap-4 bg-(--bg-base)">
                     {isConvsLoading ? (
-                        <p className="text-sm font-bold text-(--text-secondary) animate-pulse">Loading secure communications...</p>
+                        <p className="text-sm font-bold text-(--text-secondary) animate-pulse">
+                            Loading secure communications...
+                        </p>
                     ) : (
                         <div className="flex flex-col items-center max-w-sm px-6">
                             <div className="w-20 h-20 mb-4 rounded-2xl bg-(--bg-surface) border border-(--ui-border) shadow-sm flex items-center justify-center">
-                                <MessageSquare size={32} className="text-(--brand-primary) opacity-80" />
+                                <MessageSquare
+                                    size={32}
+                                    className="text-(--brand-primary) opacity-80"
+                                />
                             </div>
                             <div className="text-center space-y-2 mb-6">
                                 <p className="text-lg font-black text-(--text-primary)">
                                     No conversation selected
                                 </p>
                                 <p className="text-sm font-medium text-(--text-secondary) leading-relaxed">
-                                    Select an existing conversation from the sidebar panel or initiate a new secure channel.
+                                    Select an existing conversation from the
+                                    sidebar panel or initiate a new secure
+                                    channel.
                                 </p>
                             </div>
                             <Button
@@ -195,7 +215,10 @@ const Messanger = () => {
                                     fontWeight: 700,
                                     bgcolor: "var(--brand-primary)",
                                     boxShadow: "none",
-                                    "&:hover": { bgcolor: "var(--bg-sidebar)", boxShadow: "none" }
+                                    "&:hover": {
+                                        bgcolor: "var(--bg-sidebar)",
+                                        boxShadow: "none",
+                                    },
                                 }}
                             >
                                 New Conversation

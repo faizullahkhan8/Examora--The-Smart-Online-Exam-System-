@@ -11,3 +11,9 @@ export const createConversationValidation = z.object({
 export const sendMessageValidation = z.object({
     text: z.string().min(1, "Message cannot be empty").max(4000),
 });
+
+export const addMembersValidation = z.object({
+    members: z
+        .array(z.string().min(1))
+        .min(1, "At least one member ID is required"),
+});

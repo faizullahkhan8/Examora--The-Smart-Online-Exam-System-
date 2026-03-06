@@ -28,7 +28,8 @@ const ConversationList: React.FC<Props> = ({
     const filtered = conversations.filter((conv) => {
         // Tab filter
         if (activeTab === "Groups" && conv.type !== "group") return false;
-        if (activeTab === "Announcements" && conv.type !== "announcement") return false;
+        if (activeTab === "Announcements" && conv.type !== "announcement")
+            return false;
 
         // Search filter
         if (search) {

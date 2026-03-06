@@ -7,7 +7,8 @@ const Students = () => (
             <GraduationCap size={48} className="mx-auto mb-4 text-slate-300" />
             <h3 className="font-black text-slate-500 mb-2">Coming Soon</h3>
             <p className="text-sm text-slate-400 font-medium max-w-sm mx-auto">
-                Student oversight module is under development. You will be able to view enrollment, attendance, and performance metrics here.
+                Student oversight module is under development. You will be able
+                to view enrollment, attendance, and performance metrics here.
             </p>
         </div>
     </div>

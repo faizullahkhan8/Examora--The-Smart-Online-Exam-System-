@@ -16,12 +16,19 @@ function groupByDate(messages: Message[]) {
     for (const msg of messages) {
         const date = new Date(msg.createdAt);
         const now = new Date();
-        const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+        const diffDays = Math.floor(
+            (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+        );
         let label = "";
 
         if (diffDays === 0) label = "Today";
         else if (diffDays === 1) label = "Yesterday";
-        else label = date.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" });
+        else
+            label = date.toLocaleDateString([], {
+                weekday: "long",
+                month: "short",
+                day: "numeric",
+            });
 
         if (label !== lastLabel) {
             groups.push({ label, messages: [msg] });
@@ -33,7 +40,11 @@ function groupByDate(messages: Message[]) {
     return groups;
 }
 
-const MessageList: React.FC<Props> = ({ messages, isLoading, currentUserId }) => {
+const MessageList: React.FC<Props> = ({
+    messages,
+    isLoading,
+    currentUserId,
+}) => {
     const endRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -43,7 +54,10 @@ const MessageList: React.FC<Props> = ({ messages, isLoading, currentUserId }) =>
     if (isLoading) {
         return (
             <div className="grow flex items-center justify-center bg-(--bg-base)">
-                <CircularProgress size={28} sx={{ color: "var(--brand-primary)" }} />
+                <CircularProgress
+                    size={28}
+                    sx={{ color: "var(--brand-primary)" }}
+                />
             </div>
         );
     }
