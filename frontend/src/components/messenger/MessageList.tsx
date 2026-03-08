@@ -7,6 +7,8 @@ interface Props {
     messages: Message[];
     isLoading: boolean;
     currentUserId: string;
+    searchQuery?: string;
+    highlightedId?: string | null;
 }
 
 function groupByDate(messages: Message[]) {
@@ -44,12 +46,28 @@ const MessageList: React.FC<Props> = ({
     messages,
     isLoading,
     currentUserId,
+    searchQuery = "",
+    highlightedId = null,
 }) => {
     const endRef = useRef<HTMLDivElement>(null);
+    const highlightRef = useRef<HTMLDivElement>(null);
 
+    // Auto-scroll to bottom on new messages (only when no active search)
     useEffect(() => {
-        endRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+        if (!highlightedId) {
+            endRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages, highlightedId]);
+
+    // Auto-scroll to focused match
+    useEffect(() => {
+        if (highlightedId && highlightRef.current) {
+            highlightRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        }
+    }, [highlightedId]);
 
     if (isLoading) {
         return (
@@ -84,13 +102,22 @@ const MessageList: React.FC<Props> = ({
                             {group.label}
                         </span>
                     </div>
-                    {group.messages.map((msg) => (
-                        <MessageBubble
-                            key={msg._id}
-                            message={msg}
-                            currentUserId={currentUserId}
-                        />
-                    ))}
+                    {group.messages.map((msg) => {
+                        const isFocused = msg._id === highlightedId;
+                        return (
+                            <div
+                                key={msg._id}
+                                ref={isFocused ? highlightRef : undefined}
+                            >
+                                <MessageBubble
+                                    message={msg}
+                                    currentUserId={currentUserId}
+                                    searchQuery={searchQuery}
+                                    isFocused={isFocused}
+                                />
+                            </div>
+                        );
+                    })}
                 </div>
             ))}
             <div ref={endRef} />

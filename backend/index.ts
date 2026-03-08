@@ -20,6 +20,7 @@ import examPaperRouter from "./routers/examPaper.router.ts";
 import attendanceRouter from "./routers/attendance.router.ts";
 import materialRouter from "./routers/material.router.ts";
 import auditLogRouter from "./routers/auditLog.router.ts";
+import meetingRouter from "./routers/meeting.router.ts";
 
 import { ErrorHandler } from "./middlewares/error.middleware.ts";
 import { auditLogMiddleware } from "./middlewares/auditLog.middleware.ts";
@@ -77,6 +78,7 @@ app.use("/api/exam-papers", examPaperRouter);
 app.use("/api/attendance", attendanceRouter);
 app.use("/api/materials", materialRouter);
 app.use("/api/audit-logs", auditLogRouter);
+app.use("/api/meetings",   meetingRouter);
 
 connectDB();
 

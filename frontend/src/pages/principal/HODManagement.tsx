@@ -1,4 +1,4 @@
-import { useState, useDeferredValue } from "react";
+import { useState, useEffect, useDeferredValue } from "react";
 import {
     Button,
     IconButton,
@@ -72,6 +72,18 @@ const HODDrawer = ({
         email: editing?.email ?? "",
         password: "",
     });
+
+    // Re-populate form every time the drawer opens or the editing user changes
+    useEffect(() => {
+        if (open) {
+            setForm({
+                firstName: editing?.firstName ?? "",
+                lastName: editing?.lastName ?? "",
+                email: editing?.email ?? "",
+                password: "",
+            });
+        }
+    }, [open, editing]);
 
     const [createUser, { isLoading: creating }] = useCreateUserMutation();
     const [updateUser, { isLoading: updating }] = useUpdateUserMutation();

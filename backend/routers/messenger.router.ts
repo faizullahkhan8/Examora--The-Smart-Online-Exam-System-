@@ -7,6 +7,7 @@ import {
     deleteConversation,
     searchUsers,
     addMembers,
+    removeMember,
 } from "../controller/messenger.controller.ts";
 import { isAuthenticated } from "../middlewares/auth.middleware.ts";
 
@@ -20,6 +21,7 @@ router.get("/conversations", getConversations);
 router.post("/conversations", createConversation);
 router.delete("/conversations/:id", deleteConversation);
 router.patch("/conversations/:id/members", addMembers);
+router.delete("/conversations/:id/members/:memberId", removeMember);
 
 // Messages within a conversation
 router.get("/conversations/:id/messages", getMessages);

@@ -45,6 +45,7 @@ import TeacherNotifications from "./pages/teacher/TeacherNotifications";
 
 // ─── Route Guards
 import { RequireRole } from "./components/guards/RouteGuards";
+import Meetings from "./pages/principal/Meeting";
 
 const AppRouter = createBrowserRouter([
     {
@@ -79,6 +80,7 @@ const AppRouter = createBrowserRouter([
                 children: [
                     { path: "/principal/dashboard", element: <PrincipalDashboard /> },
                     { path: "/principal/departments", element: <Departments /> },
+                    { path: "/principal/meetings", element: <Meetings /> },
                     { path: "/principal/hods", element: <HODManagement /> },
                     { path: "/principal/sessions", element: <AcademicSessions /> },
                     { path: "/principal/institute", element: <InstituteProfile /> },

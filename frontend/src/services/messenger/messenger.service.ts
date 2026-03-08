@@ -98,6 +98,11 @@ export interface AddMembersPayload {
     members: string[];
 }
 
+export interface RemoveMemberPayload {
+    conversationId: string;
+    memberId: string;
+}
+
 export interface SearchUsersResponse {
     success: boolean;
     data: ParticipantUser[];
@@ -171,6 +176,14 @@ export const messengerApi = baseQuery.injectEndpoints({
             }),
             invalidatesTags: ["Messenger"],
         }),
+
+        removeMember: builder.mutation<ConversationResponse, RemoveMemberPayload>({
+            query: ({ conversationId, memberId }) => ({
+                url: `/messenger/conversations/${conversationId}/members/${memberId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["Messenger"],
+        }),
     }),
 });
 
@@ -182,4 +195,5 @@ export const {
     useDeleteConversationMutation,
     useSearchUsersQuery,
     useAddMembersMutation,
+    useRemoveMemberMutation,
 } = messengerApi;

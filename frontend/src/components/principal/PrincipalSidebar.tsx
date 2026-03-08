@@ -18,6 +18,7 @@ import {
     BellIcon,
     LogOut,
     MailIcon,
+    Video,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -33,6 +34,7 @@ const menuItems = [
         icon: Building2,
         url: "/principal/institute",
     },
+    { label: "Meetings", icon: Video, url: "/principal/meetings" },
     { label: "Departments", icon: BookOpen, url: "/principal/departments" },
     { label: "HOD Management", icon: Users, url: "/principal/hods" },
     {

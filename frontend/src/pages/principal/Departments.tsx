@@ -1,4 +1,4 @@
-import { useState, useDeferredValue } from "react";
+import { useState, useEffect, useDeferredValue } from "react";
 import {
     Button,
     IconButton,
@@ -75,6 +75,18 @@ const DeptDrawer = ({
         description: editing?.description ?? "",
         capacity: editing?.capacity ?? 0,
     });
+
+    // Re-populate form every time the drawer opens or the editing record changes
+    useEffect(() => {
+        if (open) {
+            setForm({
+                name: editing?.name ?? "",
+                code: editing?.code ?? "",
+                description: editing?.description ?? "",
+                capacity: editing?.capacity ?? 0,
+            });
+        }
+    }, [open, editing]);
     const [createDept, { isLoading: creating }] = useCreateDepartmentMutation();
     const [updateDept, { isLoading: updating }] = useUpdateDepartmentMutation();
 

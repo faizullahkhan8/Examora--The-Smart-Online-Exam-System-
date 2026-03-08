@@ -28,6 +28,7 @@ export const baseQuery = createApi({
         "Attendance",
         "Material",
         "AuditLog",
+        "Meeting",
     ],
     endpoints: () => ({}),
 });

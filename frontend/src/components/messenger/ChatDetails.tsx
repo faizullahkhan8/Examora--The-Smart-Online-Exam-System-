@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Avatar, Switch, IconButton } from "@mui/material";
+import {
+    Avatar,
+    Switch,
+    IconButton,
+    CircularProgress,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+} from "@mui/material";
 import {
     Building2,
     VolumeX,
@@ -9,8 +19,14 @@ import {
     Users,
     Image as ImageIcon,
     UserPlus,
+    UserMinus,
+    AlertTriangle,
 } from "lucide-react";
-import type { Conversation } from "../../services/messenger/messenger.service";
+import type {
+    Conversation,
+    ParticipantUser,
+} from "../../services/messenger/messenger.service";
+import { useRemoveMemberMutation } from "../../services/messenger/messenger.service";
 import AddMembersModal from "./AddMembersModal";
 
 interface Props {
@@ -27,9 +43,17 @@ const ChatDetails: React.FC<Props> = ({
     onDelete,
 }) => {
     const [addMembersOpen, setAddMembersOpen] = useState(false);
+    const [removingId, setRemovingId] = useState<string | null>(null);
+    const [confirmTarget, setConfirmTarget] = useState<ParticipantUser | null>(null);
+
+    const [removeMember] = useRemoveMemberMutation();
 
     const isGroup =
         conversation.type === "group" || conversation.type === "announcement";
+
+    const isCreator =
+        conversation.type === "group" &&
+        String(conversation.createdBy?._id) === String(currentUserId);
 
     let displayName = "";
     let displayRole = "";
@@ -54,6 +78,22 @@ const ChatDetails: React.FC<Props> = ({
         displayRole = conversation.type === "group" ? "Group" : "Broadcast";
         displayInstitute = `${conversation.participants.length} total members`;
     }
+
+    const handleConfirmRemove = async () => {
+        if (!confirmTarget) return;
+        setRemovingId(confirmTarget._id);
+        setConfirmTarget(null);
+        try {
+            await removeMember({
+                conversationId: conversation._id,
+                memberId: confirmTarget._id,
+            }).unwrap();
+        } catch {
+            // Error handled globally
+        } finally {
+            setRemovingId(null);
+        }
+    };
 
     return (
         <div className="h-full flex flex-col">
@@ -126,25 +166,21 @@ const ChatDetails: React.FC<Props> = ({
                                 Participants ({conversation.participants.length})
                             </h4>
                             {/* Add Members button — only for group creator */}
-                            {conversation.type === "group" &&
-                                String(conversation.createdBy?._id) ===
-                                    String(currentUserId) && (
-                                    <button
-                                        onClick={() =>
-                                            setAddMembersOpen(true)
-                                        }
-                                        className="flex items-center gap-1.5 text-[10px] font-bold text-(--brand-primary) hover:underline outline-none"
-                                    >
-                                        <UserPlus size={12} />
-                                        Add Members
-                                    </button>
-                                )}
+                            {isCreator && (
+                                <button
+                                    onClick={() => setAddMembersOpen(true)}
+                                    className="flex items-center gap-1.5 text-[10px] font-bold text-(--brand-primary) hover:underline outline-none"
+                                >
+                                    <UserPlus size={12} />
+                                    Add Members
+                                </button>
+                            )}
                         </div>
                         <div className="space-y-1">
                             {conversation.participants.slice(0, 6).map((p) => (
                                 <div
                                     key={p._id}
-                                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-(--bg-base) transition-colors"
+                                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-(--bg-base) transition-colors group"
                                 >
                                     <Avatar
                                         sx={{
@@ -158,14 +194,49 @@ const ChatDetails: React.FC<Props> = ({
                                         {p.firstName[0]}
                                         {p.lastName[0]}
                                     </Avatar>
-                                    <div className="min-w-0">
-                                        <p className="text-xs font-bold text-(--text-primary) truncate">
+                                    <div className="min-w-0 grow">
+                                        <p className="text-xs font-bold text-(--text-primary) truncate flex items-center gap-1.5">
                                             {p.firstName} {p.lastName}
+                                            {String(p._id) ===
+                                                String(
+                                                    conversation.createdBy?._id,
+                                                ) && (
+                                                <span className="text-[9px] font-bold bg-violet-100 text-violet-600 px-1.5 py-0.5 rounded-md shrink-0">
+                                                    Creator
+                                                </span>
+                                            )}
                                         </p>
                                         <p className="text-[10px] text-(--text-secondary) font-medium capitalize truncate">
                                             {p.role}
                                         </p>
                                     </div>
+
+                                    {/* Remove button — only creator, only for other members */}
+                                    {isCreator &&
+                                        String(p._id) !==
+                                            String(currentUserId) && (
+                                            <button
+                                                onClick={() =>
+                                                    setConfirmTarget(p)
+                                                }
+                                                disabled={
+                                                    removingId === p._id
+                                                }
+                                                title="Remove member"
+                                                className="ml-auto opacity-0 group-hover:opacity-100 flex items-center justify-center w-6 h-6 rounded-full text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition-all outline-none disabled:opacity-50 shrink-0"
+                                            >
+                                                {removingId === p._id ? (
+                                                    <CircularProgress
+                                                        size={12}
+                                                        sx={{
+                                                            color: "rgb(239 68 68)",
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <UserMinus size={13} />
+                                                )}
+                                            </button>
+                                        )}
                                 </div>
                             ))}
                         </div>
@@ -258,6 +329,82 @@ const ChatDetails: React.FC<Props> = ({
                 existingMemberIds={conversation.participants.map((p) => p._id)}
                 onMembersAdded={() => setAddMembersOpen(false)}
             />
+
+            {/* Remove Member Confirmation Dialog */}
+            <Dialog
+                open={!!confirmTarget}
+                onClose={() => setConfirmTarget(null)}
+                maxWidth="xs"
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        borderRadius: "16px",
+                        border: "1px solid var(--ui-border)",
+                        boxShadow: "0 10px 25px -5px rgb(0 0 0 / 0.15)",
+                    },
+                }}
+            >
+                <DialogTitle
+                    sx={{
+                        px: 3,
+                        pt: 3,
+                        pb: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                    }}
+                >
+                    <span className="flex items-center justify-center w-9 h-9 rounded-full bg-rose-100 shrink-0">
+                        <AlertTriangle size={18} className="text-rose-600" />
+                    </span>
+                    <span className="text-base font-bold text-(--text-primary)">
+                        Remove Member
+                    </span>
+                </DialogTitle>
+
+                <DialogContent sx={{ px: 3, pt: 1.5, pb: 2 }}>
+                    <p className="text-sm text-(--text-secondary) leading-relaxed">
+                        Are you sure you want to remove{" "}
+                        <span className="font-bold text-(--text-primary)">
+                            {confirmTarget?.firstName} {confirmTarget?.lastName}
+                        </span>{" "}
+                        from this group? They will lose access to the
+                        conversation immediately.
+                    </p>
+                </DialogContent>
+
+                <DialogActions sx={{ px: 3, pb: 3, pt: 0, gap: 1 }}>
+                    <Button
+                        onClick={() => setConfirmTarget(null)}
+                        sx={{
+                            color: "var(--text-secondary)",
+                            fontWeight: 600,
+                            textTransform: "none",
+                            borderRadius: "8px",
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleConfirmRemove}
+                        sx={{
+                            bgcolor: "#ef4444",
+                            borderRadius: "8px",
+                            px: 3,
+                            textTransform: "none",
+                            fontWeight: 700,
+                            boxShadow: "none",
+                            "&:hover": {
+                                bgcolor: "#dc2626",
+                                boxShadow: "none",
+                            },
+                        }}
+                    >
+                        Remove
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };

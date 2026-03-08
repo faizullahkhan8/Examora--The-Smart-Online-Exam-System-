@@ -29,6 +29,11 @@ const Messanger = () => {
     const [showDetails, setShowDetails] = useState(false);
     const [isNewMsgModal, setIsNewMsgModal] = useState(false);
 
+    // ─── In-chat message search ───────────────────────────────────────────────
+    const [msgSearchQuery, setMsgSearchQuery] = useState("");
+    const [msgMatchIds, setMsgMatchIds] = useState<string[]>([]);
+    const [msgMatchIndex, setMsgMatchIndex] = useState(0);
+
     // ─── Conversations ────────────────────────────────────────────────────────
     const {
         data: convsData,
@@ -50,6 +55,13 @@ const Messanger = () => {
             if (fresh) setSelectedConv(fresh);
         }
     }, [conversations]);
+
+    // Reset in-chat search when switching conversations
+    useEffect(() => {
+        setMsgSearchQuery("");
+        setMsgMatchIds([]);
+        setMsgMatchIndex(0);
+    }, [selectedConv?._id]);
 
     // ─── Messages ─────────────────────────────────────────────────────────────
     const { data: msgsData, isLoading: isMsgsLoading } = useGetMessagesQuery(
@@ -167,11 +179,24 @@ const Messanger = () => {
                         currentUserId={authUser.id}
                         showDetails={showDetails}
                         onToggleDetails={() => setShowDetails((v) => !v)}
+                        messages={messages}
+                        onSearchMatch={(ids, idx, q) => {
+                            setMsgMatchIds(ids);
+                            setMsgMatchIndex(idx);
+                            setMsgSearchQuery(q);
+                        }}
+                        onSearchClose={() => {
+                            setMsgMatchIds([]);
+                            setMsgMatchIndex(0);
+                            setMsgSearchQuery("");
+                        }}
                     />
                     <MessageList
                         messages={messages}
                         isLoading={isMsgsLoading}
                         currentUserId={authUser.id}
+                        searchQuery={msgSearchQuery}
+                        highlightedId={msgMatchIds[msgMatchIndex] ?? null}
                     />
                     <MessageInput
                         conversationId={selectedConv._id}

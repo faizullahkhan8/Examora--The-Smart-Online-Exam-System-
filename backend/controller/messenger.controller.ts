@@ -329,6 +329,78 @@ export const searchUsers = expressAsyncHandler(
         }
     },
 );
+// ─── REMOVE MEMBER FROM GROUP ─────────────────────────────────────────────────
+export const removeMember = expressAsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id, memberId } = req.params;
+            const userId = req.session.user?.id;
+
+            if (
+                !mongoose.Types.ObjectId.isValid(id) ||
+                !mongoose.Types.ObjectId.isValid(memberId)
+            ) {
+                return next(new ErrorResponse("Invalid ID", 400));
+            }
+
+            const conversation = await ConversationModel.findOne({
+                _id: id,
+                isActive: true,
+            });
+            if (!conversation) {
+                return next(new ErrorResponse("Conversation not found", 404));
+            }
+
+            // Only the group creator can remove members
+            if (String(conversation.createdBy) !== String(userId)) {
+                return next(
+                    new ErrorResponse(
+                        "Only the group creator can remove members",
+                        403,
+                    ),
+                );
+            }
+
+            // Creator cannot remove themselves
+            if (String(memberId) === String(userId)) {
+                return next(
+                    new ErrorResponse(
+                        "You cannot remove yourself from the group",
+                        400,
+                    ),
+                );
+            }
+
+            // Check target member is actually in the group
+            const isMember = conversation.participants.some(
+                (p) => String(p) === String(memberId),
+            );
+            if (!isMember) {
+                return next(
+                    new ErrorResponse("User is not a member of this group", 404),
+                );
+            }
+
+            conversation.participants = conversation.participants.filter(
+                (p) => String(p) !== String(memberId),
+            ) as any;
+            await conversation.save();
+
+            const updated = await ConversationModel.findById(conversation._id)
+                .populate("participants", PARTICIPANT_FIELDS)
+                .populate("createdBy", "firstName lastName role");
+
+            res.status(200).json({
+                success: true,
+                message: "Member removed successfully",
+                data: updated,
+            });
+        } catch (error: any) {
+            return next(new ErrorResponse(error.message, 500));
+        }
+    },
+);
+
 // ─── ADD MEMBERS TO GROUP ─────────────────────────────────────────────────────
 export const addMembers = expressAsyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
